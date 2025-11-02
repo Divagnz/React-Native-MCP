@@ -143,17 +143,51 @@ describe('ReactNativeTools', () => {
       });
     });
 
-    // NOTE: Package management tools are currently not registered due to a source code bug
-    // where they are accidentally nested inside the analyze_codebase_comprehensive handler
-    // This will be fixed during Phase 2 (refactoring)
-    it('should register at least 13 tools', () => {
+    it('should register all 17 tools including package management tools', () => {
       reactNativeTools.register();
 
       const calls = (mockServer.tool as any).mock.calls;
 
-      // Current implementation registers 13 tools
-      // (package management tools are not registered due to nesting bug)
-      expect(calls.length).toBeGreaterThanOrEqual(13);
+      // Should register 17 tools (fixed: package management tools no longer nested)
+      expect(calls.length).toBe(17);
+    });
+  });
+
+  describe('Package Management Tools Registration (Bug Fix)', () => {
+    const packageTools = [
+      'upgrade_packages',
+      'resolve_dependencies',
+      'audit_packages',
+      'migrate_packages',
+    ];
+
+    packageTools.forEach((toolName) => {
+      it(`should register ${toolName} tool`, () => {
+        reactNativeTools.register();
+
+        const calls = (mockServer.tool as any).mock.calls;
+        const toolCall = calls.find((call: any[]) => call[0] === toolName);
+
+        expect(toolCall).toBeDefined();
+      });
+    });
+
+    it('should register package management tools at class level, not nested', () => {
+      reactNativeTools.register();
+
+      const calls = (mockServer.tool as any).mock.calls;
+
+      // Verify these tools are registered immediately on register() call
+      // Previously they were incorrectly nested inside analyze_codebase_comprehensive
+      const upgradeToolsCall = calls.find((call: any[]) => call[0] === 'upgrade_packages');
+      const resolveCall = calls.find((call: any[]) => call[0] === 'resolve_dependencies');
+      const auditCall = calls.find((call: any[]) => call[0] === 'audit_packages');
+      const migrateCall = calls.find((call: any[]) => call[0] === 'migrate_packages');
+
+      expect(upgradeToolsCall).toBeDefined();
+      expect(resolveCall).toBeDefined();
+      expect(auditCall).toBeDefined();
+      expect(migrateCall).toBeDefined();
     });
   });
 

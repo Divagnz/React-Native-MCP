@@ -122,179 +122,6 @@ export class ReactNativeTools {
           analysis_types
         );
 
-        // Package Upgrade Tool
-        this.server.tool(
-          'upgrade_packages',
-          'Automatically check for package updates and provide upgrade recommendations',
-          {
-            project_path: z.string().optional().describe('Path to React Native project root'),
-            package_manager: z
-              .enum(['npm', 'yarn', 'pnpm'])
-              .optional()
-              .describe('Package manager to use'),
-            update_level: z
-              .enum(['patch', 'minor', 'major', 'all'])
-              .optional()
-              .describe('Level of updates to include'),
-            auto_apply: z
-              .boolean()
-              .optional()
-              .describe('Whether to automatically apply safe updates'),
-            check_vulnerabilities: z
-              .boolean()
-              .optional()
-              .describe('Whether to check for security vulnerabilities'),
-          },
-          async ({
-            project_path,
-            package_manager = 'npm',
-            update_level = 'minor',
-            auto_apply = false,
-            check_vulnerabilities = true,
-          }) => {
-            const result = await this.upgradePackages(
-              project_path || process.cwd(),
-              package_manager,
-              update_level,
-              auto_apply,
-              check_vulnerabilities
-            );
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: result,
-                },
-              ],
-            };
-          }
-        );
-
-        // Dependency Resolution Tool
-        this.server.tool(
-          'resolve_dependencies',
-          'Analyze and resolve dependency conflicts in React Native projects',
-          {
-            project_path: z.string().optional().describe('Path to React Native project root'),
-            package_manager: z
-              .enum(['npm', 'yarn', 'pnpm'])
-              .optional()
-              .describe('Package manager to use'),
-            fix_conflicts: z
-              .boolean()
-              .optional()
-              .describe('Whether to automatically attempt to fix conflicts'),
-            generate_resolutions: z
-              .boolean()
-              .optional()
-              .describe('Whether to generate resolution suggestions'),
-          },
-          async ({
-            project_path,
-            package_manager = 'npm',
-            fix_conflicts = false,
-            generate_resolutions = true,
-          }) => {
-            const result = await this.resolveDependencies(
-              project_path || process.cwd(),
-              package_manager,
-              fix_conflicts,
-              generate_resolutions
-            );
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: result,
-                },
-              ],
-            };
-          }
-        );
-
-        // Package Security Audit Tool
-        this.server.tool(
-          'audit_packages',
-          'Perform security audit on project dependencies and provide fix recommendations',
-          {
-            project_path: z.string().optional().describe('Path to React Native project root'),
-            package_manager: z
-              .enum(['npm', 'yarn', 'pnpm'])
-              .optional()
-              .describe('Package manager to use'),
-            auto_fix: z
-              .boolean()
-              .optional()
-              .describe('Whether to automatically fix vulnerabilities'),
-            severity_threshold: z
-              .enum(['low', 'moderate', 'high', 'critical'])
-              .optional()
-              .describe('Minimum severity level to report'),
-          },
-          async ({
-            project_path,
-            package_manager = 'npm',
-            auto_fix = false,
-            severity_threshold = 'moderate',
-          }) => {
-            const result = await this.auditPackages(
-              project_path || process.cwd(),
-              package_manager,
-              auto_fix,
-              severity_threshold
-            );
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: result,
-                },
-              ],
-            };
-          }
-        );
-
-        // Package Migration Tool
-        this.server.tool(
-          'migrate_packages',
-          'Migrate deprecated packages to their recommended alternatives',
-          {
-            project_path: z.string().optional().describe('Path to React Native project root'),
-            package_manager: z
-              .enum(['npm', 'yarn', 'pnpm'])
-              .optional()
-              .describe('Package manager to use'),
-            auto_migrate: z
-              .boolean()
-              .optional()
-              .describe('Whether to automatically perform migrations'),
-            target_packages: z
-              .array(z.string())
-              .optional()
-              .describe('Specific packages to migrate (if not provided, checks all)'),
-          },
-          async ({
-            project_path,
-            package_manager = 'npm',
-            auto_migrate = false,
-            target_packages,
-          }) => {
-            const result = await this.migratePackages(
-              project_path || process.cwd(),
-              package_manager,
-              auto_migrate,
-              target_packages
-            );
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: result,
-                },
-              ],
-            };
-          }
-        );
         return {
           content: [
             {
@@ -516,6 +343,169 @@ export class ReactNativeTools {
             {
               type: 'text',
               text: refactoring,
+            },
+          ],
+        };
+      }
+    );
+
+    // Package Upgrade Tool
+    this.server.tool(
+      'upgrade_packages',
+      'Automatically check for package updates and provide upgrade recommendations',
+      {
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        package_manager: z
+          .enum(['npm', 'yarn', 'pnpm'])
+          .optional()
+          .describe('Package manager to use'),
+        update_level: z
+          .enum(['patch', 'minor', 'major', 'all'])
+          .optional()
+          .describe('Level of updates to include'),
+        auto_apply: z.boolean().optional().describe('Whether to automatically apply safe updates'),
+        check_vulnerabilities: z
+          .boolean()
+          .optional()
+          .describe('Whether to check for security vulnerabilities'),
+      },
+      async ({
+        project_path,
+        package_manager = 'npm',
+        update_level = 'minor',
+        auto_apply = false,
+        check_vulnerabilities = true,
+      }) => {
+        const result = await this.upgradePackages(
+          project_path || process.cwd(),
+          package_manager,
+          update_level,
+          auto_apply,
+          check_vulnerabilities
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
+            },
+          ],
+        };
+      }
+    );
+
+    // Dependency Resolution Tool
+    this.server.tool(
+      'resolve_dependencies',
+      'Analyze and resolve dependency conflicts in React Native projects',
+      {
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        package_manager: z
+          .enum(['npm', 'yarn', 'pnpm'])
+          .optional()
+          .describe('Package manager to use'),
+        fix_conflicts: z
+          .boolean()
+          .optional()
+          .describe('Whether to automatically attempt to fix conflicts'),
+        generate_resolutions: z
+          .boolean()
+          .optional()
+          .describe('Whether to generate resolution suggestions'),
+      },
+      async ({
+        project_path,
+        package_manager = 'npm',
+        fix_conflicts = false,
+        generate_resolutions = true,
+      }) => {
+        const result = await this.resolveDependencies(
+          project_path || process.cwd(),
+          package_manager,
+          fix_conflicts,
+          generate_resolutions
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
+            },
+          ],
+        };
+      }
+    );
+
+    // Package Security Audit Tool
+    this.server.tool(
+      'audit_packages',
+      'Perform security audit on project dependencies and provide fix recommendations',
+      {
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        package_manager: z
+          .enum(['npm', 'yarn', 'pnpm'])
+          .optional()
+          .describe('Package manager to use'),
+        auto_fix: z.boolean().optional().describe('Whether to automatically fix vulnerabilities'),
+        severity_threshold: z
+          .enum(['low', 'moderate', 'high', 'critical'])
+          .optional()
+          .describe('Minimum severity level to report'),
+      },
+      async ({
+        project_path,
+        package_manager = 'npm',
+        auto_fix = false,
+        severity_threshold = 'moderate',
+      }) => {
+        const result = await this.auditPackages(
+          project_path || process.cwd(),
+          package_manager,
+          auto_fix,
+          severity_threshold
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
+            },
+          ],
+        };
+      }
+    );
+
+    // Package Migration Tool
+    this.server.tool(
+      'migrate_packages',
+      'Migrate deprecated packages to their recommended alternatives',
+      {
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        package_manager: z
+          .enum(['npm', 'yarn', 'pnpm'])
+          .optional()
+          .describe('Package manager to use'),
+        auto_migrate: z
+          .boolean()
+          .optional()
+          .describe('Whether to automatically perform migrations'),
+        target_packages: z
+          .array(z.string())
+          .optional()
+          .describe('Specific packages to migrate (if not provided, checks all)'),
+      },
+      async ({ project_path, package_manager = 'npm', auto_migrate = false, target_packages }) => {
+        const result = await this.migratePackages(
+          project_path || process.cwd(),
+          package_manager,
+          auto_migrate,
+          target_packages
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
             },
           ],
         };
