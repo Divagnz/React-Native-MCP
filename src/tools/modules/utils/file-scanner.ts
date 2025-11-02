@@ -103,12 +103,8 @@ export class FileScanner {
               await scanDirectory(fullPath, depth + 1);
             }
           } else if (entry.isFile()) {
-            // Check if it's a test file by name OR if it's in a __tests__ directory
-            if (this.isTestFile(entry.name) || fullPath.includes('__tests__')) {
-              // Only include .ts, .tsx, .js, .jsx files
-              if (/\.(ts|tsx|js|jsx)$/.test(entry.name)) {
-                files.push(fullPath);
-              }
+            if (this.isTestFile(entry.name)) {
+              files.push(fullPath);
             }
           }
         }
@@ -149,11 +145,10 @@ export class FileScanner {
    * Check if file content is React-related
    */
   private static isReactRelated(content: string): boolean {
-    // Must have React import AND either JSX or React Native import
-    const hasReactImport = /import\s+.*React.*from\s+['"]react['"]/i.test(content);
-    const hasRNImport = /from\s+['"]react-native['"]/i.test(content);
-    const hasJSXElements = /<[A-Z]\w*[\s\S]*?>/m.test(content);
-
-    return (hasReactImport || hasRNImport) && (hasJSXElements || hasRNImport);
+    return (
+      /import.*react|from.*react|@react-native|react-native/i.test(content) ||
+      /<[A-Z]\w*[\s\S]*?>/m.test(content) ||
+      /export.*component|export.*function.*\(/i.test(content)
+    );
   }
 }

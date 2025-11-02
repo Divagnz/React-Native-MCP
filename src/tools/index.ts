@@ -4,6 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
+import { VersionUtils } from './modules/utils/version-utils.js';
+import { FileScanner } from './modules/utils/file-scanner.js';
+import { ReportFormatter } from './modules/formatters/report-formatter.js';
 
 /**
  * React Native Tools
@@ -1317,7 +1320,7 @@ const fetchData = async () => {
         }
       }
 
-      const reactNativeFiles = await this.findReactNativeFiles(projectPath);
+      const reactNativeFiles = await FileScanner.findReactNativeFiles(projectPath);
       const analysis = {
         totalFiles: reactNativeFiles.length,
         components: [] as any[],
@@ -1334,7 +1337,7 @@ const fetchData = async () => {
         analysis.suggestions.push(...fileAnalysis.suggestions);
       }
 
-      return updateNotification + this.formatCodebaseAnalysis(analysis, projectPath);
+      return updateNotification + ReportFormatter.formatCodebaseAnalysis(analysis, projectPath);
     } catch (error) {
       return `Error analyzing codebase: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -1345,7 +1348,7 @@ const fetchData = async () => {
     analysisTypes: string[]
   ): Promise<string> {
     try {
-      const reactNativeFiles = await this.findReactNativeFiles(projectPath);
+      const reactNativeFiles = await FileScanner.findReactNativeFiles(projectPath);
       const packageJsonPath = path.join(projectPath, 'package.json');
 
       let packageJson: any = {};
@@ -1408,7 +1411,7 @@ const fetchData = async () => {
         analysis.upgrades.push(...this.analyzePackageUpgrades(packageJson));
       }
 
-      return this.formatComprehensiveAnalysis(analysis, projectPath);
+      return ReportFormatter.formatComprehensiveAnalysis(analysis, projectPath);
     } catch (error) {
       return `Error in comprehensive analysis: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -1953,7 +1956,7 @@ const fetchData = async () => {
     focusAreas: string[]
   ): Promise<string> {
     try {
-      const reactNativeFiles = await this.findReactNativeFiles(projectPath);
+      const reactNativeFiles = await FileScanner.findReactNativeFiles(projectPath);
       const performanceIssues: any[] = [];
 
       for (const filePath of reactNativeFiles) {
@@ -1962,7 +1965,7 @@ const fetchData = async () => {
         performanceIssues.push(...issues);
       }
 
-      return this.formatPerformanceAnalysis(performanceIssues, projectPath);
+      return ReportFormatter.formatPerformanceAnalysis(performanceIssues, projectPath);
     } catch (error) {
       return `Error analyzing codebase performance: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -2538,7 +2541,8 @@ const fetchData = async () => {
         return '❌ Unable to check for updates. Please ensure you have internet connectivity.';
       }
 
-      const isUpdateAvailable = this.compareVersions(currentVersion, latestInfo.version) < 0;
+      const isUpdateAvailable =
+        VersionUtils.compareVersions(currentVersion, latestInfo.version) < 0;
 
       let report = '## 🔄 React Native MCP Server Update Status\n\n';
       report += `**Current Version:** ${currentVersion}\n`;
@@ -2755,9 +2759,12 @@ const fetchData = async () => {
               shouldUpgrade = true;
             } else if (updateLevel === 'major') {
               shouldUpgrade = true;
-            } else if (updateLevel === 'minor' && this.isMinorOrPatchUpdate(current, latest)) {
+            } else if (
+              updateLevel === 'minor' &&
+              VersionUtils.isMinorOrPatchUpdate(current, latest)
+            ) {
               shouldUpgrade = true;
-            } else if (updateLevel === 'patch' && this.isPatchUpdate(current, latest)) {
+            } else if (updateLevel === 'patch' && VersionUtils.isPatchUpdate(current, latest)) {
               shouldUpgrade = true;
             }
 
@@ -3952,7 +3959,7 @@ export const ${component_name}Benchmarks = {
 
     try {
       // Check for existing test files
-      const testFiles = await this.findTestFiles(projectPath);
+      const testFiles = await FileScanner.findTestFiles(projectPath);
       analysis += '## 📊 Current Test Coverage\n\n';
       analysis += `- **Test Files Found**: ${testFiles.length}\n`;
       analysis += `- **Test Types Detected**: ${this.detectTestTypes(testFiles).join(', ')}\n\n`;
