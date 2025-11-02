@@ -1,8 +1,8 @@
 # React Native MCP Server - Repository Improvements Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Generated:** 2025-11-02
-**Updated:** 2025-11-02 (Added ADB Tools Integration)
+**Updated:** 2025-11-02 (Added ADB Tools Integration + Expo CLI Integration)
 **Current Version:** 1.1.0
 **Review Type:** Comprehensive Repository Analysis
 
@@ -27,8 +27,10 @@ This document outlines a comprehensive improvement plan for the React Native MCP
 - ❌ Limited error handling and logging
 - ❌ Missing code quality tooling (ESLint, Prettier)
 
-**🆕 Proposed New Feature:**
-- 🚀 **ADB Tools Integration** - 12 new tools for Android device management, debugging, and performance monitoring (Target: v1.2.0)
+**🆕 Proposed New Features:**
+- 🚀 **ADB Tools Integration** - 18 new tools for Android device management, debugging, performance monitoring, and visual testing (Target: v1.2.0)
+- 🚀 **Expo CLI Integration** - 12 new tools for Expo development server, cloud builds, and OTA updates (Target: v1.3.0)
+- 📊 **Combined Total:** 47 comprehensive React Native development tools
 
 ---
 
@@ -40,8 +42,9 @@ This document outlines a comprehensive improvement plan for the React Native MCP
 4. [Medium Priority Improvements](#medium-priority-improvements)
 5. [Low Priority Enhancements](#low-priority-enhancements)
 6. [New Feature: ADB Tools Integration](#new-feature-adb-tools-integration)
-7. [Implementation Roadmap](#implementation-roadmap)
-8. [Technical Architecture](#technical-architecture)
+7. [New Feature: Expo CLI Integration](#new-feature-expo-cli-integration)
+8. [Implementation Roadmap](#implementation-roadmap)
+9. [Technical Architecture](#technical-architecture)
 
 ---
 
@@ -1679,6 +1682,283 @@ describe('ADB Integration', () => {
 
 ---
 
+## New Feature: Expo CLI Integration
+
+### 🚀 Priority: High
+### 📅 Target Release: v1.3.0
+### 📄 Full Specification: See `EXPO_TOOLS_SPEC.md`
+
+### Overview
+
+Add comprehensive Expo CLI and EAS (Expo Application Services) integration to provide complete React Native development workflow management. This complements the ADB tools by adding development server management, cloud builds, and over-the-air updates.
+
+**Business Value:**
+- 🚀 **50%+ productivity improvement** for Expo developers
+- 🔧 Unified interface for development, building, and deployment
+- 📱 Seamless QR code generation for device testing
+- ☁️ Cloud build management without local setup requirements
+- 🔄 Over-the-air updates for rapid hotfix deployment
+
+### Proposed Tools: 12 New Expo Tools
+
+#### 1. Development Server Management (4 tools)
+
+| Tool | Description | Priority |
+|------|-------------|----------|
+| `expo_start` | Start Expo development server with configuration options | Critical |
+| `expo_get_qr` | Get QR code and connection URLs for mobile testing | Critical |
+| `expo_logs` | Stream and filter Expo development server logs | High |
+| `expo_controls` | Control server (reload, clear cache, toggle features) | Medium |
+
+#### 2. Build Management (3 tools)
+
+| Tool | Description | Priority |
+|------|-------------|----------|
+| `eas_build` | Trigger EAS cloud builds with platform and profile options | Critical |
+| `eas_build_status` | Check build status, logs, and download artifacts | Critical |
+| `eas_submit` | Submit builds to App Store or Play Store | High |
+
+#### 3. Project Management (3 tools)
+
+| Tool | Description | Priority |
+|------|-------------|----------|
+| `expo_doctor` | Diagnose project issues and validate configuration | High |
+| `expo_install` | Install compatible packages with version resolution | Medium |
+| `expo_upgrade` | Upgrade Expo SDK with dependency migration | Medium |
+
+#### 4. Updates & Publishing (2 tools)
+
+| Tool | Description | Priority |
+|------|-------------|----------|
+| `eas_update` | Create and publish over-the-air updates | High |
+| `eas_update_status` | View update deployment status and adoption metrics | Medium |
+
+### Key Features
+
+#### Complete Development Workflow
+
+```bash
+# Start Expo server with QR code for device testing
+claude "Start Expo development server with tunnel enabled"
+
+# Trigger cloud build without local setup
+claude "Trigger EAS production build for iOS and Android"
+
+# Monitor build status
+claude "Check status of latest EAS build"
+
+# Publish OTA update for hotfix
+claude "Publish EAS update with 10% gradual rollout"
+
+# Monitor update adoption
+claude "Check update adoption metrics for production branch"
+```
+
+#### Integration with ADB Tools
+
+**Combined Workflow Example:**
+
+```bash
+# 1. Start Expo server
+expo_start → Returns server URL and QR code
+
+# 2. Connect Android device via ADB
+adb_connect_device → Emulator or physical device
+
+# 3. Setup Metro bundler port forwarding
+adb_reverse_port → 8081:8081 for Metro
+
+# 4. Install and launch app
+adb_install_apk → Install debug build
+adb_launch_app → Launch with debugger
+
+# 5. Monitor logs from both sources
+expo_logs → Metro bundler logs
+adb_logcat_react_native → Device-side React Native logs
+
+# 6. Run visual regression tests
+adb_visual_regression_test → Compare screenshots
+```
+
+### Technical Implementation
+
+#### Module Structure
+
+```
+src/tools/expo/
+├── index.ts                    # Tool registration
+├── types.ts                    # TypeScript types
+├── core/
+│   ├── expo-executor.ts        # Core Expo CLI executor
+│   ├── eas-executor.ts         # EAS CLI executor
+│   ├── process-manager.ts      # Background process management
+│   ├── log-parser.ts           # Log parsing and filtering
+│   └── qr-generator.ts         # QR code generation
+├── dev/                        # Development server tools
+│   ├── start.ts
+│   ├── get-qr.ts
+│   ├── logs.ts
+│   └── controls.ts
+├── build/                      # Build management tools
+│   ├── build.ts
+│   ├── status.ts
+│   └── submit.ts
+├── project/                    # Project management tools
+│   ├── doctor.ts
+│   ├── install.ts
+│   └── upgrade.ts
+└── update/                     # Update tools
+    ├── publish.ts
+    └── status.ts
+```
+
+#### Core Services
+
+**1. Expo Executor Service:**
+- Safe command execution with sanitization
+- Timeout handling (5 min default, 1 hour for builds)
+- Process output capture
+- Error parsing and reporting
+
+**2. Process Manager Service:**
+- Background process management for dev server
+- Log streaming and buffering (last 1000 lines)
+- Process lifecycle management
+- Event-based log monitoring
+
+**3. QR Code Generator:**
+- Multiple formats: terminal, SVG, PNG, base64
+- Expo URL QR codes for mobile testing
+- Platform-specific instructions
+
+### Integration Workflows
+
+#### Workflow 1: Development Setup
+
+```typescript
+// Complete dev environment setup
+const server = await expoStart({ platform: 'all', tunnel: true });
+const qr = await expoGetQR({ process_id: server.process_id });
+const device = await adbConnectDevice({ connection_type: 'usb' });
+await adbReversePort({ device_id: device.device_id, remote: 8081, local: 8081 });
+```
+
+#### Workflow 2: CI/CD Pipeline
+
+```typescript
+// Automated build and deploy
+await expoDoctor({ fix_issues: true });
+const build = await easBuild({ platform: 'all', profile: 'production', wait: true });
+const update = await easUpdate({ branch: 'production', rollout_percentage: 10 });
+await easUpdateStatus({ update_id: update.update_id, include_metrics: true });
+```
+
+#### Workflow 3: Visual Testing
+
+```typescript
+// Expo + ADB visual regression
+await expoStart({ platform: 'android' });
+await expoControls({ action: 'reload' });
+await adbVisualRegressionTest({ baseline_directory: './baseline', ci_mode: true });
+```
+
+### Security Considerations
+
+1. **Credential Management**
+   - Use environment variables for EXPO_TOKEN and EAS_TOKEN
+   - Never log or expose tokens
+   - Support CI/CD authentication
+
+2. **Command Injection Prevention**
+   - Sanitize all command arguments
+   - Whitelist allowed Expo/EAS commands
+   - Validate file paths and arguments
+
+3. **Process Security**
+   - Limit concurrent processes (max 5)
+   - Set timeout limits for all commands
+   - Proper process cleanup on errors
+
+### Implementation Timeline
+
+**Total Duration:** 2 weeks (Weeks 9-10)
+
+#### Week 9: Development Server & Build Tools
+- Days 1-2: Core infrastructure (Expo/EAS executors, process manager, QR generator)
+- Days 3-4: Development server tools (expo_start, expo_get_qr, expo_logs, expo_controls)
+- Day 5: Build management tools part 1 (eas_build, eas_build_status)
+
+#### Week 10: Complete Build, Project, Update Tools
+- Days 1-2: Complete build tools (eas_submit) and project management (expo_doctor, expo_install, expo_upgrade)
+- Day 3: Update tools (eas_update, eas_update_status)
+- Day 4: Integration workflows and testing
+- Day 5: Documentation and polish
+
+### Dependencies
+
+**Required NPM Packages:**
+```json
+{
+  "dependencies": {
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
+  }
+}
+```
+
+**User Environment Requirements:**
+- Expo CLI (`expo@^49.0.0` or later)
+- EAS CLI (`eas-cli@latest`)
+- Node.js v18.0.0+
+- Optional: Android SDK for ADB integration
+
+### Success Metrics
+
+| Metric | Target |
+|--------|--------|
+| Test Coverage | ≥85% for all Expo tools |
+| Command Response Time | <5 seconds (non-build commands) |
+| Build Trigger Time | <30 seconds |
+| Log Streaming Latency | <100ms |
+| QR Generation Time | <1 second |
+
+### Why This Is Important
+
+**Current Limitations:**
+- No way to manage Expo development server through MCP
+- Manual build triggering and monitoring
+- No QR code access for mobile testing
+- No OTA update management
+- Disconnected workflow between development and deployment
+
+**With Expo Tools:**
+- ✅ Complete development workflow in one interface
+- ✅ Automated dev server management with QR codes
+- ✅ Cloud builds without local setup
+- ✅ OTA updates with gradual rollout
+- ✅ Seamless integration with ADB tools
+- ✅ CI/CD ready for automated pipelines
+
+### Combined Tool Count
+
+**Total MCP Tools After v1.3.0:**
+- Existing Tools: 17
+- ADB Tools (v1.2.0): 18
+- Expo Tools (v1.3.0): 12
+- **Grand Total: 47 comprehensive React Native tools**
+
+### Future Enhancements (v1.4.0+)
+
+1. **Expo Prebuild** - Manage native code generation
+2. **Expo Config Plugins** - Install and configure config plugins
+3. **EAS Metadata** - Manage app store metadata
+4. **Expo Notifications** - Test push notifications
+5. **Expo Analytics** - View app usage analytics
+
+---
+
 ## Implementation Roadmap
 
 ### Phase 1: Foundation (Weeks 1-2) - CRITICAL
@@ -1806,6 +2086,123 @@ describe('ADB Integration', () => {
 - ✅ Caching implemented
 - ✅ Performance optimized
 - ✅ v2.0.0 ready for release
+
+---
+
+### Phase 6: ADB Tools Implementation (Weeks 11-13) - HIGH PRIORITY
+
+**Goal:** Add comprehensive Android Debug Bridge integration for React Native Android development
+
+**Target Release:** v1.2.0
+
+#### Week 11: Core Infrastructure & Device Management (Days 1-5)
+- [ ] Create ADB tools module structure
+- [ ] Implement ADBClient core executor (singleton pattern)
+- [ ] Add command injection prevention and security validators
+- [ ] Implement device management tools:
+  - adb_list_devices
+  - adb_device_info
+  - adb_connect_device
+- [ ] Write unit tests for core and device tools (85%+ coverage)
+- **Target:** Working ADB executor with device management
+
+#### Week 12: App Lifecycle & Debugging Tools (Days 1-5)
+- [ ] Implement app management tools:
+  - adb_install_apk
+  - adb_uninstall_app
+  - adb_clear_app_data
+  - adb_launch_app
+- [ ] Implement debugging tools:
+  - adb_logcat
+  - adb_logcat_react_native
+  - adb_screenshot (enhanced with metadata)
+  - adb_screen_record
+- [ ] Write tests for app and debug tools
+- **Target:** Complete app lifecycle and debugging suite
+
+#### Week 13: Performance, Screenshot Suite & Integration (Days 1-5)
+- [ ] Implement performance monitoring tools:
+  - adb_performance_monitor
+  - adb_memory_stats
+  - adb_cpu_stats
+- [ ] Implement network tools:
+  - adb_reverse_port (critical for Metro)
+  - adb_forward_port
+- [ ] Implement enhanced screenshot tools:
+  - adb_screenshot_compare
+  - adb_screenshot_batch
+  - adb_screenshot_annotate
+  - adb_screenshot_cleanup
+  - adb_visual_regression_test
+- [ ] Write integration tests for all workflows
+- [ ] Update README with ADB tools documentation
+- [ ] Create ADB usage examples
+- **Target:** Complete ADB integration ready for release
+
+**Deliverables:**
+- ✅ 18 comprehensive ADB tools
+- ✅ 85%+ test coverage
+- ✅ Complete documentation and examples
+- ✅ v1.2.0 production release
+
+---
+
+### Phase 7: Expo CLI Integration (Weeks 14-15) - HIGH PRIORITY
+
+**Goal:** Add Expo development server, EAS builds, and OTA update management
+
+**Target Release:** v1.3.0
+
+#### Week 14: Development Server & Build Tools (Days 1-5)
+- [ ] Create Expo tools module structure
+- [ ] Implement core services:
+  - ExpoExecutor (CLI command execution)
+  - EASExecutor (EAS command execution)
+  - ProcessManager (background process management)
+  - QRGenerator (QR code generation)
+  - LogParser (Metro/Expo log parsing)
+- [ ] Implement development server tools:
+  - expo_start
+  - expo_get_qr
+  - expo_logs
+  - expo_controls
+- [ ] Implement build management tools (Part 1):
+  - eas_build
+  - eas_build_status
+- [ ] Write unit tests for core and dev tools (85%+ coverage)
+- **Target:** Working Expo dev server with QR codes and cloud build triggers
+
+#### Week 15: Complete Build, Project, Updates & Integration (Days 1-5)
+- [ ] Complete build management tools:
+  - eas_submit
+- [ ] Implement project management tools:
+  - expo_doctor
+  - expo_install
+  - expo_upgrade
+- [ ] Implement update tools:
+  - eas_update
+  - eas_update_status
+- [ ] Create integration workflows:
+  - Development setup (Expo + ADB)
+  - CI/CD pipeline
+  - Visual regression testing
+- [ ] Write integration tests for all workflows
+- [ ] Update README with Expo tools documentation
+- [ ] Create Expo usage examples and workflow guides
+- **Target:** Complete Expo integration with seamless ADB interoperability
+
+**Deliverables:**
+- ✅ 12 comprehensive Expo tools
+- ✅ 85%+ test coverage
+- ✅ Integration with ADB tools
+- ✅ Complete documentation and workflow examples
+- ✅ v1.3.0 production release
+
+**📊 Final Tool Count After Phase 7:**
+- Existing tools: 17
+- ADB tools: 18
+- Expo tools: 12
+- **Grand Total: 47 comprehensive React Native development tools**
 
 ---
 
