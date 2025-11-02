@@ -11,7 +11,17 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node build/index.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:ci": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --ci --maxWorkers=2",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "type-check": "tsc --noEmit",
+    "quality": "npm run lint && npm run format:check && npm run type-check",
+    "prepare": "husky"
   },
   "keywords": [
     "mcp",
@@ -27,7 +37,18 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
   },
@@ -36,5 +57,16 @@
   },
   "files": [
     "build/"
-  ]
+  ],
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ],
+    "src/index.ts": [
+      "eslint --fix"
+    ],
+    "src/{prompts,resources}/**/*.ts": [
+      "eslint --fix"
+    ]
+  }
 }

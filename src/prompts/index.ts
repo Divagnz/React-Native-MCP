@@ -1,9 +1,9 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
 
 /**
  * React Native Prompts
- * 
+ *
  * Provides prompt templates for React Native development guidance
  */
 export class ReactNativePrompts {
@@ -12,18 +12,21 @@ export class ReactNativePrompts {
   register() {
     // Code Review Prompt
     this.server.prompt(
-      "react-native-code-review",
-      "Review React Native code for best practices and improvements",
+      'react-native-code-review',
+      'Review React Native code for best practices and improvements',
       {
-        code: z.string().describe("The React Native code to review"),
-        focus_area: z.string().optional().describe("Specific area to focus on (performance, security, accessibility, etc.)"),
+        code: z.string().describe('The React Native code to review'),
+        focus_area: z
+          .string()
+          .optional()
+          .describe('Specific area to focus on (performance, security, accessibility, etc.)'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: this.getCodeReviewPrompt(args.code, args.focus_area),
             },
           },
@@ -33,24 +36,20 @@ export class ReactNativePrompts {
 
     // Architecture Design Prompt
     this.server.prompt(
-      "react-native-architecture",
-      "Design React Native app architecture",
+      'react-native-architecture',
+      'Design React Native app architecture',
       {
-        app_description: z.string().describe("Description of the app to be built"),
-        scale: z.string().optional().describe("Expected scale (small, medium, large)"),
-        platforms: z.string().optional().describe("Target platforms (iOS, Android, both)"),
+        app_description: z.string().describe('Description of the app to be built'),
+        scale: z.string().optional().describe('Expected scale (small, medium, large)'),
+        platforms: z.string().optional().describe('Target platforms (iOS, Android, both)'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
-              text: this.getArchitecturePrompt(
-                args.app_description,
-                args.scale,
-                args.platforms
-              ),
+              type: 'text',
+              text: this.getArchitecturePrompt(args.app_description, args.scale, args.platforms),
             },
           },
         ],
@@ -59,19 +58,25 @@ export class ReactNativePrompts {
 
     // Performance Optimization Prompt
     this.server.prompt(
-      "react-native-performance",
-      "Optimize React Native app performance",
+      'react-native-performance',
+      'Optimize React Native app performance',
       {
-        performance_issue: z.string().describe("Description of the performance issue"),
-        component_type: z.string().optional().describe("Type of component having issues (list, animation, navigation, etc.)"),
-        platform: z.string().optional().describe("Platform where issue occurs (iOS, Android, both)"),
+        performance_issue: z.string().describe('Description of the performance issue'),
+        component_type: z
+          .string()
+          .optional()
+          .describe('Type of component having issues (list, animation, navigation, etc.)'),
+        platform: z
+          .string()
+          .optional()
+          .describe('Platform where issue occurs (iOS, Android, both)'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: this.getPerformancePrompt(
                 args.performance_issue,
                 args.component_type,
@@ -85,19 +90,19 @@ export class ReactNativePrompts {
 
     // Debugging Help Prompt
     this.server.prompt(
-      "react-native-debug",
-      "Debug React Native issues",
+      'react-native-debug',
+      'Debug React Native issues',
       {
-        error_message: z.string().describe("The error message or issue description"),
-        steps_to_reproduce: z.string().optional().describe("Steps to reproduce the issue"),
-        environment: z.string().optional().describe("Development environment details"),
+        error_message: z.string().describe('The error message or issue description'),
+        steps_to_reproduce: z.string().optional().describe('Steps to reproduce the issue'),
+        environment: z.string().optional().describe('Development environment details'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: this.getDebuggingPrompt(
                 args.error_message,
                 args.steps_to_reproduce,
@@ -111,19 +116,22 @@ export class ReactNativePrompts {
 
     // Migration Guide Prompt
     this.server.prompt(
-      "react-native-migration",
-      "Guide for React Native migrations and upgrades",
+      'react-native-migration',
+      'Guide for React Native migrations and upgrades',
       {
-        current_version: z.string().describe("Current React Native version"),
-        target_version: z.string().describe("Target React Native version"),
-        project_complexity: z.string().optional().describe("Project complexity (simple, moderate, complex)"),
+        current_version: z.string().describe('Current React Native version'),
+        target_version: z.string().describe('Target React Native version'),
+        project_complexity: z
+          .string()
+          .optional()
+          .describe('Project complexity (simple, moderate, complex)'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: this.getMigrationPrompt(
                 args.current_version,
                 args.target_version,
@@ -137,19 +145,19 @@ export class ReactNativePrompts {
 
     // Testing Strategy Prompt
     this.server.prompt(
-      "react-native-testing",
-      "React Native testing strategy and implementation",
+      'react-native-testing',
+      'React Native testing strategy and implementation',
       {
-        testing_scope: z.string().describe("Scope of testing needed (unit, integration, e2e, all)"),
-        app_features: z.string().optional().describe("Key app features to test"),
-        existing_tests: z.string().optional().describe("Description of existing test setup"),
+        testing_scope: z.string().describe('Scope of testing needed (unit, integration, e2e, all)'),
+        app_features: z.string().optional().describe('Key app features to test'),
+        existing_tests: z.string().optional().describe('Description of existing test setup'),
       },
       async (args) => ({
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: this.getTestingPrompt(
                 args.testing_scope,
                 args.app_features,
@@ -212,7 +220,11 @@ Please provide specific, actionable recommendations with code examples where app
 `;
   }
 
-  private getArchitecturePrompt(appDescription: string, scale?: string, platforms?: string): string {
+  private getArchitecturePrompt(
+    appDescription: string,
+    scale?: string,
+    platforms?: string
+  ): string {
     return `
 I need help designing the architecture for a React Native application.
 
@@ -271,7 +283,11 @@ Please provide specific recommendations with code examples and explain the reaso
 `;
   }
 
-  private getPerformancePrompt(performanceIssue: string, componentType?: string, platform?: string): string {
+  private getPerformancePrompt(
+    performanceIssue: string,
+    componentType?: string,
+    platform?: string
+  ): string {
     return `
 I'm experiencing performance issues in my React Native application and need optimization guidance.
 
@@ -330,7 +346,11 @@ Please provide specific, actionable solutions with code examples and implementat
 `;
   }
 
-  private getDebuggingPrompt(errorMessage: string, stepsToReproduce?: string, environment?: string): string {
+  private getDebuggingPrompt(
+    errorMessage: string,
+    stepsToReproduce?: string,
+    environment?: string
+  ): string {
     return `
 I'm encountering an issue in my React Native application and need debugging assistance.
 
@@ -384,7 +404,11 @@ Please provide specific debugging steps, potential solutions, and code examples 
 `;
   }
 
-  private getMigrationPrompt(currentVersion: string, targetVersion: string, projectComplexity?: string): string {
+  private getMigrationPrompt(
+    currentVersion: string,
+    targetVersion: string,
+    projectComplexity?: string
+  ): string {
     return `
 I need guidance for migrating my React Native application from version ${currentVersion} to ${targetVersion}.
 
@@ -451,7 +475,11 @@ Please provide specific migration steps, code examples, and timeline estimates f
 `;
   }
 
-  private getTestingPrompt(testingScope: string, appFeatures?: string, existingTests?: string): string {
+  private getTestingPrompt(
+    testingScope: string,
+    appFeatures?: string,
+    existingTests?: string
+  ): string {
     return `
 I need help developing a comprehensive testing strategy for my React Native application.
 

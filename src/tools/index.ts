@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
 import * as fs from 'fs';
 import * as path from 'path';
 import { exec, spawn } from 'child_process';
@@ -7,7 +7,7 @@ import { promisify } from 'util';
 
 /**
  * React Native Tools
- * 
+ *
  * Provides tools for React Native development guidance and analysis
  */
 export class ReactNativeTools {
@@ -16,19 +16,27 @@ export class ReactNativeTools {
   register() {
     // Register all testing tools
     this.register_test_generation();
-    
+
     // Component Analysis Tool - Enhanced with codebase support
     this.server.tool(
-      "analyze_component",
-      "Analyze React Native component for best practices",
+      'analyze_component',
+      'Analyze React Native component for best practices',
       {
-        code: z.string().optional().describe("React Native component code to analyze. If not provided, analyzes entire codebase"),
-        type: z.enum(["functional", "class", "hook"]).optional().describe("Component type"),
-        codebase_path: z.string().optional().describe("Path to React Native project root for codebase analysis")
+        code: z
+          .string()
+          .optional()
+          .describe(
+            'React Native component code to analyze. If not provided, analyzes entire codebase'
+          ),
+        type: z.enum(['functional', 'class', 'hook']).optional().describe('Component type'),
+        codebase_path: z
+          .string()
+          .optional()
+          .describe('Path to React Native project root for codebase analysis'),
       },
       async ({ code, type, codebase_path }) => {
         let analysis: string;
-        
+
         if (code) {
           // Analyze single component
           analysis = this.analyzeComponent(code, type);
@@ -36,373 +44,480 @@ export class ReactNativeTools {
           // Analyze entire codebase
           analysis = await this.analyzeCodebase(codebase_path || process.cwd());
         }
-        
+
         return {
           content: [
             {
-              type: "text",
-              text: analysis
-            }
-          ]
+              type: 'text',
+              text: analysis,
+            },
+          ],
         };
       }
     );
 
     // Codebase Performance Analysis Tool
     this.server.tool(
-      "analyze_codebase_performance",
-      "Analyze entire React Native codebase for performance issues",
+      'analyze_codebase_performance',
+      'Analyze entire React Native codebase for performance issues',
       {
-        codebase_path: z.string().optional().describe("Path to React Native project root"),
-        focus_areas: z.array(z.enum([
-          "list_rendering",
-          "navigation", 
-          "animations",
-          "memory_usage",
-          "bundle_size",
-          "startup_time",
-          "all"
-        ])).optional().describe("Specific performance areas to focus on")
+        codebase_path: z.string().optional().describe('Path to React Native project root'),
+        focus_areas: z
+          .array(
+            z.enum([
+              'list_rendering',
+              'navigation',
+              'animations',
+              'memory_usage',
+              'bundle_size',
+              'startup_time',
+              'all',
+            ])
+          )
+          .optional()
+          .describe('Specific performance areas to focus on'),
       },
-      async ({ codebase_path, focus_areas = ["all"] }) => {
+      async ({ codebase_path, focus_areas = ['all'] }) => {
         const analysis = await this.analyzeCodebasePerformance(
-          codebase_path || process.cwd(), 
+          codebase_path || process.cwd(),
           focus_areas
         );
         return {
           content: [
             {
-              type: "text",
-              text: analysis
-            }
-          ]
+              type: 'text',
+              text: analysis,
+            },
+          ],
         };
       }
     );
 
     // Comprehensive Codebase Analysis Tool
     this.server.tool(
-      "analyze_codebase_comprehensive",
-      "Comprehensive React Native codebase analysis including performance, security, refactoring, and upgrades",
+      'analyze_codebase_comprehensive',
+      'Comprehensive React Native codebase analysis including performance, security, refactoring, and upgrades',
       {
-        codebase_path: z.string().optional().describe("Path to React Native project root"),
-        analysis_types: z.array(z.enum([
-          "performance",
-          "security", 
-          "code_quality",
-          "refactoring",
-          "deprecated_features",
-          "upgrades",
-          "accessibility",
-          "testing",
-          "all"
-        ])).optional().describe("Types of analysis to perform")
+        codebase_path: z.string().optional().describe('Path to React Native project root'),
+        analysis_types: z
+          .array(
+            z.enum([
+              'performance',
+              'security',
+              'code_quality',
+              'refactoring',
+              'deprecated_features',
+              'upgrades',
+              'accessibility',
+              'testing',
+              'all',
+            ])
+          )
+          .optional()
+          .describe('Types of analysis to perform'),
       },
-      async ({ codebase_path, analysis_types = ["all"] }) => {
+      async ({ codebase_path, analysis_types = ['all'] }) => {
         const analysis = await this.analyzeCodebaseComprehensive(
           codebase_path || process.cwd(),
           analysis_types
         );
 
-    // Package Upgrade Tool
-    this.server.tool(
-      "upgrade_packages",
-      "Automatically check for package updates and provide upgrade recommendations",
-      {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        package_manager: z.enum(["npm", "yarn", "pnpm"]).optional().describe("Package manager to use"),
-        update_level: z.enum(["patch", "minor", "major", "all"]).optional().describe("Level of updates to include"),
-        auto_apply: z.boolean().optional().describe("Whether to automatically apply safe updates"),
-        check_vulnerabilities: z.boolean().optional().describe("Whether to check for security vulnerabilities")
-      },
-      async ({ project_path, package_manager = "npm", update_level = "minor", auto_apply = false, check_vulnerabilities = true }) => {
-        const result = await this.upgradePackages(
-          project_path || process.cwd(),
-          package_manager,
-          update_level,
-          auto_apply,
-          check_vulnerabilities
+        // Package Upgrade Tool
+        this.server.tool(
+          'upgrade_packages',
+          'Automatically check for package updates and provide upgrade recommendations',
+          {
+            project_path: z.string().optional().describe('Path to React Native project root'),
+            package_manager: z
+              .enum(['npm', 'yarn', 'pnpm'])
+              .optional()
+              .describe('Package manager to use'),
+            update_level: z
+              .enum(['patch', 'minor', 'major', 'all'])
+              .optional()
+              .describe('Level of updates to include'),
+            auto_apply: z
+              .boolean()
+              .optional()
+              .describe('Whether to automatically apply safe updates'),
+            check_vulnerabilities: z
+              .boolean()
+              .optional()
+              .describe('Whether to check for security vulnerabilities'),
+          },
+          async ({
+            project_path,
+            package_manager = 'npm',
+            update_level = 'minor',
+            auto_apply = false,
+            check_vulnerabilities = true,
+          }) => {
+            const result = await this.upgradePackages(
+              project_path || process.cwd(),
+              package_manager,
+              update_level,
+              auto_apply,
+              check_vulnerabilities
+            );
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: result,
+                },
+              ],
+            };
+          }
         );
-        return {
-          content: [
-            {
-              type: "text",
-              text: result
-            }
-          ]
-        };
-      }
-    );
 
-    // Dependency Resolution Tool
-    this.server.tool(
-      "resolve_dependencies",
-      "Analyze and resolve dependency conflicts in React Native projects",
-      {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        package_manager: z.enum(["npm", "yarn", "pnpm"]).optional().describe("Package manager to use"),
-        fix_conflicts: z.boolean().optional().describe("Whether to automatically attempt to fix conflicts"),
-        generate_resolutions: z.boolean().optional().describe("Whether to generate resolution suggestions")
-      },
-      async ({ project_path, package_manager = "npm", fix_conflicts = false, generate_resolutions = true }) => {
-        const result = await this.resolveDependencies(
-          project_path || process.cwd(),
-          package_manager,
-          fix_conflicts,
-          generate_resolutions
+        // Dependency Resolution Tool
+        this.server.tool(
+          'resolve_dependencies',
+          'Analyze and resolve dependency conflicts in React Native projects',
+          {
+            project_path: z.string().optional().describe('Path to React Native project root'),
+            package_manager: z
+              .enum(['npm', 'yarn', 'pnpm'])
+              .optional()
+              .describe('Package manager to use'),
+            fix_conflicts: z
+              .boolean()
+              .optional()
+              .describe('Whether to automatically attempt to fix conflicts'),
+            generate_resolutions: z
+              .boolean()
+              .optional()
+              .describe('Whether to generate resolution suggestions'),
+          },
+          async ({
+            project_path,
+            package_manager = 'npm',
+            fix_conflicts = false,
+            generate_resolutions = true,
+          }) => {
+            const result = await this.resolveDependencies(
+              project_path || process.cwd(),
+              package_manager,
+              fix_conflicts,
+              generate_resolutions
+            );
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: result,
+                },
+              ],
+            };
+          }
         );
-        return {
-          content: [
-            {
-              type: "text",
-              text: result
-            }
-          ]
-        };
-      }
-    );
 
-    // Package Security Audit Tool
-    this.server.tool(
-      "audit_packages",
-      "Perform security audit on project dependencies and provide fix recommendations",
-      {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        package_manager: z.enum(["npm", "yarn", "pnpm"]).optional().describe("Package manager to use"),
-        auto_fix: z.boolean().optional().describe("Whether to automatically fix vulnerabilities"),
-        severity_threshold: z.enum(["low", "moderate", "high", "critical"]).optional().describe("Minimum severity level to report")
-      },
-      async ({ project_path, package_manager = "npm", auto_fix = false, severity_threshold = "moderate" }) => {
-        const result = await this.auditPackages(
-          project_path || process.cwd(),
-          package_manager,
-          auto_fix,
-          severity_threshold
+        // Package Security Audit Tool
+        this.server.tool(
+          'audit_packages',
+          'Perform security audit on project dependencies and provide fix recommendations',
+          {
+            project_path: z.string().optional().describe('Path to React Native project root'),
+            package_manager: z
+              .enum(['npm', 'yarn', 'pnpm'])
+              .optional()
+              .describe('Package manager to use'),
+            auto_fix: z
+              .boolean()
+              .optional()
+              .describe('Whether to automatically fix vulnerabilities'),
+            severity_threshold: z
+              .enum(['low', 'moderate', 'high', 'critical'])
+              .optional()
+              .describe('Minimum severity level to report'),
+          },
+          async ({
+            project_path,
+            package_manager = 'npm',
+            auto_fix = false,
+            severity_threshold = 'moderate',
+          }) => {
+            const result = await this.auditPackages(
+              project_path || process.cwd(),
+              package_manager,
+              auto_fix,
+              severity_threshold
+            );
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: result,
+                },
+              ],
+            };
+          }
         );
-        return {
-          content: [
-            {
-              type: "text",
-              text: result
-            }
-          ]
-        };
-      }
-    );
 
-    // Package Migration Tool
-    this.server.tool(
-      "migrate_packages",
-      "Migrate deprecated packages to their recommended alternatives",
-      {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        package_manager: z.enum(["npm", "yarn", "pnpm"]).optional().describe("Package manager to use"),
-        auto_migrate: z.boolean().optional().describe("Whether to automatically perform migrations"),
-        target_packages: z.array(z.string()).optional().describe("Specific packages to migrate (if not provided, checks all)")
-      },
-      async ({ project_path, package_manager = "npm", auto_migrate = false, target_packages }) => {
-        const result = await this.migratePackages(
-          project_path || process.cwd(),
-          package_manager,
-          auto_migrate,
-          target_packages
+        // Package Migration Tool
+        this.server.tool(
+          'migrate_packages',
+          'Migrate deprecated packages to their recommended alternatives',
+          {
+            project_path: z.string().optional().describe('Path to React Native project root'),
+            package_manager: z
+              .enum(['npm', 'yarn', 'pnpm'])
+              .optional()
+              .describe('Package manager to use'),
+            auto_migrate: z
+              .boolean()
+              .optional()
+              .describe('Whether to automatically perform migrations'),
+            target_packages: z
+              .array(z.string())
+              .optional()
+              .describe('Specific packages to migrate (if not provided, checks all)'),
+          },
+          async ({
+            project_path,
+            package_manager = 'npm',
+            auto_migrate = false,
+            target_packages,
+          }) => {
+            const result = await this.migratePackages(
+              project_path || process.cwd(),
+              package_manager,
+              auto_migrate,
+              target_packages
+            );
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: result,
+                },
+              ],
+            };
+          }
         );
         return {
           content: [
             {
-              type: "text",
-              text: result
-            }
-          ]
-        };
-      }
-    );
-        return {
-          content: [
-            {
-              type: "text",
-              text: analysis
-            }
-          ]
+              type: 'text',
+              text: analysis,
+            },
+          ],
         };
       }
     );
 
     // Performance Optimization Tool (existing)
     this.server.tool(
-      "optimize_performance",
-      "Get performance optimization suggestions for React Native",
+      'optimize_performance',
+      'Get performance optimization suggestions for React Native',
       {
-        scenario: z.enum([
-          "list_rendering",
-          "navigation",
-          "animations",
-          "memory_usage",
-          "bundle_size",
-          "startup_time"
-        ]).describe("Performance scenario to optimize"),
-        platform: z.enum(["ios", "android", "both"]).optional().describe("Target platform")
+        scenario: z
+          .enum([
+            'list_rendering',
+            'navigation',
+            'animations',
+            'memory_usage',
+            'bundle_size',
+            'startup_time',
+          ])
+          .describe('Performance scenario to optimize'),
+        platform: z.enum(['ios', 'android', 'both']).optional().describe('Target platform'),
       },
-      async ({ scenario, platform = "both" }) => {
+      async ({ scenario, platform = 'both' }) => {
         const suggestions = this.getPerformanceOptimizations(scenario, platform);
         return {
           content: [
             {
-              type: "text", 
-              text: suggestions
-            }
-          ]
+              type: 'text',
+              text: suggestions,
+            },
+          ],
         };
       }
     );
 
     // Architecture Guidance Tool
     this.server.tool(
-      "architecture_advice",
-      "Get React Native architecture and project structure advice",
+      'architecture_advice',
+      'Get React Native architecture and project structure advice',
       {
-        project_type: z.enum([
-          "simple_app",
-          "complex_app", 
-          "enterprise_app",
-          "library",
-          "monorepo"
-        ]).describe("Type of React Native project"),
-        features: z.array(z.string()).optional().describe("Key features of the app")
+        project_type: z
+          .enum(['simple_app', 'complex_app', 'enterprise_app', 'library', 'monorepo'])
+          .describe('Type of React Native project'),
+        features: z.array(z.string()).optional().describe('Key features of the app'),
       },
       async ({ project_type, features = [] }) => {
         const advice = this.getArchitectureAdvice(project_type, features);
         return {
           content: [
             {
-              type: "text",
-              text: advice
-            }
-          ]
+              type: 'text',
+              text: advice,
+            },
+          ],
         };
       }
     );
 
     // Debugging Guide Tool
     this.server.tool(
-      "debug_issue",
-      "Get debugging guidance for React Native issues",
+      'debug_issue',
+      'Get debugging guidance for React Native issues',
       {
-        issue_type: z.enum([
-          "crash",
-          "performance",
-          "ui_layout",
-          "navigation",
-          "state_management",
-          "network",
-          "platform_specific"
-        ]).describe("Type of issue to debug"),
-        platform: z.enum(["ios", "android", "both"]).optional().describe("Platform where issue occurs"),
-        error_message: z.string().optional().describe("Error message if available")
+        issue_type: z
+          .enum([
+            'crash',
+            'performance',
+            'ui_layout',
+            'navigation',
+            'state_management',
+            'network',
+            'platform_specific',
+          ])
+          .describe('Type of issue to debug'),
+        platform: z
+          .enum(['ios', 'android', 'both'])
+          .optional()
+          .describe('Platform where issue occurs'),
+        error_message: z.string().optional().describe('Error message if available'),
       },
-      async ({ issue_type, platform = "both", error_message }) => {
+      async ({ issue_type, platform = 'both', error_message }) => {
         const guidance = this.getDebuggingGuidance(issue_type, platform, error_message);
         return {
           content: [
             {
-              type: "text",
-              text: guidance
-            }
-          ]
+              type: 'text',
+              text: guidance,
+            },
+          ],
         };
       }
     );
 
     // Update Checker Tool
     this.server.tool(
-      "check_for_updates",
-      "Check for available updates to the React Native MCP server",
+      'check_for_updates',
+      'Check for available updates to the React Native MCP server',
       {
-        include_changelog: z.boolean().optional().describe("Include changelog in the response")
+        include_changelog: z.boolean().optional().describe('Include changelog in the response'),
       },
       async ({ include_changelog = false }) => {
         const updateInfo = await this.checkForUpdates(include_changelog);
         return {
           content: [
             {
-              type: "text",
-              text: updateInfo
-            }
-          ]
+              type: 'text',
+              text: updateInfo,
+            },
+          ],
         };
       }
     );
 
     // Version Info Tool - Simple utility for getting MCP server version
     this.server.tool(
-      "get_version_info",
-      "Get React Native MCP Server version and build information",
+      'get_version_info',
+      'Get React Native MCP Server version and build information',
       {
-        include_build_info: z.boolean().optional().describe("Include detailed build information")
+        include_build_info: z.boolean().optional().describe('Include detailed build information'),
       },
       async ({ include_build_info = false }) => {
         const versionInfo = this.getVersionInfo(include_build_info);
         return {
           content: [
             {
-              type: "text",
-              text: versionInfo
-            }
-          ]
+              type: 'text',
+              text: versionInfo,
+            },
+          ],
         };
       }
     );
 
     // Code Remediation Tool - Expert-level automatic code fixing
     this.server.tool(
-      "remediate_code",
-      "Automatically fix React Native code issues with expert-level solutions",
+      'remediate_code',
+      'Automatically fix React Native code issues with expert-level solutions',
       {
-        code: z.string().describe("React Native code to remediate"),
-        issues: z.array(z.string()).optional().describe("Specific issues to fix (if not provided, auto-detects all)"),
-        remediation_level: z.enum(["basic", "comprehensive", "expert"]).optional().describe("Level of remediation to apply"),
-        preserve_formatting: z.boolean().optional().describe("Whether to preserve original code formatting"),
-        add_comments: z.boolean().optional().describe("Whether to add explanatory comments to fixes")
+        code: z.string().describe('React Native code to remediate'),
+        issues: z
+          .array(z.string())
+          .optional()
+          .describe('Specific issues to fix (if not provided, auto-detects all)'),
+        remediation_level: z
+          .enum(['basic', 'comprehensive', 'expert'])
+          .optional()
+          .describe('Level of remediation to apply'),
+        preserve_formatting: z
+          .boolean()
+          .optional()
+          .describe('Whether to preserve original code formatting'),
+        add_comments: z
+          .boolean()
+          .optional()
+          .describe('Whether to add explanatory comments to fixes'),
       },
-      async ({ code, issues = [], remediation_level = "expert", preserve_formatting = true, add_comments = true }) => {
-        const remediation = await this.remediateCode(code, issues, remediation_level, preserve_formatting, add_comments);
+      async ({
+        code,
+        issues = [],
+        remediation_level = 'expert',
+        preserve_formatting = true,
+        add_comments = true,
+      }) => {
+        const remediation = await this.remediateCode(
+          code,
+          issues,
+          remediation_level,
+          preserve_formatting,
+          add_comments
+        );
         return {
           content: [
             {
-              type: "text",
-              text: remediation
-            }
-          ]
+              type: 'text',
+              text: remediation,
+            },
+          ],
         };
       }
     );
 
     // Code Refactoring Tool - Advanced refactoring suggestions
     this.server.tool(
-      "refactor_component",
-      "Provide expert-level refactoring suggestions and implementations",
+      'refactor_component',
+      'Provide expert-level refactoring suggestions and implementations',
       {
-        code: z.string().describe("React Native component code to refactor"),
-        refactor_type: z.enum([
-          "performance", 
-          "maintainability", 
-          "accessibility", 
-          "type_safety", 
-          "modern_patterns",
-          "comprehensive"
-        ]).describe("Type of refactoring to apply"),
-        target_rn_version: z.string().optional().describe("Target React Native version for refactoring"),
-        include_tests: z.boolean().optional().describe("Whether to include test updates")
+        code: z.string().describe('React Native component code to refactor'),
+        refactor_type: z
+          .enum([
+            'performance',
+            'maintainability',
+            'accessibility',
+            'type_safety',
+            'modern_patterns',
+            'comprehensive',
+          ])
+          .describe('Type of refactoring to apply'),
+        target_rn_version: z
+          .string()
+          .optional()
+          .describe('Target React Native version for refactoring'),
+        include_tests: z.boolean().optional().describe('Whether to include test updates'),
       },
-      async ({ code, refactor_type, target_rn_version = "latest", include_tests = false }) => {
-        const refactoring = await this.refactorComponent(code, refactor_type, target_rn_version, include_tests);
+      async ({ code, refactor_type, target_rn_version = 'latest', include_tests = false }) => {
+        const refactoring = await this.refactorComponent(
+          code,
+          refactor_type,
+          target_rn_version,
+          include_tests
+        );
         return {
           content: [
             {
-              type: "text",
-              text: refactoring
-            }
-          ]
+              type: 'text',
+              text: refactoring,
+            },
+          ],
         };
       }
     );
@@ -410,45 +525,45 @@ export class ReactNativeTools {
 
   private getVersionInfo(includeBuildInfo: boolean): string {
     // Try to read package.json to get version
-    let version = "Unknown";
+    let version = 'Unknown';
     let packageInfo = {};
-    
+
     try {
       const packagePath = path.join(process.cwd(), 'package.json');
       if (fs.existsSync(packagePath)) {
         packageInfo = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-        version = (packageInfo as any).version || "Unknown";
+        version = (packageInfo as any).version || 'Unknown';
       }
     } catch (error) {
       // Fallback - version info might not be available in all environments
     }
 
-    let info = `# React Native MCP Server Version Information\n\n`;
+    let info = '# React Native MCP Server Version Information\n\n';
     info += `**Current Version:** ${version}\n`;
-    info += `**Package:** @mrnitro360/react-native-mcp-guide\n`;
+    info += '**Package:** @mrnitro360/react-native-mcp-guide\n';
     info += `**Runtime:** Node.js ${process.version}\n`;
     info += `**Platform:** ${process.platform} ${process.arch}\n\n`;
 
     if (includeBuildInfo) {
-      info += `## Build Information\n\n`;
+      info += '## Build Information\n\n';
       info += `**Process ID:** ${process.pid}\n`;
       info += `**Working Directory:** ${process.cwd()}\n`;
       info += `**Memory Usage:** ${Math.round(process.memoryUsage().rss / 1024 / 1024)}MB\n`;
       info += `**Uptime:** ${Math.round(process.uptime())}s\n\n`;
-      
-      info += `## Capabilities\n\n`;
-      info += `- ✅ Component Analysis\n`;
-      info += `- ✅ Performance Optimization\n`;
-      info += `- ✅ Security Auditing\n`;
-      info += `- ✅ Test Generation\n`;
-      info += `- ✅ Package Management\n`;
-      info += `- ✅ Architecture Guidance\n\n`;
-      
-      info += `## Updates\n\n`;
-      info += `To update to the latest version:\n`;
-      info += `\`\`\`bash\n`;
-      info += `npm update -g @mrnitro360/react-native-mcp-guide\n`;
-      info += `\`\`\`\n`;
+
+      info += '## Capabilities\n\n';
+      info += '- ✅ Component Analysis\n';
+      info += '- ✅ Performance Optimization\n';
+      info += '- ✅ Security Auditing\n';
+      info += '- ✅ Test Generation\n';
+      info += '- ✅ Package Management\n';
+      info += '- ✅ Architecture Guidance\n\n';
+
+      info += '## Updates\n\n';
+      info += 'To update to the latest version:\n';
+      info += '```bash\n';
+      info += 'npm update -g @mrnitro360/react-native-mcp-guide\n';
+      info += '```\n';
     }
 
     return info;
@@ -459,13 +574,17 @@ export class ReactNativeTools {
     const suggestions: string[] = [];
 
     // More accurate React component detection
-    const hasReactImport = /import\s+.*React.*from\s+['"]react['"]|from\s+['"]react-native['"]/.test(code);
-    const hasExport = /export\s+default\s+(?:function|class|const)|export\s+(?:function|const)|export\s+default\s+\w+/.test(code);
+    const hasReactImport =
+      /import\s+.*React.*from\s+['"]react['"]|from\s+['"]react-native['"]/.test(code);
+    const hasExport =
+      /export\s+default\s+(?:function|class|const)|export\s+(?:function|const)|export\s+default\s+\w+/.test(
+        code
+      );
     const hasJSXElements = /<[A-Z]\w*[\s\S]*?>/.test(code);
     const isReactComponent = hasReactImport && hasExport && hasJSXElements;
 
     if (!isReactComponent) {
-      return "## Analysis Result\n\nThis does not appear to be a React Native component.";
+      return '## Analysis Result\n\nThis does not appear to be a React Native component.';
     }
 
     // More precise hook usage analysis
@@ -473,13 +592,14 @@ export class ReactNativeTools {
     const hasUseEffect = /useEffect\s*\(/.test(code);
     const hasUseCallback = /useCallback\s*\(/.test(code);
     const hasOnPress = /onPress\s*=/.test(code);
-    
+
     if (hasUseState && hasUseEffect && hasOnPress && !hasUseCallback) {
       // Check if onPress is actually inside a function component
-      const funcComponentRegex = /(?:function\s+\w+|const\s+\w+\s*=\s*(?:\([^)]*\)\s*=>|\([^)]*\)\s*=>))[\s\S]*?onPress/;
+      const funcComponentRegex =
+        /(?:function\s+\w+|const\s+\w+\s*=\s*(?:\([^)]*\)\s*=>|\([^)]*\)\s*=>))[\s\S]*?onPress/;
       if (funcComponentRegex.test(code)) {
-        issues.push("Event handlers may cause unnecessary re-renders without useCallback");
-        suggestions.push("Consider wrapping event handlers in useCallback to optimize performance");
+        issues.push('Event handlers may cause unnecessary re-renders without useCallback');
+        suggestions.push('Consider wrapping event handlers in useCallback to optimize performance');
       }
     }
 
@@ -488,91 +608,101 @@ export class ReactNativeTools {
     if (flatListMatch) {
       const flatListProps = flatListMatch[0];
       if (!flatListProps.includes('keyExtractor')) {
-        issues.push("FlatList missing keyExtractor prop which can cause rendering issues");
-        suggestions.push("Add keyExtractor={(item, index) => item.id || index.toString()} to FlatList");
+        issues.push('FlatList missing keyExtractor prop which can cause rendering issues');
+        suggestions.push(
+          'Add keyExtractor={(item, index) => item.id || index.toString()} to FlatList'
+        );
       }
       if (!flatListProps.includes('getItemLayout') && flatListProps.includes('data=')) {
-        suggestions.push("Consider adding getItemLayout if all items have the same height for better performance");
+        suggestions.push(
+          'Consider adding getItemLayout if all items have the same height for better performance'
+        );
       }
     }
 
     // More precise ScrollView with map detection
     const scrollViewWithMapRegex = /<ScrollView[\s\S]*?>[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/;
     if (scrollViewWithMapRegex.test(code)) {
-      issues.push("Using .map() inside ScrollView can cause performance issues with large datasets");
-      suggestions.push("Replace ScrollView + .map() with FlatList for better performance with dynamic lists");
+      issues.push(
+        'Using .map() inside ScrollView can cause performance issues with large datasets'
+      );
+      suggestions.push(
+        'Replace ScrollView + .map() with FlatList for better performance with dynamic lists'
+      );
     }
 
     // Style analysis improvements
     const hasStyleSheetCreate = /StyleSheet\.create\s*\(/.test(code);
     const hasInlineStyles = /style\s*=\s*\{\{/.test(code);
-    
+
     if (hasInlineStyles && !hasStyleSheetCreate) {
-      suggestions.push("Consider using StyleSheet.create instead of inline styles for better performance");
+      suggestions.push(
+        'Consider using StyleSheet.create instead of inline styles for better performance'
+      );
     }
-    
+
     if (hasStyleSheetCreate) {
-      suggestions.push("✅ Good use of StyleSheet.create for optimized styling");
+      suggestions.push('✅ Good use of StyleSheet.create for optimized styling');
     }
 
     // Security analysis - inline for immediate effect
     // Check for hardcoded secrets
     if (/(?:api[_-]?key|apikey)\s*[:=]\s*["'][^"']{10,}["']/gi.test(code)) {
-      issues.push("Potential hardcoded API key detected - security risk");
-      suggestions.push("Move API keys to environment variables or secure storage");
+      issues.push('Potential hardcoded API key detected - security risk');
+      suggestions.push('Move API keys to environment variables or secure storage');
     }
-    
+
     // Check for sensitive logging
     if (/console\.log.*(?:password|pwd|secret|token|key|auth|credential)/gi.test(code)) {
-      issues.push("Console logging may expose sensitive data");
-      suggestions.push("Remove or sanitize console statements containing sensitive information");
+      issues.push('Console logging may expose sensitive data');
+      suggestions.push('Remove or sanitize console statements containing sensitive information');
     }
-    
+
     // Check for HTTP requests
     if (/fetch\s*\(\s*["']http:\/\//.test(code)) {
-      issues.push("HTTP requests detected instead of HTTPS");
-      suggestions.push("Use HTTPS for all network requests to ensure data encryption");
+      issues.push('HTTP requests detected instead of HTTPS');
+      suggestions.push('Use HTTPS for all network requests to ensure data encryption');
     }
-    
+
     // Memory leak detection
     if (/setInterval\s*\(/.test(code) && !/clearInterval/.test(code)) {
-      issues.push("setInterval without clearInterval - potential memory leak");
-      suggestions.push("Clear intervals in useEffect cleanup or componentWillUnmount");
+      issues.push('setInterval without clearInterval - potential memory leak');
+      suggestions.push('Clear intervals in useEffect cleanup or componentWillUnmount');
     }
 
     // Generate analysis report
-    let analysis = "## React Native Component Analysis\\n\\n";
-    
+    let analysis = '## React Native Component Analysis\\n\\n';
+
     if (type) {
       analysis += `**Component Type:** ${type}\\n\\n`;
     }
 
     if (issues.length > 0) {
-      analysis += "### Issues Found:\\n";
+      analysis += '### Issues Found:\\n';
       issues.forEach((issue, index) => {
         analysis += `${index + 1}. ${issue}\\n`;
       });
-      analysis += "\\n";
+      analysis += '\\n';
     }
 
     if (suggestions.length > 0) {
-      analysis += "### Suggestions:\\n";
+      analysis += '### Suggestions:\\n';
       suggestions.forEach((suggestion, index) => {
         analysis += `${index + 1}. ${suggestion}\\n`;
       });
-      analysis += "\\n";
+      analysis += '\\n';
     }
 
     if (issues.length === 0) {
-      analysis += "### ✅ No major issues found\\n\\n";
+      analysis += '### ✅ No major issues found\\n\\n';
     }
 
-    analysis += "### Additional Best Practices:\\n";
-    analysis += "- Use TypeScript for better type safety\\n";
-    analysis += "- Implement proper error boundaries\\n";
-    analysis += "- Follow React Native naming conventions\\n";
-    analysis += "- Use memo() for expensive components\\n";
-    analysis += "- Implement proper accessibility props\\n";
+    analysis += '### Additional Best Practices:\\n';
+    analysis += '- Use TypeScript for better type safety\\n';
+    analysis += '- Implement proper error boundaries\\n';
+    analysis += '- Follow React Native naming conventions\\n';
+    analysis += '- Use memo() for expensive components\\n';
+    analysis += '- Implement proper accessibility props\\n';
 
     return analysis;
   }
@@ -583,21 +713,25 @@ export class ReactNativeTools {
       { pattern: /(?:api[_-]?key|apikey)\s*[:=]\s*["'][^"']{10,}["']/gi, type: 'API Key' },
       { pattern: /(?:secret|password|pwd)\s*[:=]\s*["'][^"']{6,}["']/gi, type: 'Secret/Password' },
       { pattern: /(?:token|auth[_-]?token)\s*[:=]\s*["'][^"']{10,}["']/gi, type: 'Auth Token' },
-      { pattern: /(?:private[_-]?key|privatekey)\s*[:=]\s*["'][^"']{20,}["']/gi, type: 'Private Key' },
-      { pattern: /["'][A-Za-z0-9+/]{40,}={0,2}["']/g, type: 'Base64 encoded secret' }
+      {
+        pattern: /(?:private[_-]?key|privatekey)\s*[:=]\s*["'][^"']{20,}["']/gi,
+        type: 'Private Key',
+      },
+      { pattern: /["'][A-Za-z0-9+/]{40,}={0,2}["']/g, type: 'Base64 encoded secret' },
     ];
 
     secretPatterns.forEach(({ pattern, type }) => {
       const matches = code.match(pattern);
       if (matches) {
-        const validMatches = matches.filter(match => 
-          !match.includes('example') && 
-          !match.includes('placeholder') && 
-          !match.includes('your_') &&
-          !match.includes('YOUR_') &&
-          !match.includes('###')
+        const validMatches = matches.filter(
+          (match) =>
+            !match.includes('example') &&
+            !match.includes('placeholder') &&
+            !match.includes('your_') &&
+            !match.includes('YOUR_') &&
+            !match.includes('###')
         );
-        
+
         if (validMatches.length > 0) {
           issues.push(`Potential hardcoded ${type} detected - security risk`);
           suggestions.push(`Move ${type.toLowerCase()} to environment variables or secure storage`);
@@ -608,49 +742,51 @@ export class ReactNativeTools {
     // Sensitive logging detection
     const sensitiveLogPatterns = [
       /console\.log.*(?:password|pwd|secret|token|key|auth|credential)/gi,
-      /console\.(?:warn|error|info).*(?:password|pwd|secret|token|key|auth|credential)/gi
+      /console\.(?:warn|error|info).*(?:password|pwd|secret|token|key|auth|credential)/gi,
     ];
-    
-    if (sensitiveLogPatterns.some(pattern => pattern.test(code))) {
-      issues.push("Console logging may expose sensitive data");
-      suggestions.push("Remove or sanitize console statements containing sensitive information");
+
+    if (sensitiveLogPatterns.some((pattern) => pattern.test(code))) {
+      issues.push('Console logging may expose sensitive data');
+      suggestions.push('Remove or sanitize console statements containing sensitive information');
     }
 
     // Code injection detection
     if (/eval\s*\(/.test(code)) {
-      issues.push("eval() usage detected - critical security risk");
-      suggestions.push("Replace eval() with safer alternatives like JSON.parse()");
+      issues.push('eval() usage detected - critical security risk');
+      suggestions.push('Replace eval() with safer alternatives like JSON.parse()');
     }
 
     // Network security
     if (/(?:fetch|axios\.(?:get|post|put|delete))\s*\(\s*["']http:\/\//.test(code)) {
-      issues.push("HTTP requests detected instead of HTTPS");
-      suggestions.push("Use HTTPS for all network requests to ensure data encryption");
+      issues.push('HTTP requests detected instead of HTTPS');
+      suggestions.push('Use HTTPS for all network requests to ensure data encryption');
     }
 
     // XSS vulnerabilities
     if (/dangerouslySetInnerHTML\s*=\s*\{\{/.test(code)) {
-      issues.push("dangerouslySetInnerHTML usage detected - XSS risk");
-      suggestions.push("Sanitize HTML content or use safer alternatives");
+      issues.push('dangerouslySetInnerHTML usage detected - XSS risk');
+      suggestions.push('Sanitize HTML content or use safer alternatives');
     }
   }
 
   private addMemoryLeakIssues(code: string, issues: string[], suggestions: string[]): void {
     // setInterval without clearInterval
     if (/setInterval\s*\(/.test(code) && !/clearInterval/.test(code)) {
-      issues.push("setInterval without clearInterval - potential memory leak");
-      suggestions.push("Clear intervals in useEffect cleanup or componentWillUnmount");
+      issues.push('setInterval without clearInterval - potential memory leak');
+      suggestions.push('Clear intervals in useEffect cleanup or componentWillUnmount');
     }
 
     // addEventListener without removeEventListener
     if (/addEventListener\s*\(/.test(code) && !/removeEventListener/.test(code)) {
-      issues.push("Event listeners without cleanup - potential memory leak");
-      suggestions.push("Remove event listeners in useEffect cleanup or componentWillUnmount");
+      issues.push('Event listeners without cleanup - potential memory leak');
+      suggestions.push('Remove event listeners in useEffect cleanup or componentWillUnmount');
     }
 
     // Large state objects
     if (/useState\s*\(\s*\{[\s\S]{100,}\}\s*\)/.test(code)) {
-      suggestions.push("Large objects in useState detected - consider breaking down or using useReducer");
+      suggestions.push(
+        'Large objects in useState detected - consider breaking down or using useReducer'
+      );
     }
   }
 
@@ -658,19 +794,23 @@ export class ReactNativeTools {
     // Wildcard imports
     const wildcardImports = code.match(/import\s+\*\s+as\s+\w+\s+from\s+["'][^"']+["']/g);
     if (wildcardImports && wildcardImports.length > 0) {
-      suggestions.push("Consider using named imports instead of wildcard imports for better tree shaking");
+      suggestions.push(
+        'Consider using named imports instead of wildcard imports for better tree shaking'
+      );
     }
 
     // Animation performance
     if (/Animated\./.test(code) && !/useNativeDriver/.test(code)) {
-      suggestions.push("Add useNativeDriver: true to animations for better performance");
+      suggestions.push('Add useNativeDriver: true to animations for better performance');
     }
 
     // Heavy libraries
     const heavyLibraries = ['lodash', 'moment'];
-    heavyLibraries.forEach(lib => {
+    heavyLibraries.forEach((lib) => {
       if (new RegExp(`import.*from\\s+["']${lib}["']`, 'g').test(code)) {
-        suggestions.push(`Heavy library '${lib}' detected - consider lighter alternatives or specific imports`);
+        suggestions.push(
+          `Heavy library '${lib}' detected - consider lighter alternatives or specific imports`
+        );
       }
     });
   }
@@ -807,17 +947,21 @@ project.ext.react = [
 - Use React.Suspense for lazy components
 - Optimize image loading
 - Minimize synchronous operations
-      `
+      `,
     };
 
-    let result = optimizations[scenario] || "Performance optimization guidance not available for this scenario.";
-    
-    if (platform !== "both") {
+    let result =
+      optimizations[scenario] ||
+      'Performance optimization guidance not available for this scenario.';
+
+    if (platform !== 'both') {
       result += `\\n\\n### Platform-Specific Notes (${platform.toUpperCase()}):`;
-      if (platform === "ios") {
-        result += "\\n- Use iOS-specific optimizations like CADisplayLink\\n- Consider iOS memory warnings\\n- Optimize for different device sizes";
+      if (platform === 'ios') {
+        result +=
+          '\\n- Use iOS-specific optimizations like CADisplayLink\\n- Consider iOS memory warnings\\n- Optimize for different device sizes';
       } else {
-        result += "\\n- Use Android-specific optimizations like ProGuard\\n- Consider Android background limitations\\n- Optimize for various Android versions";
+        result +=
+          '\\n- Use Android-specific optimizations like ProGuard\\n- Consider Android background limitations\\n- Optimize for various Android versions';
       }
     }
 
@@ -967,14 +1111,15 @@ packages/
 - Nx for monorepo management
 - Metro for React Native bundling
 - Shared ESLint/Prettier configs
-      `
+      `,
     };
 
-    let advice = architectures[projectType] || "Architecture advice not available for this project type.";
-    
+    let advice =
+      architectures[projectType] || 'Architecture advice not available for this project type.';
+
     if (features.length > 0) {
-      advice += "\\n\\n### Feature-Specific Considerations:\\n";
-      features.forEach(feature => {
+      advice += '\\n\\n### Feature-Specific Considerations:\\n';
+      features.forEach((feature) => {
         advice += `- **${feature}**: Consider dedicated module/service\\n`;
       });
     }
@@ -1139,23 +1284,26 @@ const fetchData = async () => {
 - Navigation behavior
 - Permission handling
 - File system access
-      `
+      `,
     };
 
-    let guidance = debugGuides[issueType] || "Debugging guidance not available for this issue type.";
-    
+    let guidance =
+      debugGuides[issueType] || 'Debugging guidance not available for this issue type.';
+
     if (errorMessage) {
       guidance += `\\n\\n### Error Message Analysis:\\n\`\`\`\\n${errorMessage}\\n\`\`\`\\n`;
-      guidance += "**Suggestions based on error:**\\n";
-      
-      if (errorMessage.includes("Cannot read property")) {
-        guidance += "- Check for null/undefined values\\n- Add proper null checks\\n";
+      guidance += '**Suggestions based on error:**\\n';
+
+      if (errorMessage.includes('Cannot read property')) {
+        guidance += '- Check for null/undefined values\\n- Add proper null checks\\n';
       }
-      if (errorMessage.includes("Network request failed")) {
-        guidance += "- Check network connectivity\\n- Verify API endpoints\\n- Check CORS settings\\n";
+      if (errorMessage.includes('Network request failed')) {
+        guidance +=
+          '- Check network connectivity\\n- Verify API endpoints\\n- Check CORS settings\\n';
       }
-      if (errorMessage.includes("Module not found")) {
-        guidance += "- Verify import paths\\n- Check if module is installed\\n- Clear Metro cache\\n";
+      if (errorMessage.includes('Module not found')) {
+        guidance +=
+          '- Verify import paths\\n- Check if module is installed\\n- Clear Metro cache\\n';
       }
     }
 
@@ -1168,13 +1316,14 @@ const fetchData = async () => {
       // Check for updates periodically
       const shouldCheckUpdates = await this.shouldCheckForUpdates();
       let updateNotification = '';
-      
+
       if (shouldCheckUpdates) {
         const updateInfo = await this.checkForUpdates(false);
         if (updateInfo.includes('Update Available')) {
-          updateNotification = `\n\n---\n\n### 🔔 Update Notification\n\n` +
-            `A new version of the React Native MCP server is available! ` +
-            `Run \`check_for_updates\` for details or \`npm run auto-update\` to update.\n\n---\n\n`;
+          updateNotification =
+            '\n\n---\n\n### 🔔 Update Notification\n\n' +
+            'A new version of the React Native MCP server is available! ' +
+            'Run `check_for_updates` for details or `npm run auto-update` to update.\n\n---\n\n';
         }
       }
 
@@ -1183,7 +1332,7 @@ const fetchData = async () => {
         totalFiles: reactNativeFiles.length,
         components: [] as any[],
         issues: [] as string[],
-        suggestions: [] as string[]
+        suggestions: [] as string[],
       };
 
       // Analyze each file
@@ -1201,11 +1350,14 @@ const fetchData = async () => {
     }
   }
 
-  private async analyzeCodebaseComprehensive(projectPath: string, analysisTypes: string[]): Promise<string> {
+  private async analyzeCodebaseComprehensive(
+    projectPath: string,
+    analysisTypes: string[]
+  ): Promise<string> {
     try {
       const reactNativeFiles = await this.findReactNativeFiles(projectPath);
       const packageJsonPath = path.join(projectPath, 'package.json');
-      
+
       let packageJson: any = {};
       try {
         const packageContent = await fs.promises.readFile(packageJsonPath, 'utf-8');
@@ -1224,38 +1376,38 @@ const fetchData = async () => {
         deprecated: [] as any[],
         upgrades: [] as any[],
         accessibility: [] as any[],
-        testing: [] as any[]
+        testing: [] as any[],
       };
 
       // Analyze each file
       for (const filePath of reactNativeFiles) {
         const content = await fs.promises.readFile(filePath, 'utf-8');
         const fileName = path.basename(filePath);
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('performance')) {
           analysis.performance.push(...this.analyzeFilePerformance(content, filePath, ['all']));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('security')) {
           analysis.security.push(...this.analyzeFileSecurity(content, fileName));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('code_quality')) {
           analysis.codeQuality.push(...this.analyzeFileCodeQuality(content, fileName));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('refactoring')) {
           analysis.refactoring.push(...this.analyzeFileRefactoring(content, fileName));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('deprecated_features')) {
           analysis.deprecated.push(...this.analyzeFileDeprecated(content, fileName));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('accessibility')) {
           analysis.accessibility.push(...this.analyzeFileAccessibility(content, fileName));
         }
-        
+
         if (analysisTypes.includes('all') || analysisTypes.includes('testing')) {
           analysis.testing.push(...this.analyzeFileTesting(content, fileName));
         }
@@ -1280,23 +1432,27 @@ const fetchData = async () => {
       { pattern: /(?:api[_-]?key|apikey)\s*[:=]\s*["'][^"']{10,}["']/gi, type: 'API Key' },
       { pattern: /(?:secret|password|pwd)\s*[:=]\s*["'][^"']{6,}["']/gi, type: 'Secret/Password' },
       { pattern: /(?:token|auth[_-]?token)\s*[:=]\s*["'][^"']{10,}["']/gi, type: 'Auth Token' },
-      { pattern: /(?:private[_-]?key|privatekey)\s*[:=]\s*["'][^"']{20,}["']/gi, type: 'Private Key' },
+      {
+        pattern: /(?:private[_-]?key|privatekey)\s*[:=]\s*["'][^"']{20,}["']/gi,
+        type: 'Private Key',
+      },
       { pattern: /(?:access[_-]?key|accesskey)\s*[:=]\s*["'][^"']{10,}["']/gi, type: 'Access Key' },
-      { pattern: /["'][A-Za-z0-9+/]{40,}={0,2}["']/g, type: 'Base64 encoded secret' }
+      { pattern: /["'][A-Za-z0-9+/]{40,}={0,2}["']/g, type: 'Base64 encoded secret' },
     ];
 
     secretPatterns.forEach(({ pattern, type }) => {
       const matches = content.match(pattern);
       if (matches) {
         // Exclude common false positives
-        const validMatches = matches.filter(match => 
-          !match.includes('example') && 
-          !match.includes('placeholder') && 
-          !match.includes('your_') &&
-          !match.includes('YOUR_') &&
-          !match.includes('###')
+        const validMatches = matches.filter(
+          (match) =>
+            !match.includes('example') &&
+            !match.includes('placeholder') &&
+            !match.includes('your_') &&
+            !match.includes('YOUR_') &&
+            !match.includes('###')
         );
-        
+
         if (validMatches.length > 0) {
           issues.push({
             file: fileName,
@@ -1304,7 +1460,7 @@ const fetchData = async () => {
             severity: 'critical',
             category: 'secrets',
             issue: `Potential hardcoded ${type} detected (${validMatches.length} occurrence(s))`,
-            suggestion: `Move ${type.toLowerCase()} to environment variables or React Native Config/Keychain`
+            suggestion: `Move ${type.toLowerCase()} to environment variables or React Native Config/Keychain`,
           });
         }
       }
@@ -1314,10 +1470,10 @@ const fetchData = async () => {
     const sensitiveLogPatterns = [
       /console\.log.*(?:password|pwd|secret|token|key|auth|credential)/gi,
       /console\.(?:warn|error|info).*(?:password|pwd|secret|token|key|auth|credential)/gi,
-      /console\.log.*\$\{.*(?:password|pwd|secret|token|key|auth|credential)/gi
+      /console\.log.*\$\{.*(?:password|pwd|secret|token|key|auth|credential)/gi,
     ];
-    
-    sensitiveLogPatterns.forEach(pattern => {
+
+    sensitiveLogPatterns.forEach((pattern) => {
       if (pattern.test(content)) {
         issues.push({
           file: fileName,
@@ -1325,7 +1481,7 @@ const fetchData = async () => {
           severity: 'high',
           category: 'data_exposure',
           issue: 'Console logging may expose sensitive data',
-          suggestion: 'Remove console statements with sensitive data or use sanitized logging'
+          suggestion: 'Remove console statements with sensitive data or use sanitized logging',
         });
       }
     });
@@ -1334,8 +1490,16 @@ const fetchData = async () => {
     const injectionPatterns = [
       { pattern: /eval\s*\(/g, risk: 'critical', desc: 'eval() usage' },
       { pattern: /Function\s*\(/g, risk: 'high', desc: 'Function constructor usage' },
-      { pattern: /setTimeout\s*\(\s*["'][^"']*["']/g, risk: 'medium', desc: 'setTimeout with string' },
-      { pattern: /setInterval\s*\(\s*["'][^"']*["']/g, risk: 'medium', desc: 'setInterval with string' }
+      {
+        pattern: /setTimeout\s*\(\s*["'][^"']*["']/g,
+        risk: 'medium',
+        desc: 'setTimeout with string',
+      },
+      {
+        pattern: /setInterval\s*\(\s*["'][^"']*["']/g,
+        risk: 'medium',
+        desc: 'setInterval with string',
+      },
     ];
 
     injectionPatterns.forEach(({ pattern, risk, desc }) => {
@@ -1346,13 +1510,15 @@ const fetchData = async () => {
           severity: risk,
           category: 'code_injection',
           issue: `${desc} detected - potential code injection risk`,
-          suggestion: `Replace ${desc} with safer alternatives`
+          suggestion: `Replace ${desc} with safer alternatives`,
         });
       }
     });
 
     // Network security issues
-    const httpMatches = content.match(/(?:fetch|axios\.(?:get|post|put|delete))\s*\(\s*["']http:\/\/[^"']+["']/gi);
+    const httpMatches = content.match(
+      /(?:fetch|axios\.(?:get|post|put|delete))\s*\(\s*["']http:\/\/[^"']+["']/gi
+    );
     if (httpMatches) {
       issues.push({
         file: fileName,
@@ -1360,7 +1526,7 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'insecure_transport',
         issue: `${httpMatches.length} HTTP request(s) detected (should use HTTPS)`,
-        suggestion: 'Use HTTPS for all network requests to ensure data encryption'
+        suggestion: 'Use HTTPS for all network requests to ensure data encryption',
       });
     }
 
@@ -1374,7 +1540,7 @@ const fetchData = async () => {
         severity,
         category: 'xss',
         issue: 'dangerouslySetInnerHTML usage detected',
-        suggestion: 'Sanitize HTML content or use safer alternatives'
+        suggestion: 'Sanitize HTML content or use safer alternatives',
       });
     }
 
@@ -1393,7 +1559,9 @@ const fetchData = async () => {
         inFunction = true;
         functionLength = 0;
       }
-      if (inFunction) functionLength++;
+      if (inFunction) {
+        functionLength++;
+      }
       if (line.includes('}') && inFunction) {
         if (functionLength > 50) {
           issues.push({
@@ -1402,7 +1570,7 @@ const fetchData = async () => {
             severity: 'medium',
             category: 'function_length',
             issue: `Function longer than 50 lines (${functionLength} lines)`,
-            suggestion: 'Break down large functions into smaller, focused functions'
+            suggestion: 'Break down large functions into smaller, focused functions',
           });
         }
         inFunction = false;
@@ -1412,7 +1580,7 @@ const fetchData = async () => {
     // Too many props
     const propMatches = content.match(/interface\s+\w+Props\s*{([^}]+)}/g);
     if (propMatches) {
-      propMatches.forEach(match => {
+      propMatches.forEach((match) => {
         const propCount = (match.match(/\w+\s*:/g) || []).length;
         if (propCount > 10) {
           issues.push({
@@ -1421,7 +1589,7 @@ const fetchData = async () => {
             severity: 'medium',
             category: 'props_complexity',
             issue: `Component has ${propCount} props (consider reducing)`,
-            suggestion: 'Group related props into objects or split component'
+            suggestion: 'Group related props into objects or split component',
           });
         }
       });
@@ -1435,7 +1603,7 @@ const fetchData = async () => {
         severity: 'low',
         category: 'readability',
         issue: 'Nested ternary operators detected',
-        suggestion: 'Use if-else statements or extract to functions for better readability'
+        suggestion: 'Use if-else statements or extract to functions for better readability',
       });
     }
 
@@ -1448,7 +1616,7 @@ const fetchData = async () => {
         severity: 'low',
         category: 'magic_numbers',
         issue: 'Multiple magic numbers detected',
-        suggestion: 'Extract numbers to named constants for better maintainability'
+        suggestion: 'Extract numbers to named constants for better maintainability',
       });
     }
 
@@ -1460,7 +1628,7 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'error_handling',
         issue: 'Network request without error handling',
-        suggestion: 'Add try-catch or .catch() for proper error handling'
+        suggestion: 'Add try-catch or .catch() for proper error handling',
       });
     }
 
@@ -1480,14 +1648,14 @@ const fetchData = async () => {
         severity: 'low',
         category: 'duplicate_code',
         issue: 'Duplicate import statements',
-        suggestion: 'Remove duplicate imports'
+        suggestion: 'Remove duplicate imports',
       });
     }
 
     // Large useEffect
     const useEffectMatches = content.match(/useEffect\(\s*\(\)\s*=>\s*{([^}]+(?:{[^}]*}[^}]*)*)}/g);
     if (useEffectMatches) {
-      useEffectMatches.forEach(effect => {
+      useEffectMatches.forEach((effect) => {
         const lines = effect.split('\n').length;
         if (lines > 20) {
           suggestions.push({
@@ -1496,7 +1664,7 @@ const fetchData = async () => {
             severity: 'medium',
             category: 'effect_complexity',
             issue: `Large useEffect hook (${lines} lines)`,
-            suggestion: 'Split useEffect into multiple effects or extract to custom hooks'
+            suggestion: 'Split useEffect into multiple effects or extract to custom hooks',
           });
         }
       });
@@ -1510,7 +1678,7 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'styling',
         issue: 'Inline styles detected',
-        suggestion: 'Move styles to StyleSheet.create() for better performance'
+        suggestion: 'Move styles to StyleSheet.create() for better performance',
       });
     }
 
@@ -1522,7 +1690,7 @@ const fetchData = async () => {
         severity: 'low',
         category: 'complexity',
         issue: 'Complex conditional rendering',
-        suggestion: 'Extract complex conditions to variables or functions'
+        suggestion: 'Extract complex conditions to variables or functions',
       });
     }
 
@@ -1535,7 +1703,7 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'props_drilling',
         issue: `Many props being passed (${propPasses})`,
-        suggestion: 'Consider using Context API or state management library'
+        suggestion: 'Consider using Context API or state management library',
       });
     }
 
@@ -1556,10 +1724,10 @@ const fetchData = async () => {
       { old: 'PickerIOS', new: '@react-native-picker/picker', severity: 'medium' },
       { old: 'SliderIOS', new: '@react-native-community/slider', severity: 'medium' },
       { old: 'SwitchIOS', new: 'Switch', severity: 'low' },
-      { old: 'SwitchAndroid', new: 'Switch', severity: 'low' }
+      { old: 'SwitchAndroid', new: 'Switch', severity: 'low' },
     ];
 
-    deprecatedAPIs.forEach(api => {
+    deprecatedAPIs.forEach((api) => {
       if (content.includes(api.old)) {
         issues.push({
           file: fileName,
@@ -1567,7 +1735,7 @@ const fetchData = async () => {
           severity: api.severity,
           category: 'deprecated_api',
           issue: `${api.old} is deprecated`,
-          suggestion: `Replace ${api.old} with ${api.new}`
+          suggestion: `Replace ${api.old} with ${api.new}`,
         });
       }
     });
@@ -1580,7 +1748,7 @@ const fetchData = async () => {
         severity: 'high',
         category: 'lifecycle',
         issue: 'componentWillMount is deprecated',
-        suggestion: 'Use componentDidMount or useEffect hook'
+        suggestion: 'Use componentDidMount or useEffect hook',
       });
     }
 
@@ -1591,7 +1759,7 @@ const fetchData = async () => {
         severity: 'high',
         category: 'lifecycle',
         issue: 'componentWillReceiveProps is deprecated',
-        suggestion: 'Use componentDidUpdate or useEffect hook'
+        suggestion: 'Use componentDidUpdate or useEffect hook',
       });
     }
 
@@ -1603,7 +1771,7 @@ const fetchData = async () => {
         severity: 'critical',
         category: 'syntax',
         issue: 'React.createClass is deprecated',
-        suggestion: 'Convert to ES6 class or functional component'
+        suggestion: 'Convert to ES6 class or functional component',
       });
     }
 
@@ -1621,7 +1789,7 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'labels',
         issue: 'TouchableOpacity missing accessibilityLabel',
-        suggestion: 'Add accessibilityLabel for screen readers'
+        suggestion: 'Add accessibilityLabel for screen readers',
       });
     }
 
@@ -1632,33 +1800,38 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'labels',
         issue: 'Image missing accessibilityLabel',
-        suggestion: 'Add accessibilityLabel or mark as decorative'
+        suggestion: 'Add accessibilityLabel or mark as decorative',
       });
     }
 
     // Missing accessibility roles
-    if ((content.includes('<TouchableOpacity') || content.includes('<Pressable')) && 
-        !content.includes('accessibilityRole')) {
+    if (
+      (content.includes('<TouchableOpacity') || content.includes('<Pressable')) &&
+      !content.includes('accessibilityRole')
+    ) {
       issues.push({
         file: fileName,
         type: 'accessibility',
         severity: 'low',
         category: 'roles',
         issue: 'Interactive element missing accessibilityRole',
-        suggestion: 'Add accessibilityRole="button" for buttons'
+        suggestion: 'Add accessibilityRole="button" for buttons',
       });
     }
 
     // Text without accessibility considerations
-    if (content.includes('<Text') && content.includes('fontSize') && 
-        !content.includes('allowFontScaling')) {
+    if (
+      content.includes('<Text') &&
+      content.includes('fontSize') &&
+      !content.includes('allowFontScaling')
+    ) {
       issues.push({
         file: fileName,
         type: 'accessibility',
         severity: 'low',
         category: 'font_scaling',
         issue: 'Text component may not respect font scaling',
-        suggestion: 'Consider allowFontScaling prop for accessibility'
+        suggestion: 'Consider allowFontScaling prop for accessibility',
       });
     }
 
@@ -1669,8 +1842,11 @@ const fetchData = async () => {
     const suggestions: any[] = [];
 
     // Components without tests
-    if ((content.includes('export default') || content.includes('export const')) && 
-        content.includes('React') && !fileName.includes('.test.')) {
+    if (
+      (content.includes('export default') || content.includes('export const')) &&
+      content.includes('React') &&
+      !fileName.includes('.test.')
+    ) {
       // This is a component file, check if test file exists
       suggestions.push({
         file: fileName,
@@ -1678,7 +1854,7 @@ const fetchData = async () => {
         severity: 'low',
         category: 'test_coverage',
         issue: 'Component may lack corresponding test file',
-        suggestion: `Create ${fileName.replace(/\.(js|tsx?)$/, '.test.$1')} for this component`
+        suggestion: `Create ${fileName.replace(/\.(js|tsx?)$/, '.test.$1')} for this component`,
       });
     }
 
@@ -1690,20 +1866,24 @@ const fetchData = async () => {
         severity: 'low',
         category: 'test_ids',
         issue: 'Interactive elements missing testID',
-        suggestion: 'Add testID props for easier testing'
+        suggestion: 'Add testID props for easier testing',
       });
     }
 
     // Complex components without prop validation
-    if (content.includes('interface') && content.includes('Props') && 
-        !content.includes('PropTypes') && !fileName.includes('.d.ts')) {
+    if (
+      content.includes('interface') &&
+      content.includes('Props') &&
+      !content.includes('PropTypes') &&
+      !fileName.includes('.d.ts')
+    ) {
       suggestions.push({
         file: fileName,
         type: 'testing',
         severity: 'low',
         category: 'prop_validation',
         issue: 'Component uses TypeScript but could benefit from runtime validation',
-        suggestion: 'Consider PropTypes for runtime prop validation in development'
+        suggestion: 'Consider PropTypes for runtime prop validation in development',
       });
     }
 
@@ -1730,7 +1910,7 @@ const fetchData = async () => {
           severity: 'high',
           category: 'react_native_version',
           issue: `React Native ${version} is outdated`,
-          suggestion: 'Upgrade to React Native 0.72+ for latest features and security fixes'
+          suggestion: 'Upgrade to React Native 0.72+ for latest features and security fixes',
         });
       }
     }
@@ -1740,10 +1920,10 @@ const fetchData = async () => {
       'react-native-vector-icons': '@expo/vector-icons or react-native-vector-icons (check latest)',
       'react-native-asyncstorage': '@react-native-async-storage/async-storage',
       'react-native-community/async-storage': '@react-native-async-storage/async-storage',
-      '@react-native-community/netinfo': '@react-native-community/netinfo (check if latest)'
+      '@react-native-community/netinfo': '@react-native-community/netinfo (check if latest)',
     };
 
-    Object.keys(deprecatedPackages).forEach(pkg => {
+    Object.keys(deprecatedPackages).forEach((pkg) => {
       if (dependencies[pkg]) {
         suggestions.push({
           file: 'package.json',
@@ -1751,7 +1931,7 @@ const fetchData = async () => {
           severity: 'medium',
           category: 'package_migration',
           issue: `${pkg} may be deprecated or have better alternatives`,
-          suggestion: `Consider migrating to ${deprecatedPackages[pkg]}`
+          suggestion: `Consider migrating to ${deprecatedPackages[pkg]}`,
         });
       }
     });
@@ -1760,7 +1940,7 @@ const fetchData = async () => {
     const recommendedPackages = [
       { pkg: 'react-native-flipper', reason: 'For debugging', severity: 'low' },
       { pkg: '@react-native-community/eslint-config', reason: 'For code quality', severity: 'low' },
-      { pkg: 'react-native-super-grid', reason: 'If using grids', severity: 'low' }
+      { pkg: 'react-native-super-grid', reason: 'If using grids', severity: 'low' },
     ];
 
     // Check for missing linting
@@ -1771,14 +1951,17 @@ const fetchData = async () => {
         severity: 'medium',
         category: 'tooling',
         issue: 'No ESLint configuration detected',
-        suggestion: 'Add ESLint with @react-native-community/eslint-config for code quality'
+        suggestion: 'Add ESLint with @react-native-community/eslint-config for code quality',
       });
     }
 
     return suggestions;
   }
 
-  private async analyzeCodebasePerformance(projectPath: string, focusAreas: string[]): Promise<string> {
+  private async analyzeCodebasePerformance(
+    projectPath: string,
+    focusAreas: string[]
+  ): Promise<string> {
     try {
       const reactNativeFiles = await this.findReactNativeFiles(projectPath);
       const performanceIssues: any[] = [];
@@ -1797,46 +1980,66 @@ const fetchData = async () => {
 
   private async findReactNativeFiles(projectPath: string): Promise<string[]> {
     const files: string[] = [];
-    
+
     const scanDirectory = async (dir: string, depth: number = 0): Promise<void> => {
       try {
         // Prevent scanning too deep to avoid performance issues
-        if (depth > 10) return;
-        
+        if (depth > 10) {
+          return;
+        }
+
         const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(dir, entry.name);
-          
+
           if (entry.isDirectory()) {
             // Enhanced directory filtering
             const skipDirs = [
-              'node_modules', '.git', 'ios', 'android', '.expo', 'dist', 'build',
-              '.next', 'coverage', '__pycache__', '.vscode', '.idea', 'tmp',
-              'temp', 'logs', 'log', 'cache', '.cache', '.turbo'
+              'node_modules',
+              '.git',
+              'ios',
+              'android',
+              '.expo',
+              'dist',
+              'build',
+              '.next',
+              'coverage',
+              '__pycache__',
+              '.vscode',
+              '.idea',
+              'tmp',
+              'temp',
+              'logs',
+              'log',
+              'cache',
+              '.cache',
+              '.turbo',
             ];
-            
+
             if (!skipDirs.includes(entry.name) && !entry.name.startsWith('.')) {
               await scanDirectory(fullPath, depth + 1);
             }
           } else if (entry.isFile()) {
             // Enhanced file filtering for React Native
-            const isReactNativeFile = /\.(js|jsx|ts|tsx)$/.test(entry.name) && 
-                                     !entry.name.includes('.test.') && 
-                                     !entry.name.includes('.spec.') &&
-                                     !entry.name.includes('.d.ts') &&
-                                     !entry.name.includes('.config.') &&
-                                     !entry.name.endsWith('.min.js');
-            
+            const isReactNativeFile =
+              /\.(js|jsx|ts|tsx)$/.test(entry.name) &&
+              !entry.name.includes('.test.') &&
+              !entry.name.includes('.spec.') &&
+              !entry.name.includes('.d.ts') &&
+              !entry.name.includes('.config.') &&
+              !entry.name.endsWith('.min.js');
+
             if (isReactNativeFile) {
               // Additional check: read first few lines to confirm it's React/React Native
               try {
                 const content = await fs.promises.readFile(fullPath, 'utf-8');
                 const firstLines = content.substring(0, 500);
-                const isReactRelated = /import.*react|from.*react|@react-native|react-native/i.test(firstLines) ||
-                                     /<[A-Z]\w*[\s\S]*?>/m.test(firstLines) ||
-                                     /export.*component|export.*function.*\(/i.test(firstLines);
-                
+                const isReactRelated =
+                  /import.*react|from.*react|@react-native|react-native/i.test(firstLines) ||
+                  /<[A-Z]\w*[\s\S]*?>/m.test(firstLines) ||
+                  /export.*component|export.*function.*\(/i.test(firstLines);
+
                 if (isReactRelated) {
                   files.push(fullPath);
                 }
@@ -1865,19 +2068,21 @@ const fetchData = async () => {
     const hasRNImport = /from\s+['"]react-native['"]/m.test(content);
     const hasExport = /export\s+(?:default\s+)?(?:function|class|const)/m.test(content);
     const hasJSXElements = /<[A-Z]\w*[\s\S]*?>/m.test(content);
-    
+
     const isComponent = (hasReactImport || hasRNImport) && hasExport && hasJSXElements;
 
     if (isComponent) {
       // Enhanced FlatList analysis
       const flatListMatches = content.match(/<FlatList[\s\S]*?(?:\/\>|<\/FlatList>)/g);
       if (flatListMatches) {
-        flatListMatches.forEach(flatList => {
+        flatListMatches.forEach((flatList) => {
           if (!flatList.includes('keyExtractor')) {
             issues.push(`${fileName}: FlatList missing keyExtractor prop`);
           }
           if (!flatList.includes('getItemLayout') && flatList.length > 200) {
-            suggestions.push(`${fileName}: Consider adding getItemLayout to FlatList for better performance`);
+            suggestions.push(
+              `${fileName}: Consider adding getItemLayout to FlatList for better performance`
+            );
           }
         });
       }
@@ -1885,7 +2090,9 @@ const fetchData = async () => {
       // More precise ScrollView + map detection
       const scrollViewMapRegex = /<ScrollView[\s\S]*?>[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/g;
       if (scrollViewMapRegex.test(content)) {
-        issues.push(`${fileName}: Using .map() inside ScrollView - consider FlatList for performance`);
+        issues.push(
+          `${fileName}: Using .map() inside ScrollView - consider FlatList for performance`
+        );
       }
 
       // Enhanced hooks analysis
@@ -1893,7 +2100,7 @@ const fetchData = async () => {
       const hasUseEffect = /useEffect\s*\(/.test(content);
       const hasUseCallback = /useCallback\s*\(/.test(content);
       const hasEventHandlers = /on(?:Press|Change|Submit|Focus|Blur)\s*=/.test(content);
-      
+
       if (hasUseState && hasUseEffect && hasEventHandlers && !hasUseCallback) {
         issues.push(`${fileName}: Event handlers without useCallback may cause re-renders`);
       }
@@ -1901,9 +2108,11 @@ const fetchData = async () => {
       // Improved style analysis
       const hasStyleSheetCreate = /StyleSheet\.create\s*\(/.test(content);
       const hasInlineStyles = /style\s*=\s*\{\{[^}]+\}\}/g.test(content);
-      
+
       if (hasInlineStyles && !hasStyleSheetCreate) {
-        suggestions.push(`${fileName}: Replace inline styles with StyleSheet.create for better performance`);
+        suggestions.push(
+          `${fileName}: Replace inline styles with StyleSheet.create for better performance`
+        );
       }
 
       // Import optimization checks
@@ -1916,7 +2125,7 @@ const fetchData = async () => {
       if (/setInterval\s*\(/.test(content) && !/clearInterval/.test(content)) {
         issues.push(`${fileName}: setInterval without clearInterval may cause memory leaks`);
       }
-      
+
       if (/addEventListener\s*\(/.test(content) && !/removeEventListener/.test(content)) {
         issues.push(`${fileName}: Event listeners without cleanup may cause memory leaks`);
       }
@@ -1928,7 +2137,7 @@ const fetchData = async () => {
       isComponent,
       issues,
       suggestions,
-      linesOfCode: content.split('\n').length
+      linesOfCode: content.split('\n').length,
     };
   }
 
@@ -1942,49 +2151,53 @@ const fetchData = async () => {
       if (flatListMatches) {
         flatListMatches.forEach((flatList, index) => {
           const flatListId = flatListMatches.length > 1 ? ` #${index + 1}` : '';
-          
+
           if (!flatList.includes('getItemLayout')) {
             issues.push({
               file: fileName,
               type: 'list_rendering',
               severity: 'medium',
               issue: `FlatList${flatListId} without getItemLayout - impacts scrolling performance`,
-              suggestion: 'Add getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index})} if items have known fixed height'
+              suggestion:
+                'Add getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index})} if items have known fixed height',
             });
           }
-          
+
           if (!flatList.includes('removeClippedSubviews')) {
             issues.push({
               file: fileName,
-              type: 'list_rendering', 
+              type: 'list_rendering',
               severity: 'low',
               issue: `FlatList${flatListId} without removeClippedSubviews optimization`,
-              suggestion: 'Add removeClippedSubviews={true} for better memory usage with large lists'
+              suggestion:
+                'Add removeClippedSubviews={true} for better memory usage with large lists',
             });
           }
-          
+
           if (!flatList.includes('keyExtractor')) {
             issues.push({
               file: fileName,
               type: 'list_rendering',
               severity: 'high',
               issue: `FlatList${flatListId} missing keyExtractor - can cause rendering issues`,
-              suggestion: 'Add keyExtractor={(item, index) => item.id?.toString() || index.toString()}'
+              suggestion:
+                'Add keyExtractor={(item, index) => item.id?.toString() || index.toString()}',
             });
           }
-          
+
           if (!flatList.includes('maxToRenderPerBatch') && flatList.length > 300) {
             issues.push({
               file: fileName,
               type: 'list_rendering',
               severity: 'low',
               issue: `Large FlatList${flatListId} without batch rendering optimization`,
-              suggestion: 'Consider adding maxToRenderPerBatch={5} and windowSize={10} for large lists'
+              suggestion:
+                'Consider adding maxToRenderPerBatch={5} and windowSize={10} for large lists',
             });
           }
         });
       }
-      
+
       // Check for ScrollView with many children
       const scrollViewMapRegex = /<ScrollView[\s\S]*?>[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/g;
       const matches = content.match(scrollViewMapRegex);
@@ -1994,7 +2207,7 @@ const fetchData = async () => {
           type: 'list_rendering',
           severity: 'high',
           issue: 'ScrollView with .map() can cause performance issues with large datasets',
-          suggestion: 'Replace ScrollView + .map() with FlatList for virtualized rendering'
+          suggestion: 'Replace ScrollView + .map() with FlatList for virtualized rendering',
         });
       }
     }
@@ -2003,32 +2216,39 @@ const fetchData = async () => {
       // More precise memory leak detection
       const intervalMatches = content.match(/setInterval\s*\([^)]+\)/g);
       if (intervalMatches) {
-        const hasCleanup = /clearInterval|useEffect\s*\([^,]+,\s*\[\]\)[\s\S]*?return\s*\(\s*\)\s*=>|componentWillUnmount/.test(content);
+        const hasCleanup =
+          /clearInterval|useEffect\s*\([^,]+,\s*\[\]\)[\s\S]*?return\s*\(\s*\)\s*=>|componentWillUnmount/.test(
+            content
+          );
         if (!hasCleanup) {
           issues.push({
             file: fileName,
             type: 'memory_usage',
-            severity: 'high', 
+            severity: 'high',
             issue: `${intervalMatches.length} setInterval(s) without proper cleanup`,
-            suggestion: 'Clear intervals in useEffect cleanup or componentWillUnmount: () => clearInterval(intervalId)'
+            suggestion:
+              'Clear intervals in useEffect cleanup or componentWillUnmount: () => clearInterval(intervalId)',
           });
         }
       }
 
       const listenerMatches = content.match(/addEventListener\s*\([^)]+\)/g);
       if (listenerMatches) {
-        const hasListenerCleanup = /removeEventListener|useEffect\s*\([^,]+,\s*\[\]\)[\s\S]*?return\s*\(\s*\)\s*=>/.test(content);
+        const hasListenerCleanup =
+          /removeEventListener|useEffect\s*\([^,]+,\s*\[\]\)[\s\S]*?return\s*\(\s*\)\s*=>/.test(
+            content
+          );
         if (!hasListenerCleanup) {
           issues.push({
             file: fileName,
             type: 'memory_usage',
             severity: 'high',
             issue: `${listenerMatches.length} event listener(s) without cleanup`,
-            suggestion: 'Remove event listeners in useEffect cleanup or componentWillUnmount'
+            suggestion: 'Remove event listeners in useEffect cleanup or componentWillUnmount',
           });
         }
       }
-      
+
       // Check for large state objects
       const largeStateRegex = /useState\s*\(\s*\{[\s\S]{100,}\}\s*\)/g;
       if (largeStateRegex.test(content)) {
@@ -2037,7 +2257,7 @@ const fetchData = async () => {
           type: 'memory_usage',
           severity: 'medium',
           issue: 'Large object in useState - may impact performance',
-          suggestion: 'Consider breaking down large state objects or using useReducer'
+          suggestion: 'Consider breaking down large state objects or using useReducer',
         });
       }
     }
@@ -2046,22 +2266,22 @@ const fetchData = async () => {
       // More specific wildcard import analysis
       const wildcardImports = content.match(/import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g);
       if (wildcardImports) {
-        wildcardImports.forEach(importStmt => {
-          const match = importStmt.match(/from\s+['"]([^'"]+)['"]/); 
+        wildcardImports.forEach((importStmt) => {
+          const match = importStmt.match(/from\s+['"]([^'"]+)['"]/);
           const moduleName = match ? match[1] : 'unknown';
           issues.push({
             file: fileName,
             type: 'bundle_size',
             severity: 'medium',
             issue: `Wildcard import from '${moduleName}' increases bundle size`,
-            suggestion: `Use named imports: import { specificFunction } from '${moduleName}'`
+            suggestion: `Use named imports: import { specificFunction } from '${moduleName}'`,
           });
         });
       }
-      
+
       // Check for heavy libraries
       const heavyLibraries = ['lodash', 'moment', 'date-fns'];
-      heavyLibraries.forEach(lib => {
+      heavyLibraries.forEach((lib) => {
         const libImportRegex = new RegExp(`import.*from\s+['"]${lib}['"]{1}`, 'g');
         if (libImportRegex.test(content)) {
           issues.push({
@@ -2069,12 +2289,12 @@ const fetchData = async () => {
             type: 'bundle_size',
             severity: 'medium',
             issue: `Heavy library '${lib}' import detected`,
-            suggestion: `Consider using specific imports from '${lib}' or lighter alternatives`
+            suggestion: `Consider using specific imports from '${lib}' or lighter alternatives`,
           });
         }
       });
     }
-    
+
     if (focusAreas.includes('all') || focusAreas.includes('animations')) {
       // Check for animation performance issues
       if (content.includes('Animated.') && !content.includes('useNativeDriver')) {
@@ -2083,7 +2303,8 @@ const fetchData = async () => {
           type: 'animations',
           severity: 'medium',
           issue: 'Animations without native driver may cause performance issues',
-          suggestion: 'Add useNativeDriver: true to Animated.timing/spring/decay for better performance'
+          suggestion:
+            'Add useNativeDriver: true to Animated.timing/spring/decay for better performance',
         });
       }
     }
@@ -2092,7 +2313,7 @@ const fetchData = async () => {
   }
 
   private formatCodebaseAnalysis(analysis: any, projectPath: string): string {
-    let report = `## React Native Codebase Analysis\n\n`;
+    let report = '## React Native Codebase Analysis\n\n';
     report += `**Project Path:** ${projectPath}\n`;
     report += `**Total Files Analyzed:** ${analysis.totalFiles}\n`;
     report += `**Components Found:** ${analysis.components.filter((c: any) => c.isComponent).length}\n\n`;
@@ -2114,7 +2335,7 @@ const fetchData = async () => {
     }
 
     // File breakdown
-    report += `### File Breakdown\n\n`;
+    report += '### File Breakdown\n\n';
     const components = analysis.components.filter((c: any) => c.isComponent);
     if (components.length > 0) {
       report += `**React Native Components (${components.length}):**\n`;
@@ -2138,20 +2359,20 @@ const fetchData = async () => {
   }
 
   private formatPerformanceAnalysis(issues: any[], projectPath: string): string {
-    let report = `## React Native Performance Analysis\n\n`;
+    let report = '## React Native Performance Analysis\n\n';
     report += `**Project Path:** ${projectPath}\n`;
     report += `**Performance Issues Found:** ${issues.length}\n\n`;
 
     if (issues.length === 0) {
-      report += `✅ No major performance issues detected!\n\n`;
-      report += `Your React Native codebase follows good performance practices.`;
+      report += '✅ No major performance issues detected!\n\n';
+      report += 'Your React Native codebase follows good performance practices.';
       return report;
     }
 
     // Group by severity
-    const high = issues.filter(i => i.severity === 'high');
-    const medium = issues.filter(i => i.severity === 'medium');
-    const low = issues.filter(i => i.severity === 'low');
+    const high = issues.filter((i) => i.severity === 'high');
+    const medium = issues.filter((i) => i.severity === 'medium');
+    const low = issues.filter((i) => i.severity === 'low');
 
     if (high.length > 0) {
       report += `### 🔴 High Priority Issues (${high.length})\n\n`;
@@ -2178,11 +2399,11 @@ const fetchData = async () => {
     }
 
     // Summary by category
-    const categories = [...new Set(issues.map(i => i.type))];
+    const categories = [...new Set(issues.map((i) => i.type))];
     if (categories.length > 1) {
-      report += `### Issues by Category\n\n`;
-      categories.forEach(category => {
-        const count = issues.filter(i => i.type === category).length;
+      report += '### Issues by Category\n\n';
+      categories.forEach((category) => {
+        const count = issues.filter((i) => i.type === category).length;
         report += `- **${category.replace('_', ' ')}**: ${count} issues\n`;
       });
     }
@@ -2191,17 +2412,21 @@ const fetchData = async () => {
   }
 
   private formatComprehensiveAnalysis(analysis: any, projectPath: string): string {
-    let report = `## Comprehensive React Native Codebase Analysis\n\n`;
+    let report = '## Comprehensive React Native Codebase Analysis\n\n';
     report += `**Project Path:** ${projectPath}\n`;
     report += `**Total Files Analyzed:** ${analysis.totalFiles}\n\n`;
 
     // Summary stats
-    const totalIssues = analysis.performance.length + analysis.security.length + 
-                       analysis.codeQuality.length + analysis.refactoring.length + 
-                       analysis.deprecated.length + analysis.accessibility.length + 
-                       analysis.testing.length;
+    const totalIssues =
+      analysis.performance.length +
+      analysis.security.length +
+      analysis.codeQuality.length +
+      analysis.refactoring.length +
+      analysis.deprecated.length +
+      analysis.accessibility.length +
+      analysis.testing.length;
 
-    report += `### 📊 Analysis Summary\n\n`;
+    report += '### 📊 Analysis Summary\n\n';
     report += `- **Security Issues:** ${analysis.security.length}\n`;
     report += `- **Performance Issues:** ${analysis.performance.length}\n`;
     report += `- **Code Quality Issues:** ${analysis.codeQuality.length}\n`;
@@ -2212,13 +2437,17 @@ const fetchData = async () => {
     report += `- **Upgrade Suggestions:** ${analysis.upgrades.length}\n\n`;
 
     if (totalIssues === 0) {
-      report += `✅ **Excellent!** Your codebase follows React Native best practices with no major issues detected.\n\n`;
+      report +=
+        '✅ **Excellent!** Your codebase follows React Native best practices with no major issues detected.\n\n';
       return report;
     }
 
     // Critical and High severity issues first
-    const criticalIssues = [...analysis.security, ...analysis.deprecated, ...analysis.performance]
-      .filter(issue => issue.severity === 'critical' || issue.severity === 'high');
+    const criticalIssues = [
+      ...analysis.security,
+      ...analysis.deprecated,
+      ...analysis.performance,
+    ].filter((issue) => issue.severity === 'critical' || issue.severity === 'high');
 
     if (criticalIssues.length > 0) {
       report += `### 🚨 Critical & High Priority Issues (${criticalIssues.length})\n\n`;
@@ -2232,9 +2461,10 @@ const fetchData = async () => {
 
     // Security Issues
     if (analysis.security.length > 0) {
-      report += `### 🛡️ Security Analysis\n\n`;
+      report += '### 🛡️ Security Analysis\n\n';
       analysis.security.forEach((issue: any, index: number) => {
-        const severity = issue.severity === 'critical' ? '🔴' : issue.severity === 'high' ? '🟠' : '🟡';
+        const severity =
+          issue.severity === 'critical' ? '🔴' : issue.severity === 'high' ? '🟠' : '🟡';
         report += `${index + 1}. ${severity} **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n`;
         report += `   📂 ${issue.category.replace(/_/g, ' ')}\n\n`;
@@ -2243,7 +2473,7 @@ const fetchData = async () => {
 
     // Deprecated Features
     if (analysis.deprecated.length > 0) {
-      report += `### ⚠️ Deprecated Features\n\n`;
+      report += '### ⚠️ Deprecated Features\n\n';
       analysis.deprecated.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2252,7 +2482,7 @@ const fetchData = async () => {
 
     // Code Quality
     if (analysis.codeQuality.length > 0) {
-      report += `### 📝 Code Quality\n\n`;
+      report += '### 📝 Code Quality\n\n';
       analysis.codeQuality.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2261,7 +2491,7 @@ const fetchData = async () => {
 
     // Refactoring Opportunities
     if (analysis.refactoring.length > 0) {
-      report += `### 🔄 Refactoring Opportunities\n\n`;
+      report += '### 🔄 Refactoring Opportunities\n\n';
       analysis.refactoring.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2270,7 +2500,7 @@ const fetchData = async () => {
 
     // Accessibility
     if (analysis.accessibility.length > 0) {
-      report += `### ♿ Accessibility Improvements\n\n`;
+      report += '### ♿ Accessibility Improvements\n\n';
       analysis.accessibility.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2279,7 +2509,7 @@ const fetchData = async () => {
 
     // Testing
     if (analysis.testing.length > 0) {
-      report += `### 🧪 Testing Recommendations\n\n`;
+      report += '### 🧪 Testing Recommendations\n\n';
       analysis.testing.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2288,7 +2518,7 @@ const fetchData = async () => {
 
     // Upgrades
     if (analysis.upgrades.length > 0) {
-      report += `### 📦 Package & Version Upgrades\n\n`;
+      report += '### 📦 Package & Version Upgrades\n\n';
       analysis.upgrades.forEach((issue: any, index: number) => {
         report += `${index + 1}. **${issue.file}** - ${issue.issue}\n`;
         report += `   💡 ${issue.suggestion}\n\n`;
@@ -2296,13 +2526,14 @@ const fetchData = async () => {
     }
 
     // Recommendations
-    report += `### 🎯 Next Steps\n\n`;
-    report += `1. **Start with security issues** - Address any critical security vulnerabilities first\n`;
-    report += `2. **Update deprecated features** - Replace deprecated APIs and components\n`;
-    report += `3. **Improve performance** - Focus on high-impact performance optimizations\n`;
-    report += `4. **Enhance code quality** - Refactor complex components and improve readability\n`;
-    report += `5. **Add accessibility** - Make your app usable for all users\n`;
-    report += `6. **Increase test coverage** - Add tests for critical components\n\n`;
+    report += '### 🎯 Next Steps\n\n';
+    report +=
+      '1. **Start with security issues** - Address any critical security vulnerabilities first\n';
+    report += '2. **Update deprecated features** - Replace deprecated APIs and components\n';
+    report += '3. **Improve performance** - Focus on high-impact performance optimizations\n';
+    report += '4. **Enhance code quality** - Refactor complex components and improve readability\n';
+    report += '5. **Add accessibility** - Make your app usable for all users\n';
+    report += '6. **Increase test coverage** - Add tests for critical components\n\n';
 
     return report;
   }
@@ -2312,55 +2543,55 @@ const fetchData = async () => {
     try {
       const currentVersion = await this.getCurrentVersion();
       const latestInfo = await this.getLatestVersionInfo();
-      
+
       if (!latestInfo) {
-        return "❌ Unable to check for updates. Please ensure you have internet connectivity.";
+        return '❌ Unable to check for updates. Please ensure you have internet connectivity.';
       }
 
       const isUpdateAvailable = this.compareVersions(currentVersion, latestInfo.version) < 0;
-      
-      let report = `## 🔄 React Native MCP Server Update Status\n\n`;
+
+      let report = '## 🔄 React Native MCP Server Update Status\n\n';
       report += `**Current Version:** ${currentVersion}\n`;
       report += `**Latest Version:** ${latestInfo.version}\n`;
       report += `**Last Checked:** ${new Date().toLocaleString()}\n\n`;
 
       if (isUpdateAvailable) {
-        report += `### 🎉 Update Available!\n\n`;
+        report += '### 🎉 Update Available!\n\n';
         report += `A new version (${latestInfo.version}) is available with new features and improvements.\n\n`;
-        
-        report += `### 📥 How to Update:\n\n`;
-        report += `**Option 1: Automatic Update**\n`;
-        report += `\`\`\`bash\n`;
-        report += `cd "C:\\Users\\david\\Desktop\\React-Native MCP"\n`;
-        report += `npm run auto-update\n`;
-        report += `\`\`\`\n\n`;
-        
-        report += `**Option 2: Manual Update**\n`;
-        report += `\`\`\`bash\n`;
-        report += `cd "C:\\Users\\david\\Desktop\\React-Native MCP"\n`;
-        report += `git pull origin master\n`;
-        report += `npm run deploy\n`;
-        report += `\`\`\`\n\n`;
+
+        report += '### 📥 How to Update:\n\n';
+        report += '**Option 1: Automatic Update**\n';
+        report += '```bash\n';
+        report += 'cd "C:\\Users\\david\\Desktop\\React-Native MCP"\n';
+        report += 'npm run auto-update\n';
+        report += '```\n\n';
+
+        report += '**Option 2: Manual Update**\n';
+        report += '```bash\n';
+        report += 'cd "C:\\Users\\david\\Desktop\\React-Native MCP"\n';
+        report += 'git pull origin master\n';
+        report += 'npm run deploy\n';
+        report += '```\n\n';
 
         if (includeChangelog && latestInfo.changelog) {
-          report += `### 📋 What's New:\n\n`;
+          report += "### 📋 What's New:\n\n";
           report += latestInfo.changelog + '\n\n';
         }
 
-        report += `### ⚡ Benefits of Updating:\n`;
-        report += `- Latest React Native best practices\n`;
-        report += `- New analysis capabilities\n`;
-        report += `- Bug fixes and performance improvements\n`;
-        report += `- Enhanced security recommendations\n\n`;
-        
+        report += '### ⚡ Benefits of Updating:\n';
+        report += '- Latest React Native best practices\n';
+        report += '- New analysis capabilities\n';
+        report += '- Bug fixes and performance improvements\n';
+        report += '- Enhanced security recommendations\n\n';
       } else {
-        report += `### ✅ You're Up to Date!\n\n`;
-        report += `Your React Native MCP server is running the latest version with all the newest features and improvements.\n\n`;
-        
-        report += `### 🔄 Auto-Update Options:\n`;
-        report += `To stay automatically updated, you can:\n`;
-        report += `- Set up daily auto-updates: \`npm run setup-auto-update\`\n`;
-        report += `- Enable continuous monitoring: \`npm run watch-updates\`\n\n`;
+        report += "### ✅ You're Up to Date!\n\n";
+        report +=
+          'Your React Native MCP server is running the latest version with all the newest features and improvements.\n\n';
+
+        report += '### 🔄 Auto-Update Options:\n';
+        report += 'To stay automatically updated, you can:\n';
+        report += '- Set up daily auto-updates: `npm run setup-auto-update`\n';
+        report += '- Enable continuous monitoring: `npm run watch-updates`\n\n';
       }
 
       return report;
@@ -2380,20 +2611,24 @@ const fetchData = async () => {
     }
   }
 
-  private async getLatestVersionInfo(): Promise<{version: string, changelog?: string} | null> {
+  private async getLatestVersionInfo(): Promise<{ version: string; changelog?: string } | null> {
     try {
       // Check GitHub releases API
-      const response = await fetch('https://api.github.com/repos/MrNitro360/React-Native-MCP/releases/latest');
+      const response = await fetch(
+        'https://api.github.com/repos/MrNitro360/React-Native-MCP/releases/latest'
+      );
       if (response.ok) {
         const data = await response.json();
         return {
           version: data.tag_name.replace(/^v/, ''),
-          changelog: data.body
+          changelog: data.body,
         };
       }
 
       // Fallback: Check GitHub commits for version in package.json
-      const commitsResponse = await fetch('https://api.github.com/repos/MrNitro360/React-Native-MCP/commits?path=package.json&per_page=1');
+      const commitsResponse = await fetch(
+        'https://api.github.com/repos/MrNitro360/React-Native-MCP/commits?path=package.json&per_page=1'
+      );
       if (commitsResponse.ok) {
         const commits = await commitsResponse.json();
         if (commits.length > 0) {
@@ -2402,7 +2637,7 @@ const fetchData = async () => {
           const version = `1.${commitDate.getFullYear()}.${commitDate.getMonth() + 1}${commitDate.getDate()}`;
           return {
             version,
-            changelog: commits[0].commit.message
+            changelog: commits[0].commit.message,
           };
         }
       }
@@ -2416,15 +2651,19 @@ const fetchData = async () => {
   private compareVersions(current: string, latest: string): number {
     const currentParts = current.split('.').map(Number);
     const latestParts = latest.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
       const currentPart = currentParts[i] || 0;
       const latestPart = latestParts[i] || 0;
-      
-      if (currentPart < latestPart) return -1;
-      if (currentPart > latestPart) return 1;
+
+      if (currentPart < latestPart) {
+        return -1;
+      }
+      if (currentPart > latestPart) {
+        return 1;
+      }
     }
-    
+
     return 0;
   }
 
@@ -2432,22 +2671,22 @@ const fetchData = async () => {
     try {
       const lastCheckFile = path.join(process.cwd(), '.last-update-check');
       let lastCheck = 0;
-      
+
       try {
         const lastCheckData = await fs.promises.readFile(lastCheckFile, 'utf-8');
         lastCheck = parseInt(lastCheckData);
       } catch {
         // File doesn't exist, first check
       }
-      
+
       const now = Date.now();
       const twentyFourHours = 24 * 60 * 60 * 1000;
-      
+
       if (now - lastCheck > twentyFourHours) {
         await fs.promises.writeFile(lastCheckFile, now.toString());
         return true;
       }
-      
+
       return false;
     } catch {
       return false;
@@ -2463,19 +2702,19 @@ const fetchData = async () => {
     checkVulnerabilities: boolean
   ): Promise<string> {
     const execAsync = promisify(exec);
-    
+
     try {
-      let report = "# 📦 Package Upgrade Analysis\n\n";
-      
+      let report = '# 📦 Package Upgrade Analysis\n\n';
+
       // Read package.json
       const packageJsonPath = path.join(projectPath, 'package.json');
       let packageJson: any = {};
-      
+
       try {
         const packageContent = await fs.promises.readFile(packageJsonPath, 'utf-8');
         packageJson = JSON.parse(packageContent);
       } catch {
-        return "❌ No package.json found in the specified project path.";
+        return '❌ No package.json found in the specified project path.';
       }
 
       report += `**Project:** ${packageJson.name || 'Unknown'}\n`;
@@ -2484,60 +2723,75 @@ const fetchData = async () => {
       report += `**Update Level:** ${updateLevel}\n\n`;
 
       // Check for outdated packages
-      report += "## 🔍 Checking for Outdated Packages\n\n";
-      
-      const outdatedCommand = packageManager === 'yarn' ? 'yarn outdated --json' : 
-                             packageManager === 'pnpm' ? 'pnpm outdated --format json' :
-                             'npm outdated --json';
-      
+      report += '## 🔍 Checking for Outdated Packages\n\n';
+
+      const outdatedCommand =
+        packageManager === 'yarn'
+          ? 'yarn outdated --json'
+          : packageManager === 'pnpm'
+            ? 'pnpm outdated --format json'
+            : 'npm outdated --json';
+
       try {
         const { stdout } = await execAsync(outdatedCommand, { cwd: projectPath });
         const outdatedData = JSON.parse(stdout);
-        
+
         if (Object.keys(outdatedData).length === 0) {
-          report += "✅ All packages are up to date!\n\n";
+          report += '✅ All packages are up to date!\n\n';
         } else {
-          report += "| Package | Current | Wanted | Latest | Type |\n";
-          report += "|---------|---------|--------|--------|---------|\n";
-          
-          const upgrades: Array<{package: string, current: string, wanted: string, latest: string, type: string}> = [];
-          
+          report += '| Package | Current | Wanted | Latest | Type |\n';
+          report += '|---------|---------|--------|--------|---------|\n';
+
+          const upgrades: Array<{
+            package: string;
+            current: string;
+            wanted: string;
+            latest: string;
+            type: string;
+          }> = [];
+
           for (const [pkg, info] of Object.entries(outdatedData as any)) {
             const packageInfo = info as any;
             const current = packageInfo.current;
             const wanted = packageInfo.wanted;
             const latest = packageInfo.latest;
             const type = packageInfo.type || 'production';
-            
+
             report += `| ${pkg} | ${current} | ${wanted} | ${latest} | ${type} |\n`;
-            
+
             // Determine if this package should be upgraded based on update level
             let shouldUpgrade = false;
-            if (updateLevel === 'all') shouldUpgrade = true;
-            else if (updateLevel === 'major') shouldUpgrade = true;
-            else if (updateLevel === 'minor' && this.isMinorOrPatchUpdate(current, latest)) shouldUpgrade = true;
-            else if (updateLevel === 'patch' && this.isPatchUpdate(current, latest)) shouldUpgrade = true;
-            
+            if (updateLevel === 'all') {
+              shouldUpgrade = true;
+            } else if (updateLevel === 'major') {
+              shouldUpgrade = true;
+            } else if (updateLevel === 'minor' && this.isMinorOrPatchUpdate(current, latest)) {
+              shouldUpgrade = true;
+            } else if (updateLevel === 'patch' && this.isPatchUpdate(current, latest)) {
+              shouldUpgrade = true;
+            }
+
             if (shouldUpgrade) {
               upgrades.push({ package: pkg, current, wanted, latest, type });
             }
           }
-          
-          report += "\n";
-          
+
+          report += '\n';
+
           if (upgrades.length > 0) {
-            report += "## 🚀 Recommended Upgrades\n\n";
-            
+            report += '## 🚀 Recommended Upgrades\n\n';
+
             if (autoApply) {
-              report += "### Applying Automatic Upgrades\n\n";
-              
+              report += '### Applying Automatic Upgrades\n\n';
+
               for (const upgrade of upgrades) {
-                const upgradeCommand = packageManager === 'yarn' ? 
-                  `yarn upgrade ${upgrade.package}@${upgrade.latest}` :
-                  packageManager === 'pnpm' ?
-                  `pnpm update ${upgrade.package}@${upgrade.latest}` :
-                  `npm install ${upgrade.package}@${upgrade.latest}`;
-                
+                const upgradeCommand =
+                  packageManager === 'yarn'
+                    ? `yarn upgrade ${upgrade.package}@${upgrade.latest}`
+                    : packageManager === 'pnpm'
+                      ? `pnpm update ${upgrade.package}@${upgrade.latest}`
+                      : `npm install ${upgrade.package}@${upgrade.latest}`;
+
                 try {
                   report += `Upgrading ${upgrade.package} from ${upgrade.current} to ${upgrade.latest}...\n`;
                   await execAsync(upgradeCommand, { cwd: projectPath });
@@ -2547,20 +2801,21 @@ const fetchData = async () => {
                 }
               }
             } else {
-              report += "### Manual Upgrade Commands\n\n";
-              report += "```bash\n";
-              
+              report += '### Manual Upgrade Commands\n\n';
+              report += '```bash\n';
+
               for (const upgrade of upgrades) {
-                const upgradeCommand = packageManager === 'yarn' ? 
-                  `yarn upgrade ${upgrade.package}@${upgrade.latest}` :
-                  packageManager === 'pnpm' ?
-                  `pnpm update ${upgrade.package}@${upgrade.latest}` :
-                  `npm install ${upgrade.package}@${upgrade.latest}`;
-                
+                const upgradeCommand =
+                  packageManager === 'yarn'
+                    ? `yarn upgrade ${upgrade.package}@${upgrade.latest}`
+                    : packageManager === 'pnpm'
+                      ? `pnpm update ${upgrade.package}@${upgrade.latest}`
+                      : `npm install ${upgrade.package}@${upgrade.latest}`;
+
                 report += `${upgradeCommand}\n`;
               }
-              
-              report += "```\n\n";
+
+              report += '```\n\n';
             }
           }
         }
@@ -2570,26 +2825,32 @@ const fetchData = async () => {
 
       // Security vulnerabilities check
       if (checkVulnerabilities) {
-        report += "## 🛡️ Security Vulnerability Check\n\n";
-        
-        const auditCommand = packageManager === 'yarn' ? 'yarn audit --json' :
-                            packageManager === 'pnpm' ? 'pnpm audit --json' :
-                            'npm audit --json';
-        
+        report += '## 🛡️ Security Vulnerability Check\n\n';
+
+        const auditCommand =
+          packageManager === 'yarn'
+            ? 'yarn audit --json'
+            : packageManager === 'pnpm'
+              ? 'pnpm audit --json'
+              : 'npm audit --json';
+
         try {
           const { stdout } = await execAsync(auditCommand, { cwd: projectPath });
           const auditData = JSON.parse(stdout);
-          
+
           if (auditData.vulnerabilities && Object.keys(auditData.vulnerabilities).length > 0) {
             report += `Found ${Object.keys(auditData.vulnerabilities).length} vulnerabilities.\n\n`;
-            
-            const fixCommand = packageManager === 'yarn' ? 'yarn audit fix' :
-                              packageManager === 'pnpm' ? 'pnpm audit fix' :
-                              'npm audit fix';
-            
+
+            const fixCommand =
+              packageManager === 'yarn'
+                ? 'yarn audit fix'
+                : packageManager === 'pnpm'
+                  ? 'pnpm audit fix'
+                  : 'npm audit fix';
+
             report += `**Fix command:** \`${fixCommand}\`\n\n`;
           } else {
-            report += "✅ No security vulnerabilities found!\n\n";
+            report += '✅ No security vulnerabilities found!\n\n';
           }
         } catch (error) {
           report += `⚠️ Could not check for vulnerabilities: ${error}\n\n`;
@@ -2600,7 +2861,6 @@ const fetchData = async () => {
       report += await this.getReactNativeUpgradeRecommendations(packageJson);
 
       return report;
-
     } catch (error) {
       return `❌ Error during package upgrade analysis: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -2613,108 +2873,113 @@ const fetchData = async () => {
     generateResolutions: boolean
   ): Promise<string> {
     const execAsync = promisify(exec);
-    
+
     try {
-      let report = "# 🔧 Dependency Resolution Analysis\n\n";
-      
+      let report = '# 🔧 Dependency Resolution Analysis\n\n';
+
       // Read package.json and lock files
       const packageJsonPath = path.join(projectPath, 'package.json');
       let packageJson: any = {};
-      
+
       try {
         const packageContent = await fs.promises.readFile(packageJsonPath, 'utf-8');
         packageJson = JSON.parse(packageContent);
       } catch {
-        return "❌ No package.json found in the specified project path.";
+        return '❌ No package.json found in the specified project path.';
       }
 
       report += `**Project:** ${packageJson.name || 'Unknown'}\n`;
       report += `**Package Manager:** ${packageManager}\n\n`;
 
       // Check for dependency conflicts
-      report += "## 🔍 Analyzing Dependency Tree\n\n";
-      
-      const listCommand = packageManager === 'yarn' ? 'yarn list --json' :
-                         packageManager === 'pnpm' ? 'pnpm list --json' :
-                         'npm list --json';
-      
+      report += '## 🔍 Analyzing Dependency Tree\n\n';
+
+      const listCommand =
+        packageManager === 'yarn'
+          ? 'yarn list --json'
+          : packageManager === 'pnpm'
+            ? 'pnpm list --json'
+            : 'npm list --json';
+
       try {
         const { stdout, stderr } = await execAsync(listCommand, { cwd: projectPath });
-        
+
         if (stderr && stderr.includes('UNMET')) {
-          report += "⚠️ Found unmet dependencies:\n\n";
+          report += '⚠️ Found unmet dependencies:\n\n';
           const unmetDeps = stderr.match(/UNMET DEPENDENCY ([^\n]+)/g);
           if (unmetDeps) {
-            unmetDeps.forEach(dep => {
+            unmetDeps.forEach((dep) => {
               report += `- ${dep.replace('UNMET DEPENDENCY ', '')}\n`;
             });
           }
-          report += "\n";
+          report += '\n';
         }
-        
+
         // Parse dependency tree for conflicts
         try {
           const depTree = JSON.parse(stdout);
           const conflicts = this.findDependencyConflicts(depTree);
-          
+
           if (conflicts.length > 0) {
-            report += "🚨 **Dependency Conflicts Found:**\n\n";
-            
-            conflicts.forEach(conflict => {
+            report += '🚨 **Dependency Conflicts Found:**\n\n';
+
+            conflicts.forEach((conflict) => {
               report += `**${conflict.package}**\n`;
               report += `- Required versions: ${conflict.versions.join(', ')}\n`;
               report += `- Conflict reason: ${conflict.reason}\n\n`;
             });
           } else {
-            report += "✅ No dependency conflicts detected!\n\n";
+            report += '✅ No dependency conflicts detected!\n\n';
           }
         } catch {
-          report += "⚠️ Could not parse dependency tree for conflict analysis\n\n";
+          report += '⚠️ Could not parse dependency tree for conflict analysis\n\n';
         }
-        
       } catch (error) {
         report += `⚠️ Could not analyze dependency tree: ${error}\n\n`;
       }
 
       // Generate resolutions
       if (generateResolutions) {
-        report += "## 🛠️ Resolution Suggestions\n\n";
-        
+        report += '## 🛠️ Resolution Suggestions\n\n';
+
         const resolutions = await this.generateDependencyResolutions(packageJson, packageManager);
-        
+
         if (resolutions.length > 0) {
-          report += "### Recommended Resolutions\n\n";
-          
-          resolutions.forEach(resolution => {
+          report += '### Recommended Resolutions\n\n';
+
+          resolutions.forEach((resolution) => {
             report += `**${resolution.package}**\n`;
             report += `- Issue: ${resolution.issue}\n`;
             report += `- Solution: ${resolution.solution}\n`;
             if (resolution.command) {
               report += `- Command: \`${resolution.command}\`\n`;
             }
-            report += "\n";
+            report += '\n';
           });
         } else {
-          report += "✅ No additional resolutions needed!\n\n";
+          report += '✅ No additional resolutions needed!\n\n';
         }
       }
 
       // Auto-fix conflicts
       if (fixConflicts) {
-        report += "## 🔧 Attempting Automatic Fixes\n\n";
-        
+        report += '## 🔧 Attempting Automatic Fixes\n\n';
+
         try {
-          const installCommand = packageManager === 'yarn' ? 'yarn install' :
-                                packageManager === 'pnpm' ? 'pnpm install' :
-                                'npm install';
-          
+          const installCommand =
+            packageManager === 'yarn'
+              ? 'yarn install'
+              : packageManager === 'pnpm'
+                ? 'pnpm install'
+                : 'npm install';
+
           report += `Running: \`${installCommand}\`\n\n`;
           const { stdout, stderr } = await execAsync(installCommand, { cwd: projectPath });
-          
+
           if (stderr && !stderr.includes('warn')) {
             report += `⚠️ Warnings/Errors during installation:\n\`\`\`\n${stderr}\n\`\`\`\n\n`;
           } else {
-            report += "✅ Dependencies resolved successfully!\n\n";
+            report += '✅ Dependencies resolved successfully!\n\n';
           }
         } catch (error) {
           report += `❌ Failed to resolve dependencies automatically: ${error}\n\n`;
@@ -2722,7 +2987,6 @@ const fetchData = async () => {
       }
 
       return report;
-
     } catch (error) {
       return `❌ Error during dependency resolution: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -2735,18 +2999,18 @@ const fetchData = async () => {
     severityThreshold: string
   ): Promise<string> {
     const execAsync = promisify(exec);
-    
+
     try {
-      let report = "# 🛡️ Security Audit Report\n\n";
-      
+      let report = '# 🛡️ Security Audit Report\n\n';
+
       const packageJsonPath = path.join(projectPath, 'package.json');
       let packageJson: any = {};
-      
+
       try {
         const packageContent = await fs.promises.readFile(packageJsonPath, 'utf-8');
         packageJson = JSON.parse(packageContent);
       } catch {
-        return "❌ No package.json found in the specified project path.";
+        return '❌ No package.json found in the specified project path.';
       }
 
       report += `**Project:** ${packageJson.name || 'Unknown'}\n`;
@@ -2754,42 +3018,48 @@ const fetchData = async () => {
       report += `**Severity Threshold:** ${severityThreshold}\n\n`;
 
       // Run security audit
-      report += "## 🔍 Running Security Audit\n\n";
-      
-      const auditCommand = packageManager === 'yarn' ? 'yarn audit --json' :
-                          packageManager === 'pnpm' ? 'pnpm audit --json' :
-                          'npm audit --json';
-      
+      report += '## 🔍 Running Security Audit\n\n';
+
+      const auditCommand =
+        packageManager === 'yarn'
+          ? 'yarn audit --json'
+          : packageManager === 'pnpm'
+            ? 'pnpm audit --json'
+            : 'npm audit --json';
+
       try {
         const { stdout } = await execAsync(auditCommand, { cwd: projectPath });
         const auditData = JSON.parse(stdout);
-        
+
         if (auditData.vulnerabilities) {
           const vulnerabilities = Object.entries(auditData.vulnerabilities);
-          const filteredVulns = vulnerabilities.filter(([_, vuln]: [string, any]) => 
+          const filteredVulns = vulnerabilities.filter(([_, vuln]: [string, any]) =>
             this.meetsSeverityThreshold(vuln.severity, severityThreshold)
           );
-          
+
           if (filteredVulns.length > 0) {
             report += `Found ${filteredVulns.length} vulnerabilities meeting severity threshold.\n\n`;
-            
-            report += "| Package | Severity | Title | Patched Versions |\n";
-            report += "|---------|----------|-------|------------------|\n";
-            
+
+            report += '| Package | Severity | Title | Patched Versions |\n';
+            report += '|---------|----------|-------|------------------|\n';
+
             filteredVulns.forEach(([pkg, vuln]: [string, any]) => {
               report += `| ${pkg} | ${vuln.severity} | ${vuln.title || 'N/A'} | ${vuln.patched_versions || 'None'} |\n`;
             });
-            
-            report += "\n";
-            
+
+            report += '\n';
+
             // Auto-fix vulnerabilities
             if (autoFix) {
-              report += "## 🔧 Attempting Automatic Fixes\n\n";
-              
-              const fixCommand = packageManager === 'yarn' ? 'yarn audit fix' :
-                                packageManager === 'pnpm' ? 'pnpm audit fix' :
-                                'npm audit fix';
-              
+              report += '## 🔧 Attempting Automatic Fixes\n\n';
+
+              const fixCommand =
+                packageManager === 'yarn'
+                  ? 'yarn audit fix'
+                  : packageManager === 'pnpm'
+                    ? 'pnpm audit fix'
+                    : 'npm audit fix';
+
               try {
                 report += `Running: \`${fixCommand}\`\n\n`;
                 const { stdout: fixOutput } = await execAsync(fixCommand, { cwd: projectPath });
@@ -2798,28 +3068,29 @@ const fetchData = async () => {
                 report += `❌ Failed to auto-fix vulnerabilities: ${error}\n\n`;
               }
             } else {
-              report += "## 🛠️ Manual Fix Recommendations\n\n";
-              
-              const fixCommand = packageManager === 'yarn' ? 'yarn audit fix' :
-                                packageManager === 'pnpm' ? 'pnpm audit fix' :
-                                'npm audit fix';
-              
-              report += `Run the following command to attempt automatic fixes:\n`;
+              report += '## 🛠️ Manual Fix Recommendations\n\n';
+
+              const fixCommand =
+                packageManager === 'yarn'
+                  ? 'yarn audit fix'
+                  : packageManager === 'pnpm'
+                    ? 'pnpm audit fix'
+                    : 'npm audit fix';
+
+              report += 'Run the following command to attempt automatic fixes:\n';
               report += `\`\`\`bash\n${fixCommand}\n\`\`\`\n\n`;
             }
           } else {
             report += `✅ No vulnerabilities found meeting the ${severityThreshold} severity threshold!\n\n`;
           }
         } else {
-          report += "✅ No security vulnerabilities found!\n\n";
+          report += '✅ No security vulnerabilities found!\n\n';
         }
-        
       } catch (error) {
         report += `⚠️ Could not complete security audit: ${error}\n\n`;
       }
 
       return report;
-
     } catch (error) {
       return `❌ Error during security audit: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -2832,36 +3103,36 @@ const fetchData = async () => {
     targetPackages?: string[]
   ): Promise<string> {
     const execAsync = promisify(exec);
-    
+
     try {
-      let report = "# 📦 Package Migration Analysis\n\n";
-      
+      let report = '# 📦 Package Migration Analysis\n\n';
+
       const packageJsonPath = path.join(projectPath, 'package.json');
       let packageJson: any = {};
-      
+
       try {
         const packageContent = await fs.promises.readFile(packageJsonPath, 'utf-8');
         packageJson = JSON.parse(packageContent);
       } catch {
-        return "❌ No package.json found in the specified project path.";
+        return '❌ No package.json found in the specified project path.';
       }
 
       report += `**Project:** ${packageJson.name || 'Unknown'}\n`;
       report += `**Package Manager:** ${packageManager}\n\n`;
 
-      const dependencies = { 
-        ...packageJson.dependencies || {}, 
-        ...packageJson.devDependencies || {} 
+      const dependencies = {
+        ...(packageJson.dependencies || {}),
+        ...(packageJson.devDependencies || {}),
       };
 
       // Define migration mappings
       const packageMigrations = this.getPackageMigrations();
-      
+
       const migrationsNeeded: Array<{
-        oldPackage: string,
-        newPackage: string,
-        reason: string,
-        commands: string[]
+        oldPackage: string;
+        newPackage: string;
+        reason: string;
+        commands: string[];
       }> = [];
 
       // Check which packages need migration
@@ -2871,53 +3142,53 @@ const fetchData = async () => {
             oldPackage: oldPkg,
             newPackage: migration.newPackage,
             reason: migration.reason,
-            commands: migration.commands.map(cmd => 
+            commands: migration.commands.map((cmd) =>
               cmd.replace('{packageManager}', packageManager)
-            )
+            ),
           });
         }
       }
 
       if (migrationsNeeded.length === 0) {
-        report += "✅ No package migrations needed!\n\n";
+        report += '✅ No package migrations needed!\n\n';
         return report;
       }
 
-      report += "## 🔄 Packages Requiring Migration\n\n";
-      
-      migrationsNeeded.forEach(migration => {
+      report += '## 🔄 Packages Requiring Migration\n\n';
+
+      migrationsNeeded.forEach((migration) => {
         report += `**${migration.oldPackage}** → **${migration.newPackage}**\n`;
         report += `- Reason: ${migration.reason}\n`;
-        report += `- Commands:\n`;
-        migration.commands.forEach(cmd => {
+        report += '- Commands:\n';
+        migration.commands.forEach((cmd) => {
           report += `  - \`${cmd}\`\n`;
         });
-        report += "\n";
+        report += '\n';
       });
 
       // Auto-migrate if requested
       if (autoMigrate) {
-        report += "## 🚀 Performing Automatic Migration\n\n";
-        
+        report += '## 🚀 Performing Automatic Migration\n\n';
+
         for (const migration of migrationsNeeded) {
           report += `### Migrating ${migration.oldPackage}\n\n`;
-          
+
           for (const command of migration.commands) {
             try {
               report += `Running: \`${command}\`\n`;
               const { stdout } = await execAsync(command, { cwd: projectPath });
-              report += `✅ Success\n\n`;
+              report += '✅ Success\n\n';
             } catch (error) {
               report += `❌ Failed: ${error}\n\n`;
             }
           }
         }
-        
+
         // Update package.json to remove old dependencies
         try {
           const updatedPackageJson = { ...packageJson };
-          
-          migrationsNeeded.forEach(migration => {
+
+          migrationsNeeded.forEach((migration) => {
             if (updatedPackageJson.dependencies?.[migration.oldPackage]) {
               delete updatedPackageJson.dependencies[migration.oldPackage];
             }
@@ -2925,32 +3196,28 @@ const fetchData = async () => {
               delete updatedPackageJson.devDependencies[migration.oldPackage];
             }
           });
-          
-          await fs.promises.writeFile(
-            packageJsonPath, 
-            JSON.stringify(updatedPackageJson, null, 2)
-          );
-          
-          report += "✅ Updated package.json to remove old dependencies\n\n";
+
+          await fs.promises.writeFile(packageJsonPath, JSON.stringify(updatedPackageJson, null, 2));
+
+          report += '✅ Updated package.json to remove old dependencies\n\n';
         } catch (error) {
           report += `⚠️ Could not update package.json: ${error}\n\n`;
         }
       } else {
-        report += "## 📋 Manual Migration Instructions\n\n";
-        report += "Run the following commands to perform the migrations:\n\n";
-        report += "```bash\n";
-        
-        migrationsNeeded.forEach(migration => {
-          migration.commands.forEach(cmd => {
+        report += '## 📋 Manual Migration Instructions\n\n';
+        report += 'Run the following commands to perform the migrations:\n\n';
+        report += '```bash\n';
+
+        migrationsNeeded.forEach((migration) => {
+          migration.commands.forEach((cmd) => {
             report += `${cmd}\n`;
           });
         });
-        
-        report += "```\n\n";
+
+        report += '```\n\n';
       }
 
       return report;
-
     } catch (error) {
       return `❌ Error during package migration: ${error instanceof Error ? error.message : 'Unknown error'}`;
     }
@@ -2958,23 +3225,37 @@ const fetchData = async () => {
 
   // Helper methods
   private isMinorOrPatchUpdate(current: string, latest: string): boolean {
-    const currentParts = current.replace(/[^0-9.]/g, '').split('.').map(Number);
-    const latestParts = latest.replace(/[^0-9.]/g, '').split('.').map(Number);
-    
+    const currentParts = current
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
+    const latestParts = latest
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
+
     return latestParts[0] === currentParts[0]; // Same major version
   }
 
   private isPatchUpdate(current: string, latest: string): boolean {
-    const currentParts = current.replace(/[^0-9.]/g, '').split('.').map(Number);
-    const latestParts = latest.replace(/[^0-9.]/g, '').split('.').map(Number);
-    
+    const currentParts = current
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
+    const latestParts = latest
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
+
     return latestParts[0] === currentParts[0] && latestParts[1] === currentParts[1]; // Same major and minor
   }
 
-  private findDependencyConflicts(depTree: any): Array<{package: string, versions: string[], reason: string}> {
-    const conflicts: Array<{package: string, versions: string[], reason: string}> = [];
+  private findDependencyConflicts(
+    depTree: any
+  ): Array<{ package: string; versions: string[]; reason: string }> {
+    const conflicts: Array<{ package: string; versions: string[]; reason: string }> = [];
     const packageVersions: Record<string, Set<string>> = {};
-    
+
     const traverseTree = (node: any) => {
       if (node.dependencies) {
         for (const [pkg, info] of Object.entries(node.dependencies as any)) {
@@ -2983,37 +3264,45 @@ const fetchData = async () => {
             packageVersions[pkg] = new Set();
           }
           packageVersions[pkg].add(packageInfo.version);
-          
+
           traverseTree(packageInfo);
         }
       }
     };
-    
+
     traverseTree(depTree);
-    
+
     for (const [pkg, versions] of Object.entries(packageVersions)) {
       if (versions.size > 1) {
         conflicts.push({
           package: pkg,
           versions: Array.from(versions),
-          reason: 'Multiple versions detected in dependency tree'
+          reason: 'Multiple versions detected in dependency tree',
         });
       }
     }
-    
+
     return conflicts;
   }
 
-  private async generateDependencyResolutions(packageJson: any, packageManager: string): Promise<Array<{package: string, issue: string, solution: string, command?: string}>> {
-    const resolutions: Array<{package: string, issue: string, solution: string, command?: string}> = [];
-    
+  private async generateDependencyResolutions(
+    packageJson: any,
+    packageManager: string
+  ): Promise<Array<{ package: string; issue: string; solution: string; command?: string }>> {
+    const resolutions: Array<{
+      package: string;
+      issue: string;
+      solution: string;
+      command?: string;
+    }> = [];
+
     // Check for peer dependency warnings
     const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-    
+
     // React Native specific checks
     if (dependencies['react-native']) {
       const rnVersion = dependencies['react-native'];
-      
+
       // Check React version compatibility
       if (dependencies['react']) {
         const reactVersion = dependencies['react'];
@@ -3021,11 +3310,11 @@ const fetchData = async () => {
           package: 'react',
           issue: 'React version may not be compatible with React Native version',
           solution: 'Ensure React version matches React Native requirements',
-          command: `${packageManager} install react@18.2.0` // Example
+          command: `${packageManager} install react@18.2.0`, // Example
         });
       }
     }
-    
+
     return resolutions;
   }
 
@@ -3033,119 +3322,137 @@ const fetchData = async () => {
     const severityLevels = ['low', 'moderate', 'high', 'critical'];
     const severityIndex = severityLevels.indexOf(severity);
     const thresholdIndex = severityLevels.indexOf(threshold);
-    
+
     return severityIndex >= thresholdIndex;
   }
 
-  private getPackageMigrations(): Record<string, {newPackage: string, reason: string, commands: string[]}> {
+  private getPackageMigrations(): Record<
+    string,
+    { newPackage: string; reason: string; commands: string[] }
+  > {
     return {
       'react-native-vector-icons': {
         newPackage: '@expo/vector-icons',
         reason: 'Better maintained and more feature-rich',
         commands: [
           '{packageManager} uninstall react-native-vector-icons',
-          '{packageManager} install @expo/vector-icons'
-        ]
+          '{packageManager} install @expo/vector-icons',
+        ],
       },
       'react-native-asyncstorage': {
         newPackage: '@react-native-async-storage/async-storage',
         reason: 'Official community package with better support',
         commands: [
           '{packageManager} uninstall react-native-asyncstorage',
-          '{packageManager} install @react-native-async-storage/async-storage'
-        ]
+          '{packageManager} install @react-native-async-storage/async-storage',
+        ],
       },
       '@react-native-community/async-storage': {
         newPackage: '@react-native-async-storage/async-storage',
         reason: 'Package moved to new organization',
         commands: [
           '{packageManager} uninstall @react-native-community/async-storage',
-          '{packageManager} install @react-native-async-storage/async-storage'
-        ]
+          '{packageManager} install @react-native-async-storage/async-storage',
+        ],
       },
       'react-native-camera': {
         newPackage: 'react-native-vision-camera',
         reason: 'Better performance and actively maintained',
         commands: [
           '{packageManager} uninstall react-native-camera',
-          '{packageManager} install react-native-vision-camera'
-        ]
+          '{packageManager} install react-native-vision-camera',
+        ],
       },
       'react-navigation': {
         newPackage: '@react-navigation/native',
         reason: 'Updated to version 6 with better architecture',
         commands: [
           '{packageManager} uninstall react-navigation',
-          '{packageManager} install @react-navigation/native @react-navigation/native-stack'
-        ]
-      }
+          '{packageManager} install @react-navigation/native @react-navigation/native-stack',
+        ],
+      },
     };
   }
 
   private async getReactNativeUpgradeRecommendations(packageJson: any): Promise<string> {
-    let report = "## 🎯 React Native Specific Recommendations\n\n";
-    
+    let report = '## 🎯 React Native Specific Recommendations\n\n';
+
     const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-    
+
     // Check React Native version
     if (dependencies['react-native']) {
       const rnVersion = dependencies['react-native'].replace(/[^0-9.]/g, '');
       const majorVersion = parseInt(rnVersion.split('.')[0]);
-      
+
       if (majorVersion < 70) {
-        report += "🚨 **Critical: React Native version is outdated**\n";
+        report += '🚨 **Critical: React Native version is outdated**\n';
         report += `- Current: ${rnVersion}\n`;
-        report += `- Recommended: 0.72+\n`;
-        report += `- Benefits: New Architecture, better performance, latest features\n`;
-        report += `- Upgrade guide: https://react-native-community.github.io/upgrade-helper/\n\n`;
+        report += '- Recommended: 0.72+\n';
+        report += '- Benefits: New Architecture, better performance, latest features\n';
+        report += '- Upgrade guide: https://react-native-community.github.io/upgrade-helper/\n\n';
       } else if (majorVersion < 72) {
-        report += "⚠️ **React Native could be updated**\n";
+        report += '⚠️ **React Native could be updated**\n';
         report += `- Current: ${rnVersion}\n`;
-        report += `- Latest stable: 0.72+\n`;
-        report += `- Consider upgrading for latest features and bug fixes\n\n`;
+        report += '- Latest stable: 0.72+\n';
+        report += '- Consider upgrading for latest features and bug fixes\n\n';
       } else {
-        report += "✅ React Native version is current\n\n";
+        report += '✅ React Native version is current\n\n';
       }
     }
-    
+
     // Check for New Architecture readiness
     if (dependencies['react-native']) {
-      report += "### 🏗️ New Architecture Readiness\n\n";
-      report += "Check if your dependencies support the New Architecture (Fabric + TurboModules):\n\n";
-      
+      report += '### 🏗️ New Architecture Readiness\n\n';
+      report +=
+        'Check if your dependencies support the New Architecture (Fabric + TurboModules):\n\n';
+
       const incompatiblePackages = [
         'react-native-reanimated',
         'react-native-gesture-handler',
-        'react-native-screens'
-      ].filter(pkg => dependencies[pkg]);
-      
+        'react-native-screens',
+      ].filter((pkg) => dependencies[pkg]);
+
       if (incompatiblePackages.length > 0) {
-        report += "Ensure these packages support New Architecture:\n";
-        incompatiblePackages.forEach(pkg => {
+        report += 'Ensure these packages support New Architecture:\n';
+        incompatiblePackages.forEach((pkg) => {
           report += `- ${pkg}\n`;
         });
-        report += "\n";
+        report += '\n';
       }
     }
-    
+
     return report;
   }
 
   // React Native Component Test Generation Tool
   register_test_generation() {
     this.server.tool(
-      "generate_component_test",
-      "Generate comprehensive React Native component tests following industry best practices",
+      'generate_component_test',
+      'Generate comprehensive React Native component tests following industry best practices',
       {
-        component_code: z.string().describe("React Native component code to generate tests for"),
-        component_name: z.string().describe("Name of the component"),
-        test_type: z.enum(["unit", "integration", "e2e", "comprehensive"]).default("comprehensive").describe("Type of tests to generate"),
-        testing_framework: z.enum(["jest", "detox", "maestro"]).default("jest").describe("Testing framework preference"),
-        include_accessibility: z.boolean().default(true).describe("Include accessibility tests"),
-        include_performance: z.boolean().default(true).describe("Include performance tests"),
-        include_snapshot: z.boolean().default(true).describe("Include snapshot tests")
+        component_code: z.string().describe('React Native component code to generate tests for'),
+        component_name: z.string().describe('Name of the component'),
+        test_type: z
+          .enum(['unit', 'integration', 'e2e', 'comprehensive'])
+          .default('comprehensive')
+          .describe('Type of tests to generate'),
+        testing_framework: z
+          .enum(['jest', 'detox', 'maestro'])
+          .default('jest')
+          .describe('Testing framework preference'),
+        include_accessibility: z.boolean().default(true).describe('Include accessibility tests'),
+        include_performance: z.boolean().default(true).describe('Include performance tests'),
+        include_snapshot: z.boolean().default(true).describe('Include snapshot tests'),
       },
-      async ({ component_code, component_name, test_type, testing_framework, include_accessibility, include_performance, include_snapshot }) => {
+      async ({
+        component_code,
+        component_name,
+        test_type,
+        testing_framework,
+        include_accessibility,
+        include_performance,
+        include_snapshot,
+      }) => {
         const testCode = this.generateComponentTests({
           component_code,
           component_name,
@@ -3153,61 +3460,74 @@ const fetchData = async () => {
           testing_framework,
           include_accessibility,
           include_performance,
-          include_snapshot
+          include_snapshot,
         });
-        
+
         return {
           content: [
             {
-              type: "text",
-              text: testCode
-            }
-          ]
+              type: 'text',
+              text: testCode,
+            },
+          ],
         };
       }
     );
 
     // Testing Strategy Analysis Tool
     this.server.tool(
-      "analyze_testing_strategy",
-      "Analyze current testing strategy and provide recommendations",
+      'analyze_testing_strategy',
+      'Analyze current testing strategy and provide recommendations',
       {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        focus_areas: z.array(z.enum(["unit", "integration", "e2e", "accessibility", "performance", "security"])).default(["unit", "integration", "accessibility"]).describe("Areas to focus testing analysis on")
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        focus_areas: z
+          .array(z.enum(['unit', 'integration', 'e2e', 'accessibility', 'performance', 'security']))
+          .default(['unit', 'integration', 'accessibility'])
+          .describe('Areas to focus testing analysis on'),
       },
       async ({ project_path, focus_areas }) => {
-        const analysis = await this.analyzeTestingStrategy(project_path || process.cwd(), focus_areas);
-        
+        const analysis = await this.analyzeTestingStrategy(
+          project_path || process.cwd(),
+          focus_areas
+        );
+
         return {
           content: [
             {
-              type: "text",
-              text: analysis
-            }
-          ]
+              type: 'text',
+              text: analysis,
+            },
+          ],
         };
       }
     );
 
     // Test Coverage Analysis Tool
     this.server.tool(
-      "analyze_test_coverage",
-      "Analyze test coverage and identify gaps",
+      'analyze_test_coverage',
+      'Analyze test coverage and identify gaps',
       {
-        project_path: z.string().optional().describe("Path to React Native project root"),
-        coverage_threshold: z.number().default(80).describe("Minimum coverage threshold percentage"),
-        generate_report: z.boolean().default(true).describe("Generate detailed coverage report")
+        project_path: z.string().optional().describe('Path to React Native project root'),
+        coverage_threshold: z
+          .number()
+          .default(80)
+          .describe('Minimum coverage threshold percentage'),
+        generate_report: z.boolean().default(true).describe('Generate detailed coverage report'),
       },
       async ({ project_path, coverage_threshold, generate_report }) => {
-        const coverageAnalysis = await this.analyzeTestCoverage(project_path || process.cwd(), coverage_threshold, generate_report);
-        
+        const coverageAnalysis = await this.analyzeTestCoverage(
+          project_path || process.cwd(),
+          coverage_threshold,
+          generate_report
+        );
+
         return {
           content: [
             {
-              type: "text", 
-              text: coverageAnalysis
-            }
-          ]
+              type: 'text',
+              text: coverageAnalysis,
+            },
+          ],
         };
       }
     );
@@ -3222,19 +3542,19 @@ const fetchData = async () => {
     include_performance: boolean;
     include_snapshot: boolean;
   }): string {
-    const { 
-      component_code, 
-      component_name, 
-      test_type, 
-      testing_framework, 
-      include_accessibility, 
-      include_performance, 
-      include_snapshot 
+    const {
+      component_code,
+      component_name,
+      test_type,
+      testing_framework,
+      include_accessibility,
+      include_performance,
+      include_snapshot,
     } = options;
 
     // Analyze component to understand its structure
     const componentAnalysis = this.analyzeComponentStructure(component_code);
-    
+
     let testCode = `// ${component_name} Test Suite
 // Generated following React Native testing best practices
 // Testing Framework: ${testing_framework}
@@ -3243,11 +3563,11 @@ const fetchData = async () => {
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
 import { jest } from '@jest/globals';
-${include_accessibility ? "import { axe, toHaveNoViolations } from 'jest-axe';\nimport '@testing-library/jest-native/extend-expect';" : ""}
-${include_performance ? "import { measurePerformance } from '@shopify/react-native-performance';" : ""}
+${include_accessibility ? "import { axe, toHaveNoViolations } from 'jest-axe';\nimport '@testing-library/jest-native/extend-expect';" : ''}
+${include_performance ? "import { measurePerformance } from '@shopify/react-native-performance';" : ''}
 import ${component_name} from './${component_name}';
 
-${include_accessibility ? "expect.extend(toHaveNoViolations);" : ""}
+${include_accessibility ? 'expect.extend(toHaveNoViolations);' : ''}
 
 describe('${component_name}', () => {
   // Test Setup
@@ -3266,10 +3586,14 @@ describe('${component_name}', () => {
       expect(getByTestId('${component_name.toLowerCase()}')).toBeTruthy();
     });
 
-${include_snapshot ? `    test('matches snapshot', () => {
+${
+  include_snapshot
+    ? `    test('matches snapshot', () => {
       const tree = render(<${component_name} />).toJSON();
       expect(tree).toMatchSnapshot();
-    });` : ""}
+    });`
+    : ''
+}
 
     test('renders with default props', () => {
       const { getByTestId } = render(<${component_name} />);
@@ -3284,12 +3608,16 @@ ${include_snapshot ? `    test('matches snapshot', () => {
       testCode += `
   // Props Tests
   describe('Props', () => {
-${componentAnalysis.props.map(prop => `    test('handles ${prop.name} prop correctly', () => {
+${componentAnalysis.props
+  .map(
+    (prop) => `    test('handles ${prop.name} prop correctly', () => {
       const test${prop.name} = ${this.generateMockValue(prop.type)};
       const { getByTestId } = render(<${component_name} ${prop.name}={test${prop.name}} />);
       const component = getByTestId('${component_name.toLowerCase()}');
       ${this.generatePropAssertion(prop)}
-    });`).join('\n\n')}
+    });`
+  )
+  .join('\n\n')}
   });
 `;
     }
@@ -3299,7 +3627,9 @@ ${componentAnalysis.props.map(prop => `    test('handles ${prop.name} prop corre
       testCode += `
   // Interaction Tests
   describe('User Interactions', () => {
-${componentAnalysis.interactions.map(interaction => `    test('handles ${interaction.name} correctly', async () => {
+${componentAnalysis.interactions
+  .map(
+    (interaction) => `    test('handles ${interaction.name} correctly', async () => {
       const mock${interaction.name} = jest.fn();
       const { getByTestId } = render(<${component_name} ${interaction.prop}={mock${interaction.name}} />);
       
@@ -3309,7 +3639,9 @@ ${componentAnalysis.interactions.map(interaction => `    test('handles ${interac
       ${interaction.async ? 'await waitFor(() => {' : ''}
         expect(mock${interaction.name}).toHaveBeenCalled();
       ${interaction.async ? '});' : ''}
-    });`).join('\n\n')}
+    });`
+  )
+  .join('\n\n')}
   });
 `;
     }
@@ -3505,28 +3837,28 @@ export const ${component_name}Benchmarks = {
   private analyzeComponentStructure(componentCode: string) {
     // Basic analysis of component structure
     const props: Array<{ name: string; type: string; required: boolean }> = [];
-    const interactions: Array<{ 
-      name: string; 
-      prop: string; 
-      element: string; 
-      event: string; 
-      testId: string; 
+    const interactions: Array<{
+      name: string;
+      prop: string;
+      element: string;
+      event: string;
+      testId: string;
       async: boolean;
     }> = [];
-    
+
     // Extract props from TypeScript interfaces or PropTypes
     const interfaceMatch = componentCode.match(/interface\s+\w+Props\s*{([^}]*)}/);
     if (interfaceMatch) {
       const propsText = interfaceMatch[1];
       const propMatches = propsText.match(/(\w+)(\?)?:\s*([^;]+);/g);
       if (propMatches) {
-        propMatches.forEach(match => {
+        propMatches.forEach((match) => {
           const [, name, optional, type] = match.match(/(\w+)(\?)?:\s*([^;]+);/) || [];
           if (name && type) {
             props.push({
               name,
               type: type.trim(),
-              required: !optional
+              required: !optional,
             });
           }
         });
@@ -3536,7 +3868,7 @@ export const ${component_name}Benchmarks = {
     // Extract common interaction patterns
     const eventHandlers = componentCode.match(/on\w+\s*[:=]/g);
     if (eventHandlers) {
-      eventHandlers.forEach(handler => {
+      eventHandlers.forEach((handler) => {
         const handlerName = handler.replace(/[:=]/g, '').trim();
         interactions.push({
           name: handlerName,
@@ -3544,7 +3876,7 @@ export const ${component_name}Benchmarks = {
           element: 'button',
           event: this.inferEventType(handlerName),
           testId: `${handlerName.toLowerCase()}-button`,
-          async: handlerName.includes('async') || handlerName.includes('Submit')
+          async: handlerName.includes('async') || handlerName.includes('Submit'),
         });
       });
     }
@@ -3554,15 +3886,15 @@ export const ${component_name}Benchmarks = {
 
   private generateMockValue(type: string): string {
     const typeMap: { [key: string]: string } = {
-      'string': "'test string'",
-      'number': '42',
-      'boolean': 'true',
-      'object': '{}',
-      'array': '[]',
-      'function': 'jest.fn()',
-      'Date': 'new Date()',
-      'undefined': 'undefined',
-      'null': 'null'
+      string: "'test string'",
+      number: '42',
+      boolean: 'true',
+      object: '{}',
+      array: '[]',
+      function: 'jest.fn()',
+      Date: 'new Date()',
+      undefined: 'undefined',
+      null: 'null',
     };
 
     const lowerType = type.toLowerCase();
@@ -3577,26 +3909,26 @@ export const ${component_name}Benchmarks = {
 
   private generatePropAssertion(prop: { name: string; type: string; required: boolean }): string {
     if (prop.type.toLowerCase().includes('string')) {
-      return `expect(component).toHaveTextContent('test string');`;
+      return "expect(component).toHaveTextContent('test string');";
     } else if (prop.type.toLowerCase().includes('boolean')) {
       return `expect(component).toHaveAccessibilityState({ [${prop.name}]: true });`;
     } else if (prop.type.toLowerCase().includes('function')) {
-      return `// Function prop assertions would be handled in interaction tests`;
+      return '// Function prop assertions would be handled in interaction tests';
     }
-    
-    return `expect(component).toBeDefined();`;
+
+    return 'expect(component).toBeDefined();';
   }
 
   private inferEventType(handlerName: string): string {
     const eventMap: { [key: string]: string } = {
-      'press': 'press',
-      'tap': 'press', 
-      'click': 'press',
-      'change': 'changeText',
-      'focus': 'focus',
-      'blur': 'blur',
-      'submit': 'press',
-      'scroll': 'scroll'
+      press: 'press',
+      tap: 'press',
+      click: 'press',
+      change: 'changeText',
+      focus: 'focus',
+      blur: 'blur',
+      submit: 'press',
+      scroll: 'scroll',
     };
 
     const lowerHandler = handlerName.toLowerCase();
@@ -3621,17 +3953,17 @@ export const ${component_name}Benchmarks = {
     } else if (componentCode.includes('ScrollView') || componentCode.includes('FlatList')) {
       return 'scrollbar';
     }
-    
+
     return 'none';
   }
 
   private async analyzeTestingStrategy(projectPath: string, focusAreas: string[]): Promise<string> {
-    let analysis = `# 🧪 React Native Testing Strategy Analysis\n\n`;
-    
+    let analysis = '# 🧪 React Native Testing Strategy Analysis\n\n';
+
     try {
       // Check for existing test files
       const testFiles = await this.findTestFiles(projectPath);
-      analysis += `## 📊 Current Test Coverage\n\n`;
+      analysis += '## 📊 Current Test Coverage\n\n';
       analysis += `- **Test Files Found**: ${testFiles.length}\n`;
       analysis += `- **Test Types Detected**: ${this.detectTestTypes(testFiles).join(', ')}\n\n`;
 
@@ -3640,15 +3972,15 @@ export const ${component_name}Benchmarks = {
       if (fs.existsSync(packageJsonPath)) {
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
         const testingDeps = this.analyzeTestingDependencies(packageJson);
-        
-        analysis += `## 🛠️ Testing Dependencies\n\n`;
-        analysis += `### Installed:\n`;
-        testingDeps.installed.forEach(dep => {
+
+        analysis += '## 🛠️ Testing Dependencies\n\n';
+        analysis += '### Installed:\n';
+        testingDeps.installed.forEach((dep) => {
           analysis += `- ✅ ${dep}\n`;
         });
-        
-        analysis += `\n### Recommended Additions:\n`;
-        testingDeps.recommended.forEach(dep => {
+
+        analysis += '\n### Recommended Additions:\n';
+        testingDeps.recommended.forEach((dep) => {
           analysis += `- 🎯 ${dep.name}: ${dep.purpose}\n`;
         });
       }
@@ -3660,16 +3992,15 @@ export const ${component_name}Benchmarks = {
       }
 
       // Provide comprehensive recommendations
-      analysis += `\n## 🎯 Strategic Recommendations\n\n`;
+      analysis += '\n## 🎯 Strategic Recommendations\n\n';
       analysis += this.generateTestingRecommendations(testFiles.length, focusAreas);
 
       // Add testing setup guide
-      analysis += `\n## 🚀 Quick Setup Guide\n\n`;
+      analysis += '\n## 🚀 Quick Setup Guide\n\n';
       analysis += this.generateTestingSetupGuide();
-
     } catch (error) {
       analysis += `❌ Error analyzing project: ${error}\n\n`;
-      analysis += `Please ensure the project path is correct and accessible.\n`;
+      analysis += 'Please ensure the project path is correct and accessible.\n';
     }
 
     return analysis;
@@ -3680,21 +4011,23 @@ export const ${component_name}Benchmarks = {
     const testPatterns = [
       /\.test\.(js|jsx|ts|tsx)$/,
       /\.spec\.(js|jsx|ts|tsx)$/,
-      /__tests__.*\.(js|jsx|ts|tsx)$/
+      /__tests__.*\.(js|jsx|ts|tsx)$/,
     ];
 
     const walkDir = (dir: string) => {
-      if (!fs.existsSync(dir)) return;
-      
+      if (!fs.existsSync(dir)) {
+        return;
+      }
+
       const files = fs.readdirSync(dir);
       for (const file of files) {
         const filePath = path.join(dir, file);
         const stat = fs.statSync(filePath);
-        
+
         if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules') {
           walkDir(filePath);
         } else if (stat.isFile()) {
-          if (testPatterns.some(pattern => pattern.test(file))) {
+          if (testPatterns.some((pattern) => pattern.test(file))) {
             testFiles.push(filePath);
           }
         }
@@ -3707,22 +4040,37 @@ export const ${component_name}Benchmarks = {
 
   private detectTestTypes(testFiles: string[]): string[] {
     const types = new Set<string>();
-    
-    testFiles.forEach(file => {
+
+    testFiles.forEach((file) => {
       const content = fs.readFileSync(file, 'utf8');
-      
-      if (content.includes('@testing-library/react-native')) types.add('Unit');
-      if (content.includes('detox')) types.add('E2E');
-      if (content.includes('toMatchSnapshot')) types.add('Snapshot');
-      if (content.includes('accessibility')) types.add('Accessibility');
-      if (content.includes('performance')) types.add('Performance');
-      if (content.includes('integration')) types.add('Integration');
+
+      if (content.includes('@testing-library/react-native')) {
+        types.add('Unit');
+      }
+      if (content.includes('detox')) {
+        types.add('E2E');
+      }
+      if (content.includes('toMatchSnapshot')) {
+        types.add('Snapshot');
+      }
+      if (content.includes('accessibility')) {
+        types.add('Accessibility');
+      }
+      if (content.includes('performance')) {
+        types.add('Performance');
+      }
+      if (content.includes('integration')) {
+        types.add('Integration');
+      }
     });
 
     return Array.from(types);
   }
 
-  private analyzeTestingDependencies(packageJson: any): { installed: string[], recommended: Array<{ name: string, purpose: string }> } {
+  private analyzeTestingDependencies(packageJson: any): {
+    installed: string[];
+    recommended: Array<{ name: string; purpose: string }>;
+  } {
     const allDeps = { ...packageJson.dependencies, ...packageJson.devDependencies };
     const testingPackages = [
       'jest',
@@ -3732,10 +4080,10 @@ export const ${component_name}Benchmarks = {
       'detox',
       'maestro-cli',
       'jest-axe',
-      '@shopify/react-native-performance'
+      '@shopify/react-native-performance',
     ];
 
-    const installed = testingPackages.filter(pkg => allDeps[pkg]);
+    const installed = testingPackages.filter((pkg) => allDeps[pkg]);
     const recommended = [
       { name: '@testing-library/react-native', purpose: 'Component testing with best practices' },
       { name: '@testing-library/jest-native', purpose: 'Additional React Native matchers' },
@@ -3743,20 +4091,20 @@ export const ${component_name}Benchmarks = {
       { name: 'jest-axe', purpose: 'Accessibility testing' },
       { name: 'detox', purpose: 'End-to-end testing' },
       { name: '@shopify/react-native-performance', purpose: 'Performance testing' },
-      { name: 'flipper-plugin-react-native-performance', purpose: 'Performance monitoring' }
-    ].filter(pkg => !installed.includes(pkg.name));
+      { name: 'flipper-plugin-react-native-performance', purpose: 'Performance monitoring' },
+    ].filter((pkg) => !installed.includes(pkg.name));
 
     return { installed, recommended };
   }
 
   private getAreaEmoji(area: string): string {
     const emojiMap: { [key: string]: string } = {
-      'unit': '🔧',
-      'integration': '🔗',
-      'e2e': '🎭',
-      'accessibility': '♿',
-      'performance': '⚡',
-      'security': '🔒'
+      unit: '🔧',
+      integration: '🔗',
+      e2e: '🎭',
+      accessibility: '♿',
+      performance: '⚡',
+      security: '🔒',
     };
     return emojiMap[area] || '📋';
   }
@@ -4032,12 +4380,12 @@ ${focusAreas.map((area, index) => `${index + 1}. **${area.charAt(0).toUpperCase(
 
   private getAreaPriority(area: string): string {
     const priorities: { [key: string]: string } = {
-      'unit': 'Foundation for all other testing',
-      'integration': 'Critical for complex app flows',
-      'e2e': 'Essential for production confidence',
-      'accessibility': 'Required for inclusive design',
-      'performance': 'Key for user experience',
-      'security': 'Critical for data protection'
+      unit: 'Foundation for all other testing',
+      integration: 'Critical for complex app flows',
+      e2e: 'Essential for production confidence',
+      accessibility: 'Required for inclusive design',
+      performance: 'Key for user experience',
+      security: 'Critical for data protection',
     };
     return priorities[area] || 'Important for overall quality';
   }
@@ -4098,29 +4446,34 @@ describe('ComponentName', () => {
 `;
   }
 
-  private async analyzeTestCoverage(projectPath: string, threshold: number, generateReport: boolean): Promise<string> {
-    let analysis = `# 📊 Test Coverage Analysis\n\n`;
+  private async analyzeTestCoverage(
+    projectPath: string,
+    threshold: number,
+    generateReport: boolean
+  ): Promise<string> {
+    let analysis = '# 📊 Test Coverage Analysis\n\n';
 
     try {
       // Check if Jest is configured
-      const jestConfigExists = fs.existsSync(path.join(projectPath, 'jest.config.js')) ||
-                              fs.existsSync(path.join(projectPath, 'jest.config.json'));
-      
+      const jestConfigExists =
+        fs.existsSync(path.join(projectPath, 'jest.config.js')) ||
+        fs.existsSync(path.join(projectPath, 'jest.config.json'));
+
       if (!jestConfigExists) {
-        analysis += `❌ **Jest configuration not found**\n`;
-        analysis += `Please set up Jest first before analyzing coverage.\n\n`;
+        analysis += '❌ **Jest configuration not found**\n';
+        analysis += 'Please set up Jest first before analyzing coverage.\n\n';
         return analysis;
       }
 
       // Run coverage analysis if requested
       if (generateReport) {
-        analysis += `## 🔍 Running Coverage Analysis...\n\n`;
-        
+        analysis += '## 🔍 Running Coverage Analysis...\n\n';
+
         try {
           const execAsync = promisify(exec);
           const { stdout, stderr } = await execAsync('npm test -- --coverage --silent', {
             cwd: projectPath,
-            timeout: 30000
+            timeout: 30000,
           });
 
           if (stderr && !stderr.includes('warning')) {
@@ -4130,18 +4483,17 @@ describe('ComponentName', () => {
           // Parse coverage output
           analysis += this.parseCoverageOutput(stdout, threshold);
         } catch (error) {
-          analysis += `❌ **Failed to run coverage:**\n`;
+          analysis += '❌ **Failed to run coverage:**\n';
           analysis += `\`\`\`\n${error}\n\`\`\`\n\n`;
-          analysis += `**Possible solutions:**\n`;
-          analysis += `1. Ensure all dependencies are installed: \`npm install\`\n`;
-          analysis += `2. Check Jest configuration\n`;
-          analysis += `3. Verify test files exist\n\n`;
+          analysis += '**Possible solutions:**\n';
+          analysis += '1. Ensure all dependencies are installed: `npm install`\n';
+          analysis += '2. Check Jest configuration\n';
+          analysis += '3. Verify test files exist\n\n';
         }
       }
 
       // Provide coverage improvement suggestions
       analysis += this.generateCoverageRecommendations(threshold);
-
     } catch (error) {
       analysis += `❌ Error analyzing coverage: ${error}\n\n`;
     }
@@ -4150,35 +4502,39 @@ describe('ComponentName', () => {
   }
 
   private parseCoverageOutput(output: string, threshold: number): string {
-    let report = `## 📈 Coverage Report\n\n`;
+    let report = '## 📈 Coverage Report\n\n';
 
     // Look for coverage table in output
-    const coverageMatch = output.match(/File\s+%\s+Stmts\s+%\s+Branch\s+%\s+Funcs\s+%\s+Lines[\s\S]*?(-+)/);
-    
+    const coverageMatch = output.match(
+      /File\s+%\s+Stmts\s+%\s+Branch\s+%\s+Funcs\s+%\s+Lines[\s\S]*?(-+)/
+    );
+
     if (coverageMatch) {
       report += `### Detailed Coverage:\n\`\`\`\n${coverageMatch[0]}\n\`\`\`\n\n`;
     }
 
     // Extract summary percentages
-    const summaryMatch = output.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
-    
+    const summaryMatch = output.match(
+      /All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/
+    );
+
     if (summaryMatch) {
       const [, statements, branches, functions, lines] = summaryMatch;
       const metrics = {
         statements: parseFloat(statements),
         branches: parseFloat(branches),
         functions: parseFloat(functions),
-        lines: parseFloat(lines)
+        lines: parseFloat(lines),
       };
 
-      report += `### Coverage Summary:\n`;
+      report += '### Coverage Summary:\n';
       Object.entries(metrics).forEach(([metric, value]) => {
         const status = value >= threshold ? '✅' : '❌';
         const emoji = value >= threshold ? '🎯' : '⚠️';
         report += `- ${status} **${metric.charAt(0).toUpperCase() + metric.slice(1)}**: ${value}% ${emoji}\n`;
       });
 
-      const overallPassing = Object.values(metrics).every(value => value >= threshold);
+      const overallPassing = Object.values(metrics).every((value) => value >= threshold);
       report += `\n**Overall Status**: ${overallPassing ? '✅ PASSING' : '❌ BELOW THRESHOLD'} (${threshold}%)\n\n`;
 
       // Identify areas needing improvement
@@ -4187,14 +4543,14 @@ describe('ComponentName', () => {
         .map(([metric]) => metric);
 
       if (needsImprovement.length > 0) {
-        report += `### 🎯 Areas Needing Improvement:\n`;
-        needsImprovement.forEach(metric => {
+        report += '### 🎯 Areas Needing Improvement:\n';
+        needsImprovement.forEach((metric) => {
           report += `- **${metric.charAt(0).toUpperCase() + metric.slice(1)}** coverage is below ${threshold}%\n`;
         });
-        report += `\n`;
+        report += '\n';
       }
     } else {
-      report += `⚠️ Could not parse coverage summary. Check Jest output manually.\n\n`;
+      report += '⚠️ Could not parse coverage summary. Check Jest output manually.\n\n';
     }
 
     return report;
@@ -4301,10 +4657,10 @@ jest.mock('@react-navigation/native', () => ({
 
   // Expert-level code remediation methods
   private async remediateCode(
-    code: string, 
-    issues: string[], 
-    level: string, 
-    preserveFormatting: boolean, 
+    code: string,
+    issues: string[],
+    level: string,
+    preserveFormatting: boolean,
     addComments: boolean
   ): Promise<string> {
     let remediatedCode = code;
@@ -4321,13 +4677,13 @@ jest.mock('@react-navigation/native', () => ({
 
     // Security fixes
     remediatedCode = this.applySecurityFixes(remediatedCode, appliedFixes, addComments);
-    
+
     // Performance optimizations
     remediatedCode = this.applyPerformanceFixes(remediatedCode, appliedFixes, addComments);
-    
+
     // Memory leak fixes
     remediatedCode = this.applyMemoryLeakFixes(remediatedCode, appliedFixes, addComments);
-    
+
     // Best practices enforcement
     if (level === 'expert' || level === 'comprehensive') {
       remediatedCode = this.applyBestPracticesFixes(remediatedCode, appliedFixes, addComments);
@@ -4361,9 +4717,9 @@ ${remediatedCode}
   }
 
   private async refactorComponent(
-    code: string, 
-    refactorType: string, 
-    targetVersion: string, 
+    code: string,
+    refactorType: string,
+    targetVersion: string,
     includeTests: boolean
   ): Promise<string> {
     let report = `## 🚀 Expert Component Refactoring
@@ -4446,17 +4802,28 @@ ${testCode}
 
     // Fix hardcoded secrets
     const secretPatterns = [
-      { pattern: /(const|let|var)\s+(\w*[aA]pi[kK]ey\w*)\s*=\s*["'][^"']+["']/g, replacement: 'API_KEY' },
-      { pattern: /(const|let|var)\s+(\w*[sS]ecret\w*)\s*=\s*["'][^"']+["']/g, replacement: 'SECRET' },
-      { pattern: /(const|let|var)\s+(\w*[tT]oken\w*)\s*=\s*["'][^"']+["']/g, replacement: 'TOKEN' }
+      {
+        pattern: /(const|let|var)\s+(\w*[aA]pi[kK]ey\w*)\s*=\s*["'][^"']+["']/g,
+        replacement: 'API_KEY',
+      },
+      {
+        pattern: /(const|let|var)\s+(\w*[sS]ecret\w*)\s*=\s*["'][^"']+["']/g,
+        replacement: 'SECRET',
+      },
+      { pattern: /(const|let|var)\s+(\w*[tT]oken\w*)\s*=\s*["'][^"']+["']/g, replacement: 'TOKEN' },
     ];
 
     secretPatterns.forEach(({ pattern, replacement }) => {
       if (pattern.test(fixedCode)) {
         fixedCode = fixedCode.replace(pattern, (match, varType, varName) => {
           appliedFixes.push(`Moved hardcoded ${varName} to environment variable`);
-          const envVar = varName.toUpperCase().replace(/([A-Z])/g, '_$1').replace(/^_/, '');
-          const comment = addComments ? `\n  // TODO: Add ${envVar} to your environment variables\n` : '';
+          const envVar = varName
+            .toUpperCase()
+            .replace(/([A-Z])/g, '_$1')
+            .replace(/^_/, '');
+          const comment = addComments
+            ? `\n  // TODO: Add ${envVar} to your environment variables\n`
+            : '';
           return `${comment}${varType} ${varName} = process.env.${envVar} || Config.${envVar}`;
         });
       }
@@ -4486,7 +4853,11 @@ ${testCode}
   }
 
   // Performance remediation methods
-  private applyPerformanceFixes(code: string, appliedFixes: string[], addComments: boolean): string {
+  private applyPerformanceFixes(
+    code: string,
+    appliedFixes: string[],
+    addComments: boolean
+  ): string {
     let fixedCode = code;
 
     // Fix FlatList missing keyExtractor
@@ -4494,7 +4865,9 @@ ${testCode}
       /<FlatList([^>]*?)(?!.*keyExtractor)([^>]*?)>/g,
       (match, before, after) => {
         appliedFixes.push('Added keyExtractor to FlatList for better performance');
-        const comment = addComments ? '\n      {/* Added keyExtractor for performance */}\n      ' : '';
+        const comment = addComments
+          ? '\n      {/* Added keyExtractor for performance */}\n      '
+          : '';
         return `${comment}<FlatList${before}${after}\n        keyExtractor={(item, index) => item.id?.toString() || index.toString()}>`;
       }
     );
@@ -4504,7 +4877,9 @@ ${testCode}
       /<ScrollView([^>]*?)>([\s\S]*?)\{([^}]*).map\(([^}]*?)\)\}([\s\S]*?)<\/ScrollView>/g,
       (match, scrollProps, before, arrayVar, mapContent, after) => {
         appliedFixes.push('Converted ScrollView with .map() to FlatList for better performance');
-        const comment = addComments ? '\n      {/* Converted to FlatList for better performance with large datasets */}\n      ' : '';
+        const comment = addComments
+          ? '\n      {/* Converted to FlatList for better performance with large datasets */}\n      '
+          : '';
         return `${comment}<FlatList${scrollProps}\n        data={${arrayVar.trim()}}\n        keyExtractor={(item, index) => item.id?.toString() || index.toString()}\n        renderItem={({ item }) => (${mapContent.replace('item =>', '').trim()})}\n      />`;
       }
     );
@@ -4518,11 +4893,11 @@ ${testCode}
 
     // Fix setInterval without cleanup
     const intervalRegex = /const\s+(\w+)\s*=\s*setInterval\s*\([^;]+;/g;
-    let intervalMatches = Array.from(fixedCode.matchAll(intervalRegex));
-    
+    const intervalMatches = Array.from(fixedCode.matchAll(intervalRegex));
+
     if (intervalMatches.length > 0 && !fixedCode.includes('clearInterval')) {
       // Add cleanup in useEffect
-      intervalMatches.forEach(match => {
+      intervalMatches.forEach((match) => {
         const intervalVar = match[1];
         appliedFixes.push(`Added clearInterval cleanup for ${intervalVar}`);
       });
@@ -4533,7 +4908,7 @@ ${testCode}
           /(useEffect\s*\([^,]+),\s*\[\]\s*\);/,
           (match, effectContent) => {
             const comment = addComments ? '\n    // Cleanup intervals to prevent memory leaks' : '';
-            return `${effectContent}, []);\n\n  useEffect(() => {${comment}\n    return () => {\n      // Cleanup any intervals\n      ${intervalMatches.map(m => `clearInterval(${m[1]});`).join('\n      ')}\n    };\n  }, []);`;
+            return `${effectContent}, []);\n\n  useEffect(() => {${comment}\n    return () => {\n      // Cleanup any intervals\n      ${intervalMatches.map((m) => `clearInterval(${m[1]});`).join('\n      ')}\n    };\n  }, []);`;
           }
         );
       }
@@ -4544,7 +4919,7 @@ ${testCode}
 
   private detectAllIssues(code: string): string[] {
     const issues: string[] = [];
-    
+
     // Security issues
     if (/(?:api[_-]?key|apikey)\s*[:=]\s*["'][^"']+["']/gi.test(code)) {
       issues.push('hardcoded_secrets');
@@ -4555,7 +4930,7 @@ ${testCode}
     if (/fetch\s*\(\s*["']http:\/\//.test(code)) {
       issues.push('insecure_http');
     }
-    
+
     // Performance issues
     if (/<FlatList[^>]*(?!.*keyExtractor)/.test(code)) {
       issues.push('missing_key_extractor');
@@ -4563,43 +4938,47 @@ ${testCode}
     if (/<ScrollView[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/.test(code)) {
       issues.push('scrollview_with_map');
     }
-    
+
     // Memory leaks
     if (/setInterval\s*\(/.test(code) && !/clearInterval/.test(code)) {
       issues.push('interval_memory_leak');
     }
-    
+
     return issues;
   }
 
-  private applyBestPracticesFixes(code: string, appliedFixes: string[], addComments: boolean): string {
+  private applyBestPracticesFixes(
+    code: string,
+    appliedFixes: string[],
+    addComments: boolean
+  ): string {
     let fixedCode = code;
 
     // Add StyleSheet.create for inline styles
     const inlineStyleRegex = /style\s*=\s*\{\{([^}]+)\}\}/g;
     if (inlineStyleRegex.test(fixedCode) && !fixedCode.includes('StyleSheet.create')) {
       appliedFixes.push('Converted inline styles to StyleSheet.create');
-      
+
       // Extract styles and create StyleSheet
       const styles: string[] = [];
       let styleCounter = 0;
-      
+
       fixedCode = fixedCode.replace(inlineStyleRegex, (match, styleContent) => {
         const styleName = `style${styleCounter++}`;
         styles.push(`  ${styleName}: {\n    ${styleContent.replace(/,/g, ',\n    ')}\n  }`);
         return `style={styles.${styleName}}`;
       });
-      
+
       // Add StyleSheet definition
       if (styles.length > 0) {
         const styleSheetDefinition = `\n\nconst styles = StyleSheet.create({\n${styles.join(',\n')}\n});\n`;
         fixedCode += styleSheetDefinition;
-        
+
         // Add StyleSheet import
         if (!fixedCode.includes('StyleSheet')) {
           fixedCode = fixedCode.replace(
             /(import\s*\{[^}]*)\}\s*from\s*['"]react-native['"];?/,
-            '$1, StyleSheet } from \'react-native\';'
+            "$1, StyleSheet } from 'react-native';"
           );
         }
       }
@@ -4612,9 +4991,13 @@ ${testCode}
     let fixedCode = code;
 
     // Add TypeScript interface for props if missing
-    if (fixedCode.includes('props') && !fixedCode.includes('interface') && !fixedCode.includes('type Props')) {
+    if (
+      fixedCode.includes('props') &&
+      !fixedCode.includes('interface') &&
+      !fixedCode.includes('type Props')
+    ) {
       appliedFixes.push('Added TypeScript interface for better type safety');
-      
+
       const interfaceDefinition = `interface Props {
   // Add your prop definitions here
   children?: React.ReactNode;
@@ -4623,7 +5006,7 @@ ${testCode}
 }
 
 `;
-      
+
       // Insert before the component definition
       fixedCode = fixedCode.replace(
         /(const|function)\s+(\w+)\s*[=:]?\s*\(/,
@@ -4650,16 +5033,13 @@ ${testCode}
 
       // Add memo import
       if (!refactoredCode.includes('memo')) {
-        refactoredCode = refactoredCode.replace(
-          /import React(,\s*\{[^}]*\})?/,
-          (match) => {
-            if (match.includes('{')) {
-              return match.replace('}', ', memo }');
-            } else {
-              return match.replace('React', 'React, { memo }');
-            }
+        refactoredCode = refactoredCode.replace(/import React(,\s*\{[^}]*\})?/, (match) => {
+          if (match.includes('{')) {
+            return match.replace('}', ', memo }');
+          } else {
+            return match.replace('React', 'React, { memo }');
           }
-        );
+        });
       }
     }
 
@@ -4669,20 +5049,20 @@ ${testCode}
   private refactorForMaintainability(code: string, improvements: string[]): string {
     // Extract inline styles to StyleSheet
     let refactoredCode = code;
-    
+
     const inlineStyleRegex = /style\s*=\s*\{\{([^}]+)\}\}/g;
     if (inlineStyleRegex.test(refactoredCode)) {
       improvements.push('Extracted inline styles to StyleSheet for better maintainability');
-      
+
       // Add StyleSheet import if not present
       if (!refactoredCode.includes('StyleSheet')) {
         refactoredCode = refactoredCode.replace(
           /(import\s*\{[^}]*)\}\s*from\s*['"]react-native['"];?/,
-          '$1, StyleSheet } from \'react-native\';'
+          "$1, StyleSheet } from 'react-native';"
         );
       }
     }
-    
+
     return refactoredCode;
   }
 
@@ -4706,7 +5086,7 @@ ${testCode}
 
   private refactorForTypeSafety(code: string, improvements: string[]): string {
     let refactoredCode = code;
-    
+
     // Add TypeScript interfaces for props
     if (!refactoredCode.includes('interface') && refactoredCode.includes('props')) {
       improvements.push('Added TypeScript interface for component props');
@@ -4719,7 +5099,7 @@ interface Props {
 `;
       refactoredCode = interfaceDefinition + refactoredCode;
     }
-    
+
     return refactoredCode;
   }
 
@@ -4740,11 +5120,11 @@ interface Props {
 
   private refactorComprehensive(code: string, improvements: string[]): string {
     let refactoredCode = code;
-    
+
     refactoredCode = this.refactorForPerformance(refactoredCode, improvements);
     refactoredCode = this.refactorForAccessibility(refactoredCode, improvements);
     refactoredCode = this.refactorToModernPatterns(refactoredCode, improvements);
-    
+
     return refactoredCode;
   }
 

@@ -1,9 +1,9 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { Variables } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { Variables } from '@modelcontextprotocol/sdk/shared/uriTemplate.js';
 
 /**
  * React Native Resources
- * 
+ *
  * Provides access to React Native documentation, guides, and reference materials
  */
 export class ReactNativeResources {
@@ -12,122 +12,122 @@ export class ReactNativeResources {
   register() {
     // Official React Native Documentation
     this.server.resource(
-      "react-native-docs",
-      "https://reactnative.dev/docs/getting-started",
+      'react-native-docs',
+      'https://reactnative.dev/docs/getting-started',
       {
-        title: "React Native Documentation",
-        description: "Official React Native documentation and guides",
-        mimeType: "text/markdown"
+        title: 'React Native Documentation',
+        description: 'Official React Native documentation and guides',
+        mimeType: 'text/markdown',
       },
       async () => ({
         contents: [
           {
-            uri: "https://reactnative.dev/docs/getting-started",
-            text: this.getDocumentationContent("getting-started")
-          }
-        ]
+            uri: 'https://reactnative.dev/docs/getting-started',
+            text: this.getDocumentationContent('getting-started'),
+          },
+        ],
       })
     );
 
     // Best Practices Guide
     this.server.resource(
-      "best-practices-guide",
-      "rn://best-practices",
+      'best-practices-guide',
+      'rn://best-practices',
       {
-        title: "React Native Best Practices",
-        description: "Comprehensive guide to React Native best practices",
-        mimeType: "text/markdown"
+        title: 'React Native Best Practices',
+        description: 'Comprehensive guide to React Native best practices',
+        mimeType: 'text/markdown',
       },
       async () => ({
         contents: [
           {
-            uri: "rn://best-practices",
-            text: this.getBestPracticesGuide()
-          }
-        ]
+            uri: 'rn://best-practices',
+            text: this.getBestPracticesGuide(),
+          },
+        ],
       })
     );
 
     // Performance Guide
     this.server.resource(
-      "performance-guide",
-      "rn://performance",
+      'performance-guide',
+      'rn://performance',
       {
-        title: "React Native Performance Guide",
-        description: "Performance optimization strategies and techniques",
-        mimeType: "text/markdown"
+        title: 'React Native Performance Guide',
+        description: 'Performance optimization strategies and techniques',
+        mimeType: 'text/markdown',
       },
       async () => ({
         contents: [
           {
-            uri: "rn://performance",
-            text: this.getPerformanceGuide()
-          }
-        ]
+            uri: 'rn://performance',
+            text: this.getPerformanceGuide(),
+          },
+        ],
       })
     );
 
     // Common Patterns
     this.server.resource(
-      "common-patterns",
-      "rn://patterns",
+      'common-patterns',
+      'rn://patterns',
       {
-        title: "React Native Common Patterns",
-        description: "Common patterns and solutions for React Native development",
-        mimeType: "text/markdown"
+        title: 'React Native Common Patterns',
+        description: 'Common patterns and solutions for React Native development',
+        mimeType: 'text/markdown',
       },
       async () => ({
         contents: [
           {
-            uri: "rn://patterns",
-            text: this.getCommonPatterns()
-          }
-        ]
+            uri: 'rn://patterns',
+            text: this.getCommonPatterns(),
+          },
+        ],
       })
     );
 
     // Platform-Specific Guides
-    const platformTemplate = new ResourceTemplate("rn://platform/{platform}", {
+    const platformTemplate = new ResourceTemplate('rn://platform/{platform}', {
       list: async () => ({
         resources: [
           {
-            uri: "rn://platform/ios",
-            name: "iOS Development Guide",
-            description: "iOS-specific React Native development guide",
-            mimeType: "text/markdown"
+            uri: 'rn://platform/ios',
+            name: 'iOS Development Guide',
+            description: 'iOS-specific React Native development guide',
+            mimeType: 'text/markdown',
           },
           {
-            uri: "rn://platform/android", 
-            name: "Android Development Guide",
-            description: "Android-specific React Native development guide",
-            mimeType: "text/markdown"
-          }
-        ]
-      })
+            uri: 'rn://platform/android',
+            name: 'Android Development Guide',
+            description: 'Android-specific React Native development guide',
+            mimeType: 'text/markdown',
+          },
+        ],
+      }),
     });
 
     this.server.resource(
-      "platform-guide",
+      'platform-guide',
       platformTemplate,
       {
-        title: "Platform-Specific Guide",
-        description: "Platform-specific development guides for iOS and Android",
-        mimeType: "text/markdown"
+        title: 'Platform-Specific Guide',
+        description: 'Platform-specific development guides for iOS and Android',
+        mimeType: 'text/markdown',
       },
       async (uri: URL, variables: Variables) => ({
         contents: [
           {
             uri: uri.toString(),
-            text: this.getPlatformGuide(variables.platform as string)
-          }
-        ]
+            text: this.getPlatformGuide(variables.platform as string),
+          },
+        ],
       })
     );
   }
 
   private getDocumentationContent(section: string): string {
     const sections: Record<string, string> = {
-      "getting-started": `
+      'getting-started': `
 # React Native Documentation
 
 ## Getting Started
@@ -169,10 +169,10 @@ Use React Navigation for handling navigation:
 npm install @react-navigation/native
 npm install @react-navigation/native-stack
 \`\`\`
-      `
+      `,
     };
 
-    return sections[section] || "Documentation section not found.";
+    return sections[section] || 'Documentation section not found.';
   }
 
   private getBestPracticesGuide(): string {
@@ -1597,9 +1597,9 @@ signingConfigs {
     }
 }
 \`\`\`
-      `
+      `,
     };
 
-    return guides[platform] || "Platform guide not available.";
+    return guides[platform] || 'Platform guide not available.';
   }
 }
