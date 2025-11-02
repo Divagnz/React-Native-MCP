@@ -136,10 +136,15 @@ export class ReportFormatter {
     report += `- **Testing Gaps:** ${analysis.testing.length}\n`;
     report += `- **Upgrade Suggestions:** ${analysis.upgrades.length}\n\n`;
 
-    if (totalIssues === 0) {
+    if (totalIssues === 0 && analysis.upgrades.length === 0) {
       report +=
         '✅ **Excellent!** Your codebase follows React Native best practices with no major issues detected.\n\n';
       return report;
+    }
+
+    // If only upgrades exist (no other issues), show them
+    if (totalIssues === 0 && analysis.upgrades.length > 0) {
+      // Skip straight to upgrades section
     }
 
     // Critical and High severity issues first

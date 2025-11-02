@@ -47,15 +47,15 @@ export default {
   ],
 
   // Coverage thresholds
-  // NOTE: Starting at minimal thresholds due to monolithic 4,779-line tools file
-  // Phase 1 focuses on testing infrastructure and registration logic
-  // Will increase to 80%+ after Phase 2 refactoring when code is modularized
+  // NOTE: Phase 2 progress - modularization and testing utility modules
+  // Current coverage: Statements 14.11%, Branches 10.22%, Functions 17.18%, Lines 13.75%
+  // After full Phase 2 refactoring, will increase to 80%+
   coverageThreshold: {
     global: {
-      branches: 0,      // No branch coverage yet (registration only)
-      functions: 3,     // 7/218 functions (registration methods)
-      lines: 2,         // 29/1404 lines (registration calls)
-      statements: 2,    // 29/1433 statements (registration calls)
+      branches: 10,     // 103/1007 branches covered (up from 0%)
+      functions: 17,    // 44/256 functions covered (up from 3%)
+      lines: 13,        // 222/1614 lines covered (up from 2%)
+      statements: 14,   // 231/1637 statements covered (up from 2%)
     },
   },
 
