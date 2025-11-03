@@ -27,7 +27,7 @@
 
 A comprehensive Model Context Protocol (MCP) server designed for professional React Native development teams. This tool provides intelligent code analysis, **expert-level automated code remediation**, security auditing, and performance optimization with production-ready fixes.
 
-**🆕 v2.0.0 - Enterprise Architecture & Performance:**
+**🆕 v0.0.1 - Initial Release with Enterprise Architecture:**
 
 - 🏗️ **Modular Architecture** - Clean, maintainable service-based design with dependency injection
 - ⚡ **Advanced Caching** - LRU cache with intelligent eviction and performance optimization
@@ -317,7 +317,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "react-native-guide": {
       "command": "npx",
-      "args": ["@mrnitro360/react-native-mcp-guide@2.0.0"],
+      "args": ["@divagnz/react-native-mcp-server@0.0.1"],
       "env": {}
     }
   }
@@ -422,49 +422,25 @@ claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
 
 ## 📋 Changelog
 
-### v2.0.0 - Enterprise Architecture & Performance (Latest)
+### v0.0.1 - Initial Release (Latest)
 
-**🚀 Major Features:**
-- 🏗️ **Modular Architecture** - Complete refactor into service-based design with dependency injection
-- ⚡ **Advanced Caching** - LRU cache system with intelligent eviction and performance optimization
-- 🧪 **Comprehensive Testing** - 478 tests with 91.38% branch coverage and automated badge generation
-- 📊 **Error Handling** - Structured logging infrastructure with circuit breaker and retry mechanisms
-- 🔧 **Performance Optimization** - Memory management and cache efficiency improvements
-- 🎯 **Code Quality** - Enhanced TypeScript types and error handling throughout
+**🚀 First Release with Enterprise-Grade Features:**
+- 🏗️ **Modular Architecture** - Service-based design with dependency injection
+- ⚡ **Advanced Caching** - LRU cache system with intelligent eviction
+- 🧪 **Comprehensive Testing** - 478 tests with 91.38% branch coverage
+- 📊 **Error Handling** - Structured logging with circuit breaker patterns
+- 🔧 **Expert Code Remediation** - Automatic security, performance, and quality fixes
+- 🏗️ **Advanced Refactoring** - Component modernization with test generation
 
-**🎯 Architecture Improvements:**
-- Service layer extraction and modularization
-- Dependency injection for better testability
-- Centralized error handling and logging
-- Cache performance monitoring and metrics
-- Automated test coverage reporting
-- Circuit breaker pattern for resilience
-
-### v1.1.0 - Expert Code Remediation
-
-**🚀 Major Features:**
-- ✨ **NEW**: `remediate_code` tool - Expert-level automatic code fixing
-- ✨ **NEW**: `refactor_component` tool - Advanced component refactoring with tests
-- 🔧 **Enhanced**: Component detection accuracy improved
-- 🛡️ **Security**: Automatic hardcoded secret remediation
-- ⚡ **Performance**: Memory leak prevention and FlatList optimization
-- 📝 **Quality**: TypeScript interface generation and StyleSheet extraction
-- 🎯 **Accessibility**: WCAG compliance with automatic fixes
-
-**🎯 Remediation Capabilities:**
-- Hardcoded secrets → Environment variables
-- Sensitive logging → Sanitized code
-- HTTP requests → HTTPS enforcement
-- Memory leaks → Automatic cleanup
-- Inline styles → StyleSheet.create
-- Performance issues → Optimized patterns
-- Type safety → TypeScript interfaces
-
-### v1.0.5 - Previous Version
-- Comprehensive analysis tools
-- Testing suite generation
-- Dependency management
-- Performance optimization guidance
+**🎯 Core Capabilities:**
+- 17 specialized tools for React Native development
+- Expert code remediation and refactoring
+- Security auditing with automatic fixes
+- Performance optimization and profiling
+- Comprehensive codebase analysis
+- Testing strategy and coverage analysis
+- Package management and dependency resolution
+- Accessibility compliance checking
 
 ---
 
@@ -494,7 +470,7 @@ This project is licensed under the [MIT License](LICENSE). See the license file 
 
 *Empowering development teams to build secure, performant, and accessible mobile applications with automated expert-level code fixes*
 
-🆕 **v2.0.0 - Enterprise Architecture & Performance!**
+🆕 **v0.0.1 - First Release!**
 
 [Get Started](https://www.npmjs.com/package/@mrnitro360/react-native-mcp-guide) • [Documentation](https://github.com/MrNitro360/React-Native-MCP) • [Community](https://github.com/MrNitro360/React-Native-MCP/issues)
 
