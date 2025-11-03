@@ -2,41 +2,126 @@
 
 ## Description
 
-Please include a summary of the changes and the related issue. Please also include relevant motivation and context.
+<!-- Provide a detailed description of your changes -->
 
-Fixes # (issue)
+## Type of Change
 
-## Type of change
-
-Please delete options that are not relevant.
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+- [ ] Documentation update
+- [ ] Performance improvement
+- [ ] Code refactoring
+- [ ] Test improvements
+- [ ] CI/CD improvements
 
-## How Has This Been Tested?
+## Related Issue
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
+<!-- Link to related issue(s) -->
+Fixes #(issue number)
 
-- [ ] Test A
-- [ ] Test B
+## Changes Made
 
-## Checklist
+<!-- List the key changes in your PR -->
+-
+-
+-
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+## Testing
 
-## Screenshots (if applicable)
+### Test Coverage
+- [ ] Tests added for new functionality
+- [ ] All existing tests pass
+- [ ] Manual testing completed
+- [ ] Test coverage meets threshold (80%+)
 
-Add screenshots to help explain your changes.
+### Testing Steps
+<!-- Describe how you tested your changes -->
+1.
+2.
+3.
+
+### Test Results
+<!-- Paste test results or screenshots -->
+```bash
+# Example: npm test output
+```
+
+## Documentation
+
+- [ ] README.md updated (if applicable)
+- [ ] Code comments added/updated
+- [ ] Examples added/updated (if applicable)
+- [ ] CHANGELOG.md updated
+- [ ] API documentation updated (if applicable)
+
+## Code Quality
+
+- [ ] Code follows project style guidelines
+- [ ] ESLint checks pass (`npm run lint`)
+- [ ] Prettier formatting applied (`npm run format`)
+- [ ] TypeScript types are correct (`npm run type-check`)
+- [ ] No console.log statements (except in logger)
+- [ ] Error handling implemented
+- [ ] Input validation added
+
+## Breaking Changes
+
+<!-- If this is a breaking change, describe the impact and migration path -->
+
+**Impact**:
+-
+
+**Migration Guide**:
+1.
+2.
+
+## Performance Impact
+
+<!-- Describe any performance implications -->
+- [ ] No performance impact
+- [ ] Performance improved
+- [ ] Performance impact (please describe):
+
+## Security Considerations
+
+<!-- Describe any security implications -->
+- [ ] No security impact
+- [ ] Security improved
+- [ ] Security reviewed (please describe):
+
+## Screenshots
+
+<!-- If applicable, add screenshots to help explain your changes -->
 
 ## Additional Notes
 
-Add any other notes about the pull request here.
+<!-- Any additional information that reviewers should know -->
+
+## Checklist
+
+- [ ] Self-review completed
+- [ ] Code is well-documented
+- [ ] Changes are atomic and focused
+- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+- [ ] Branch is up-to-date with base branch
+- [ ] No merge conflicts
+- [ ] Ready for review
+
+## Reviewer Checklist
+
+- [ ] Code logic is sound
+- [ ] Tests are comprehensive
+- [ ] Documentation is clear
+- [ ] No breaking changes (or properly documented)
+- [ ] Performance is acceptable
+- [ ] Security is maintained
+- [ ] Error handling is appropriate
+- [ ] Code style is consistent
+
+---
+
+**For Maintainers**:
+- [ ] Version bump required (major/minor/patch)
+- [ ] Release notes prepared
+- [ ] Deployment plan documented
