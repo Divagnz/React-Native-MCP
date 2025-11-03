@@ -27,6 +27,35 @@ const logFormat = winston.format.combine(
   winston.format.json()
 );
 
+// Configure transports
+const transports: winston.transport[] = [
+  // Error log - only errors
+  new winston.transports.File({
+    filename: path.join(logsDir, 'error.log'),
+    level: 'error',
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  }),
+  // Combined log - all levels
+  new winston.transports.File({
+    filename: path.join(logsDir, 'combined.log'),
+    maxsize: 10485760, // 10MB
+    maxFiles: 10,
+  }),
+];
+
+// Add debug log if log level is debug
+if (logLevel === 'debug') {
+  transports.push(
+    new winston.transports.File({
+      filename: path.join(logsDir, 'debug.log'),
+      level: 'debug',
+      maxsize: 10485760, // 10MB
+      maxFiles: 3,
+    })
+  );
+}
+
 /**
  * Main logger instance
  * Logs to files only - NO console output to avoid MCP protocol interference
@@ -34,32 +63,7 @@ const logFormat = winston.format.combine(
 export const logger = winston.createLogger({
   level: logLevel,
   format: logFormat,
-  transports: [
-    // Error log - only errors
-    new winston.transports.File({
-      filename: path.join(logsDir, 'error.log'),
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-    // Combined log - all levels
-    new winston.transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 10485760, // 10MB
-      maxFiles: 10,
-    }),
-    // Debug log - debug and above (optional, only if MCP_LOG_LEVEL=debug)
-    ...(logLevel === 'debug'
-      ? [
-          new winston.transports.File({
-            filename: path.join(logsDir, 'debug.log'),
-            level: 'debug',
-            maxsize: 10485760, // 10MB
-            maxFiles: 3,
-          }),
-        ]
-      : []),
-  ],
+  transports,
   // Prevent Winston from exiting on error
   exitOnError: false,
 });
