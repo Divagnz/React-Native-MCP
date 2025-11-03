@@ -40,7 +40,9 @@ export class PerformanceMonitor {
    * Record a performance metric
    */
   record(metric: PerformanceMetrics): void {
-    if (!this.enabled) return;
+    if (!this.enabled) {
+      return;
+    }
 
     this.metrics.push(metric);
 
@@ -61,7 +63,7 @@ export class PerformanceMonitor {
    * Get metrics for a specific operation
    */
   getOperationMetrics(operation: string): PerformanceMetrics[] {
-    return this.metrics.filter(m => m.operation === operation);
+    return this.metrics.filter((m) => m.operation === operation);
   }
 
   /**
@@ -69,10 +71,12 @@ export class PerformanceMonitor {
    */
   getSummary(operation: string): PerformanceSummary | null {
     const metrics = this.getOperationMetrics(operation);
-    if (metrics.length === 0) return null;
+    if (metrics.length === 0) {
+      return null;
+    }
 
-    const durations = metrics.map(m => m.duration);
-    const successful = metrics.filter(m => m.success).length;
+    const durations = metrics.map((m) => m.duration);
+    const successful = metrics.filter((m) => m.success).length;
 
     return {
       operation,
@@ -90,9 +94,9 @@ export class PerformanceMonitor {
    * Get summaries for all operations
    */
   getAllSummaries(): PerformanceSummary[] {
-    const operations = new Set(this.metrics.map(m => m.operation));
+    const operations = new Set(this.metrics.map((m) => m.operation));
     return Array.from(operations)
-      .map(op => this.getSummary(op))
+      .map((op) => this.getSummary(op))
       .filter((s): s is PerformanceSummary => s !== null);
   }
 
@@ -121,25 +125,29 @@ export class PerformanceMonitor {
    * Get slow operations (above threshold)
    */
   getSlowOperations(thresholdMs: number): PerformanceMetrics[] {
-    return this.metrics.filter(m => m.duration > thresholdMs);
+    return this.metrics.filter((m) => m.duration > thresholdMs);
   }
 
   /**
    * Get failed operations
    */
   getFailedOperations(): PerformanceMetrics[] {
-    return this.metrics.filter(m => !m.success);
+    return this.metrics.filter((m) => !m.success);
   }
 
   /**
    * Export metrics as JSON
    */
   export(): string {
-    return JSON.stringify({
-      metrics: this.metrics,
-      summaries: this.getAllSummaries(),
-      exportedAt: Date.now(),
-    }, null, 2);
+    return JSON.stringify(
+      {
+        metrics: this.metrics,
+        summaries: this.getAllSummaries(),
+        exportedAt: Date.now(),
+      },
+      null,
+      2
+    );
   }
 }
 
@@ -153,11 +161,7 @@ export class PerformanceTimer {
   private monitor: PerformanceMonitor;
   private metadata: Record<string, any>;
 
-  constructor(
-    operation: string,
-    monitor: PerformanceMonitor,
-    metadata: Record<string, any> = {}
-  ) {
+  constructor(operation: string, monitor: PerformanceMonitor, metadata: Record<string, any> = {}) {
     this.operation = operation;
     this.monitor = monitor;
     this.metadata = metadata;
@@ -197,25 +201,16 @@ export class PerformanceTimer {
 /**
  * Decorator for measuring function performance
  */
-export function measurePerformance(
-  operation: string,
-  monitor?: PerformanceMonitor
-) {
+export function measurePerformance(operation: string, monitor?: PerformanceMonitor) {
   const perfMonitor = monitor || globalPerformanceMonitor;
 
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const timer = new PerformanceTimer(
-        `${operation}.${propertyKey}`,
-        perfMonitor,
-        { args: args.length }
-      );
+      const timer = new PerformanceTimer(`${operation}.${propertyKey}`, perfMonitor, {
+        args: args.length,
+      });
 
       try {
         const result = await originalMethod.apply(this, args);
@@ -278,9 +273,7 @@ export function measureSync<T>(
 /**
  * Create a performance report
  */
-export function generatePerformanceReport(
-  monitor: PerformanceMonitor
-): string {
+export function generatePerformanceReport(monitor: PerformanceMonitor): string {
   const summaries = monitor.getAllSummaries();
 
   if (summaries.length === 0) {
@@ -292,26 +285,26 @@ export function generatePerformanceReport(
 
   let report = '# Performance Report\n\n';
   report += `Generated: ${new Date().toISOString()}\n\n`;
-  report += `## Summary\n\n`;
+  report += '## Summary\n\n';
   report += `Total Operations: ${summaries.reduce((sum, s) => sum + s.count, 0)}\n`;
   report += `Unique Operations: ${summaries.length}\n\n`;
 
-  report += `## Top Operations by Total Time\n\n`;
-  report += `| Operation | Count | Avg (ms) | Min (ms) | Max (ms) | Success Rate |\n`;
-  report += `|-----------|-------|----------|----------|----------|-------------|\n`;
+  report += '## Top Operations by Total Time\n\n';
+  report += '| Operation | Count | Avg (ms) | Min (ms) | Max (ms) | Success Rate |\n';
+  report += '|-----------|-------|----------|----------|----------|-------------|\n';
 
-  summaries.slice(0, 10).forEach(s => {
+  summaries.slice(0, 10).forEach((s) => {
     report += `| ${s.operation} | ${s.count} | ${s.averageDuration.toFixed(2)} | ${s.minDuration.toFixed(2)} | ${s.maxDuration.toFixed(2)} | ${(s.successRate * 100).toFixed(1)}% |\n`;
   });
 
   // Show slow operations
   const slowOps = monitor.getSlowOperations(1000);
   if (slowOps.length > 0) {
-    report += `\n## Slow Operations (>1000ms)\n\n`;
-    report += `| Operation | Duration (ms) | Timestamp |\n`;
-    report += `|-----------|---------------|----------|\n`;
+    report += '\n## Slow Operations (>1000ms)\n\n';
+    report += '| Operation | Duration (ms) | Timestamp |\n';
+    report += '|-----------|---------------|----------|\n';
 
-    slowOps.slice(0, 10).forEach(m => {
+    slowOps.slice(0, 10).forEach((m) => {
       const date = new Date(m.timestamp).toISOString();
       report += `| ${m.operation} | ${m.duration.toFixed(2)} | ${date} |\n`;
     });
@@ -320,11 +313,11 @@ export function generatePerformanceReport(
   // Show failed operations
   const failedOps = monitor.getFailedOperations();
   if (failedOps.length > 0) {
-    report += `\n## Failed Operations\n\n`;
-    report += `| Operation | Duration (ms) | Error | Timestamp |\n`;
-    report += `|-----------|---------------|-------|----------|\n`;
+    report += '\n## Failed Operations\n\n';
+    report += '| Operation | Duration (ms) | Error | Timestamp |\n';
+    report += '|-----------|---------------|-------|----------|\n';
 
-    failedOps.slice(0, 10).forEach(m => {
+    failedOps.slice(0, 10).forEach((m) => {
       const date = new Date(m.timestamp).toISOString();
       const error = m.error?.substring(0, 50) || 'Unknown';
       report += `| ${m.operation} | ${m.duration.toFixed(2)} | ${error} | ${date} |\n`;

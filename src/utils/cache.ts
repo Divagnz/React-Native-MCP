@@ -68,7 +68,9 @@ export class Cache<T = any> {
     const entry = this.cache.get(key);
 
     if (!entry) {
-      if (this.enableStats) this.misses++;
+      if (this.enableStats) {
+        this.misses++;
+      }
       return undefined;
     }
 
@@ -86,7 +88,9 @@ export class Cache<T = any> {
     entry.accessCount++;
     entry.lastAccessed = Date.now();
 
-    if (this.enableStats) this.hits++;
+    if (this.enableStats) {
+      this.hits++;
+    }
     return entry.value;
   }
 
@@ -106,7 +110,9 @@ export class Cache<T = any> {
       lastAccessed: Date.now(),
     });
 
-    if (this.enableStats) this.sets++;
+    if (this.enableStats) {
+      this.sets++;
+    }
   }
 
   /**
@@ -114,11 +120,15 @@ export class Cache<T = any> {
    */
   has(key: string): boolean {
     const entry = this.cache.get(key);
-    if (!entry) return false;
+    if (!entry) {
+      return false;
+    }
 
     if (this.isExpired(entry)) {
       this.cache.delete(key);
-      if (this.enableStats) this.evictions++;
+      if (this.enableStats) {
+        this.evictions++;
+      }
       return false;
     }
 
@@ -195,7 +205,9 @@ export class Cache<T = any> {
       if (now - entry.timestamp > this.ttl) {
         this.cache.delete(key);
         cleaned++;
-        if (this.enableStats) this.evictions++;
+        if (this.enableStats) {
+          this.evictions++;
+        }
       }
     }
 
@@ -264,7 +276,9 @@ export class Cache<T = any> {
 
     if (oldestKey) {
       this.cache.delete(oldestKey);
-      if (this.enableStats) this.evictions++;
+      if (this.enableStats) {
+        this.evictions++;
+      }
     }
   }
 }
@@ -278,10 +292,7 @@ export class CacheManager {
   /**
    * Get or create a cache instance
    */
-  static getCache<T = any>(
-    name: string,
-    options?: CacheOptions
-  ): Cache<T> {
+  static getCache<T = any>(name: string, options?: CacheOptions): Cache<T> {
     if (!this.caches.has(name)) {
       this.caches.set(name, new Cache<T>(options));
     }

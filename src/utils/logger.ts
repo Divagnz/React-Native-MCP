@@ -67,11 +67,7 @@ export const logger = winston.createLogger({
 /**
  * Log tool invocation with timing
  */
-export function logToolInvocation(
-  toolName: string,
-  args: unknown,
-  duration?: number
-): void {
+export function logToolInvocation(toolName: string, args: unknown, duration?: number): void {
   logger.info('Tool invoked', {
     tool: toolName,
     args: sanitizeArgs(args),
@@ -83,11 +79,7 @@ export function logToolInvocation(
 /**
  * Log tool success
  */
-export function logToolSuccess(
-  toolName: string,
-  duration: number,
-  resultSize?: number
-): void {
+export function logToolSuccess(toolName: string, duration: number, resultSize?: number): void {
   logger.info('Tool completed successfully', {
     tool: toolName,
     duration: `${duration.toFixed(2)}ms`,
@@ -99,11 +91,7 @@ export function logToolSuccess(
 /**
  * Log tool failure
  */
-export function logToolFailure(
-  toolName: string,
-  error: Error,
-  duration?: number
-): void {
+export function logToolFailure(toolName: string, error: Error, duration?: number): void {
   logger.error('Tool failed', {
     tool: toolName,
     error: error.message,
@@ -117,11 +105,7 @@ export function logToolFailure(
 /**
  * Log validation error
  */
-export function logValidationError(
-  context: string,
-  error: string,
-  details?: unknown
-): void {
+export function logValidationError(context: string, error: string, details?: unknown): void {
   logger.warn('Validation error', {
     context,
     error,

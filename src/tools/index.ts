@@ -2,9 +2,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import * as fs from 'fs';
 import * as path from 'path';
-import { exec, spawn } from 'child_process';
-import { promisify } from 'util';
-import { VersionUtils } from './modules/utils/version-utils.js';
 import { FileScanner } from './modules/utils/file-scanner.js';
 import { ReportFormatter } from './modules/formatters/report-formatter.js';
 import { SecurityAnalyzer } from './modules/analysis/security-analyzer.js';
@@ -541,7 +538,7 @@ export class ReactNativeTools {
         packageInfo = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
         version = (packageInfo as any).version || 'Unknown';
       }
-    } catch (error) {
+    } catch {
       // Fallback - version info might not be available in all environments
     }
 
