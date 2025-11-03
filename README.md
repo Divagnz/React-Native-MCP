@@ -1,11 +1,11 @@
-# React Native MCP Server
+# React Native Expo MCP
 
 <div align="center">
 
-[![npm version](https://badge.fury.io/js/%40mrnitro360%2Freact-native-mcp-guide.svg)](https://badge.fury.io/js/%40mrnitro360%2Freact-native-mcp-guide)
+[![npm version](https://badge.fury.io/js/%40divagnz%2Freact-native-expo-mcp.svg)](https://badge.fury.io/js/%40divagnz%2Freact-native-expo-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-1.1.0-blue.svg)](https://modelcontextprotocol.io/)
-[![PR Checks](https://github.com/MrNitro360/React-Native-MCP/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/MrNitro360/React-Native-MCP/actions/workflows/pr-checks.yml)
+[![PR Checks](https://github.com/Divagnz/React-Native-MCP/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Divagnz/React-Native-MCP/actions/workflows/pr-checks.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.72+-blue.svg)](https://reactnative.dev/)
 
@@ -17,15 +17,17 @@
 [![Statements](./coverage/badge-statements.svg)]
 
 
-**Professional AI-powered React Native development companion with expert-level code remediation**
+**React Native Expo MCP Server - Professional AI-powered development companion**
 
-*Expert remediation • Automated fixes • Industry best practices • Enterprise security*
+*Expert remediation • Advanced refactoring • Enterprise architecture • Comprehensive testing*
+
+> **📌 Fork Notice:** This project is forked and significantly expanded from [@mrnitro360/react-native-mcp-guide](https://github.com/MrNitro360/React-Native-MCP), adding expert code remediation, advanced component refactoring, modular architecture with dependency injection, comprehensive testing suite (478 tests), and enterprise-grade error handling.
 
 </div>
 
 ## Overview
 
-A comprehensive Model Context Protocol (MCP) server designed for professional React Native development teams. This tool provides intelligent code analysis, **expert-level automated code remediation**, security auditing, and performance optimization with production-ready fixes.
+An enhanced Model Context Protocol (MCP) server designed for professional React Native development teams. Built on enterprise-grade architecture with **expert-level automated code remediation**, **advanced refactoring capabilities**, comprehensive testing, and production-ready fixes.
 
 **🆕 v0.0.1 - Initial Release with Enterprise Architecture:**
 
@@ -61,24 +63,24 @@ A comprehensive Model Context Protocol (MCP) server designed for professional Re
 
 ```bash
 # Install globally via npm
-npm install -g @mrnitro360/react-native-mcp-guide
+npm install -g @divagnz/react-native-expo-mcp
 
 # Configure with Claude CLI
-claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
+claude mcp add react-native-expo-mcp npx @divagnz/react-native-expo-mcp
 ```
 
 #### Development Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/MrNitro360/React-Native-MCP.git
+git clone https://github.com/Divagnz/React-Native-MCP.git
 cd React-Native-MCP
 
 # Install dependencies and build
 npm install && npm run build
 
 # Add to Claude CLI
-claude mcp add react-native-guide node ./build/index.js
+claude mcp add react-native-expo-mcp node ./build/index.js
 ```
 
 ### Verification
@@ -87,7 +89,7 @@ claude mcp add react-native-guide node ./build/index.js
 claude mcp list
 ```
 
-Verify that `react-native-guide` appears as **Connected** ✅
+Verify that `react-native-expo-mcp` appears as **Connected** ✅
 
 ---
 
@@ -187,7 +189,7 @@ export default React.memo(MyComponent);
 
 ## Core Features
 
-### 🔧 Expert Code Remediation (NEW in v1.1.0)
+### 🔧 Expert Code Remediation
 
 | Tool | Capability | Level | Output |
 |------|------------|-------|--------|
@@ -315,9 +317,9 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "react-native-guide": {
+    "react-native-expo-mcp": {
       "command": "npx",
-      "args": ["@divagnz/react-native-mcp-server@0.0.1"],
+      "args": ["@divagnz/react-native-expo-mcp@0.0.1"],
       "env": {}
     }
   }
@@ -329,7 +331,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "react-native-guide": {
+    "react-native-expo-mcp": {
       "command": "node",
       "args": ["/absolute/path/to/React-Native-MCP/build/index.js"],
       "env": {}
@@ -372,14 +374,14 @@ This project implements enterprise-grade CI/CD:
 
 ```bash
 # Check current version
-npm list -g @mrnitro360/react-native-mcp-guide
+npm list -g @divagnz/react-native-expo-mcp
 
 # Update to latest version
-npm update -g @mrnitro360/react-native-mcp-guide
+npm update -g @divagnz/react-native-expo-mcp
 
 # Reconfigure Claude CLI
-claude mcp remove react-native-guide
-claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
+claude mcp remove react-native-expo-mcp
+claude mcp add react-native-expo-mcp npx @divagnz/react-native-expo-mcp
 ```
 
 ---
@@ -399,7 +401,7 @@ claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
 
 ### 🛠️ Technical Architecture
 
-- **12 Specialized Tools** - Complete React Native development lifecycle coverage + remediation
+- **17 Specialized Tools** - Complete React Native development lifecycle coverage + remediation
 - **2 Expert Remediation Tools** - `remediate_code` and `refactor_component`
 - **6 Expert Prompt Templates** - Structured development workflows
 - **5 Resource Libraries** - Comprehensive documentation and best practices
@@ -417,6 +419,63 @@ claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
 - **Scalability Planning** - Large-scale application design patterns with refactoring
 - **Compliance Support** - Industry standards with automatic compliance fixes
 - **Multi-Platform Optimization** - iOS and Android specific considerations with fixes
+
+---
+
+## 🗺️ Roadmap
+
+### Current Release - v0.0.1 ✅
+
+**Core Infrastructure & Foundation**
+- ✅ Modular architecture with dependency injection
+- ✅ Advanced LRU caching system
+- ✅ Comprehensive testing suite (478 tests, 91.38% branch coverage)
+- ✅ Structured logging with circuit breaker patterns
+- ✅ Expert code remediation capabilities
+- ✅ Advanced component refactoring tools
+- ✅ 17 specialized React Native development tools
+
+**Current Tools Include:**
+- Component analysis and optimization
+- Performance profiling and optimization
+- Security auditing and remediation
+- Code quality analysis
+- Testing strategy and coverage analysis
+- Package management and upgrades
+- Debugging guidance
+- Architecture advice
+
+### Upcoming Features 🔜
+
+#### Expo CLI Integration
+- 🔜 Development server management (start, QR codes, logs, controls)
+- 🔜 EAS cloud build management (trigger, status, submit)
+- 🔜 Project management tools (doctor, install, upgrade)
+- 🔜 OTA update publishing with rollout control
+- 🔜 12 comprehensive Expo CLI tools
+
+#### ADB (Android Debug Bridge) Integration
+- 🔜 Device connection and management
+- 🔜 App installation and uninstallation
+- 🔜 Logcat monitoring and filtering
+- 🔜 Screenshot and screen recording
+- 🔜 Visual regression testing
+- 🔜 Performance profiling tools
+- 🔜 Complete Android development workflow
+
+#### iOS Development Tools
+- 🔜 Simulator management
+- 🔜 Device provisioning
+- 🔜 Build and deployment tools
+- 🔜 iOS-specific debugging
+- 🔜 TestFlight integration
+- 🔜 Complete iOS development workflow
+
+**Future Enhancements**
+- 📋 Enhanced performance profiling
+- 📋 Extended accessibility testing
+- 📋 CI/CD pipeline templates
+- 📋 Multi-platform workflow automation
 
 ---
 
@@ -448,9 +507,9 @@ claude mcp add react-native-guide npx @mrnitro360/react-native-mcp-guide
 
 ### Resources
 
-- 📦 **[NPM Package](https://www.npmjs.com/package/@mrnitro360/react-native-mcp-guide)** - Official package repository
-- 🐙 **[GitHub Repository](https://github.com/MrNitro360/React-Native-MCP)** - Source code and development
-- 🐛 **[Issue Tracker](https://github.com/MrNitro360/React-Native-MCP/issues)** - Bug reports and feature requests
+- 📦 **[NPM Package](https://www.npmjs.com/package/@divagnz/react-native-expo-mcp)** - Official package repository
+- 🐙 **[GitHub Repository](https://github.com/Divagnz/React-Native-MCP)** - Source code and development
+- 🐛 **[Issue Tracker](https://github.com/Divagnz/React-Native-MCP/issues)** - Bug reports and feature requests
 - 📖 **[MCP Documentation](https://modelcontextprotocol.io/)** - Model Context Protocol specification
 - ⚛️ **[React Native Docs](https://reactnative.dev/)** - Official React Native documentation
 
@@ -472,6 +531,22 @@ This project is licensed under the [MIT License](LICENSE). See the license file 
 
 🆕 **v0.0.1 - First Release!**
 
-[Get Started](https://www.npmjs.com/package/@mrnitro360/react-native-mcp-guide) • [Documentation](https://github.com/MrNitro360/React-Native-MCP) • [Community](https://github.com/MrNitro360/React-Native-MCP/issues)
+[Get Started](https://www.npmjs.com/package/@divagnz/react-native-expo-mcp) • [Documentation](https://github.com/Divagnz/React-Native-MCP) • [Community](https://github.com/Divagnz/React-Native-MCP/issues)
 
 </div>
+
+---
+
+## 🙏 Acknowledgments
+
+This project builds upon the excellent work of the React Native and MCP communities:
+
+- **[React Native Team](https://reactnative.dev/)** - For creating and maintaining the outstanding React Native framework that makes cross-platform mobile development accessible and powerful.
+
+- **[@mrnitro360](https://github.com/MrNitro360)** - Original author of [react-native-mcp-guide](https://github.com/MrNitro360/React-Native-MCP), which provided the foundation for this enhanced server. Thank you for pioneering React Native MCP integration.
+
+- **[Expo Team](https://expo.dev/)** - For building the incredible Expo ecosystem that simplifies React Native development and enables rapid iteration with tools like EAS Build and OTA updates.
+
+- **[Anthropic](https://www.anthropic.com/)** - For developing the Model Context Protocol (MCP) and Claude, enabling powerful AI-assisted development workflows that enhance developer productivity.
+
+Special thanks to the broader React Native community for continuous innovation, comprehensive documentation, and countless contributions that make mobile development better every day.

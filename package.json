@@ -1,11 +1,11 @@
 {
-  "name": "@divagnz/react-native-mcp-server",
+  "name": "@divagnz/react-native-expo-mcp",
   "version": "0.0.1",
-  "description": "Advanced MCP server for React Native development - comprehensive code analysis, performance optimization, best practices, package management, and AI-powered debugging assistance",
+  "description": "React Native Expo MCP server - forked and expanded with expert code remediation, advanced refactoring, modular architecture, and comprehensive testing. Professional development companion for React Native teams with upcoming Expo, ADB, and iOS tool integration.",
   "type": "module",
   "main": "build/index.js",
   "bin": {
-    "react-native-mcp": "./build/index.js"
+    "react-native-expo-mcp": "./build/index.js"
   },
   "scripts": {
     "build": "tsc",

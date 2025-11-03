@@ -8,15 +8,9 @@ on:
       - 'package.json'
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (leave empty to use package.json version)'
-        required: false
-        type: string
 
 jobs:
-  publish:
+publish:
     name: Publish to NPM
     runs-on: ubuntu-latest
     permissions:
@@ -68,7 +62,7 @@ jobs:
           body: |
             Automated release for version ${{ github.event.inputs.version }}
 
-            Published to NPM: https://www.npmjs.com/package/@divagnz/react-native-mcp-server
+            Published to NPM: https://www.npmjs.com/package/@divagnz/react-native-expo-mcp
           draft: false
           prerelease: false
 
@@ -84,15 +78,15 @@ jobs:
 
       - name: Verify package is available
         run: |
-          npm view @divagnz/react-native-mcp-server version || echo "Package not yet available"
+          npm view @divagnz/react-native-expo-mcp version || echo "Package not yet available"
 
       - name: Verify package installation
         run: |
-          npm install -g @divagnz/react-native-mcp-server
-          which react-native-mcp || echo "Binary not found"
+          npm install -g @divagnz/react-native-expo-mcp
+          which react-native-expo-mcp || echo "Binary not found"
 
       - name: Summary
         run: |
           echo "✅ Package published successfully!"
-          echo "📦 Package: @divagnz/react-native-mcp-server"
-          echo "🔗 NPM: https://www.npmjs.com/package/@divagnz/react-native-mcp-server"
+          echo "📦 Package: @divagnz/react-native-expo-mcp"
+          echo "🔗 NPM: https://www.npmjs.com/package/@divagnz/react-native-expo-mcp"
