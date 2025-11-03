@@ -27,6 +27,35 @@ const logFormat = winston.format.combine(
   winston.format.json()
 );
 
+// Configure transports
+const transports: winston.transport[] = [
+  // Error log - only errors
+  new winston.transports.File({
+    filename: path.join(logsDir, 'error.log'),
+    level: 'error',
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  }),
+  // Combined log - all levels
+  new winston.transports.File({
+    filename: path.join(logsDir, 'combined.log'),
+    maxsize: 10485760, // 10MB
+    maxFiles: 10,
+  }),
+];
+
+// Add debug log if log level is debug
+if (logLevel === 'debug') {
+  transports.push(
+    new winston.transports.File({
+      filename: path.join(logsDir, 'debug.log'),
+      level: 'debug',
+      maxsize: 10485760, // 10MB
+      maxFiles: 3,
+    })
+  );
+}
+
 /**
  * Main logger instance
  * Logs to files only - NO console output to avoid MCP protocol interference
@@ -34,32 +63,7 @@ const logFormat = winston.format.combine(
 export const logger = winston.createLogger({
   level: logLevel,
   format: logFormat,
-  transports: [
-    // Error log - only errors
-    new winston.transports.File({
-      filename: path.join(logsDir, 'error.log'),
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-    // Combined log - all levels
-    new winston.transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 10485760, // 10MB
-      maxFiles: 10,
-    }),
-    // Debug log - debug and above (optional, only if MCP_LOG_LEVEL=debug)
-    ...(logLevel === 'debug'
-      ? [
-          new winston.transports.File({
-            filename: path.join(logsDir, 'debug.log'),
-            level: 'debug',
-            maxsize: 10485760, // 10MB
-            maxFiles: 3,
-          }),
-        ]
-      : []),
-  ],
+  transports,
   // Prevent Winston from exiting on error
   exitOnError: false,
 });
@@ -67,11 +71,7 @@ export const logger = winston.createLogger({
 /**
  * Log tool invocation with timing
  */
-export function logToolInvocation(
-  toolName: string,
-  args: unknown,
-  duration?: number
-): void {
+export function logToolInvocation(toolName: string, args: unknown, duration?: number): void {
   logger.info('Tool invoked', {
     tool: toolName,
     args: sanitizeArgs(args),
@@ -83,11 +83,7 @@ export function logToolInvocation(
 /**
  * Log tool success
  */
-export function logToolSuccess(
-  toolName: string,
-  duration: number,
-  resultSize?: number
-): void {
+export function logToolSuccess(toolName: string, duration: number, resultSize?: number): void {
   logger.info('Tool completed successfully', {
     tool: toolName,
     duration: `${duration.toFixed(2)}ms`,
@@ -99,11 +95,7 @@ export function logToolSuccess(
 /**
  * Log tool failure
  */
-export function logToolFailure(
-  toolName: string,
-  error: Error,
-  duration?: number
-): void {
+export function logToolFailure(toolName: string, error: Error, duration?: number): void {
   logger.error('Tool failed', {
     tool: toolName,
     error: error.message,
@@ -117,11 +109,7 @@ export function logToolFailure(
 /**
  * Log validation error
  */
-export function logValidationError(
-  context: string,
-  error: string,
-  details?: unknown
-): void {
+export function logValidationError(context: string, error: string, details?: unknown): void {
   logger.warn('Validation error', {
     context,
     error,

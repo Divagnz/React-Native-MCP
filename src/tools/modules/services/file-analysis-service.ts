@@ -4,24 +4,73 @@
  */
 
 import * as path from 'path';
+import { fileAnalysisCache } from '../../../utils/cache.js';
+import { measure, globalPerformanceMonitor } from '../../../utils/performance.js';
+import * as crypto from 'crypto';
 
 export class FileAnalysisService {
+  // Pre-compiled regex patterns for better performance
+  private static readonly PATTERNS = {
+    reactImport: /import\s+.*React.*from\s+['"]react['"]/m,
+    rnImport: /from\s+['"]react-native['"]/m,
+    hasExport: /export\s+(?:default\s+)?(?:function|class|const)/m,
+    jsxElements: /<[A-Z]\w*[\s\S]*?>/m,
+    flatList: /<FlatList[\s\S]*?(?:\/\>|<\/FlatList>)/g,
+    scrollViewMap: /<ScrollView[\s\S]*?>[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/g,
+    useState: /useState\s*\(/,
+    useEffect: /useEffect\s*\(/,
+    useCallback: /useCallback\s*\(/,
+    eventHandlers: /on(?:Press|Change|Submit|Focus|Blur)\s*=/,
+    styleSheetCreate: /StyleSheet\.create\s*\(/,
+    inlineStyles: /style\s*=\s*\{\{[^}]+\}\}/g,
+    wildcardImports: /import\s+\*\s+as\s+\w+\s+from\s+['"][^'"]+['"]/g,
+    setInterval: /setInterval\s*\(/,
+    clearInterval: /clearInterval/,
+    addEventListener: /addEventListener\s*\(/,
+    removeEventListener: /removeEventListener/,
+  };
+
+  /**
+   * Generate cache key from file path and content hash
+   */
+  private static getCacheKey(filePath: string, content: string): string {
+    const contentHash = crypto.createHash('md5').update(content).digest('hex').substring(0, 8);
+    return `file:${filePath}:${contentHash}`;
+  }
+
   static analyzeFileContent(content: string, filePath: string) {
+    // Check cache first
+    const cacheKey = this.getCacheKey(filePath, content);
+    const cached = fileAnalysisCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Wrap analysis in performance monitoring
+    const result = this.performAnalysis(content, filePath);
+
+    // Cache the result
+    fileAnalysisCache.set(cacheKey, result);
+
+    return result;
+  }
+
+  private static performAnalysis(content: string, filePath: string) {
     const issues: string[] = [];
     const suggestions: string[] = [];
     const fileName = path.basename(filePath);
 
-    // More accurate React Native component detection
-    const hasReactImport = /import\s+.*React.*from\s+['"]react['"]/m.test(content);
-    const hasRNImport = /from\s+['"]react-native['"]/m.test(content);
-    const hasExport = /export\s+(?:default\s+)?(?:function|class|const)/m.test(content);
-    const hasJSXElements = /<[A-Z]\w*[\s\S]*?>/m.test(content);
+    // More accurate React Native component detection using pre-compiled patterns
+    const hasReactImport = this.PATTERNS.reactImport.test(content);
+    const hasRNImport = this.PATTERNS.rnImport.test(content);
+    const hasExport = this.PATTERNS.hasExport.test(content);
+    const hasJSXElements = this.PATTERNS.jsxElements.test(content);
 
     const isComponent = (hasReactImport || hasRNImport) && hasExport && hasJSXElements;
 
     if (isComponent) {
-      // Enhanced FlatList analysis
-      const flatListMatches = content.match(/<FlatList[\s\S]*?(?:\/\>|<\/FlatList>)/g);
+      // Enhanced FlatList analysis using pre-compiled pattern
+      const flatListMatches = content.match(this.PATTERNS.flatList);
       if (flatListMatches) {
         flatListMatches.forEach((flatList) => {
           if (!flatList.includes('keyExtractor')) {
@@ -35,27 +84,26 @@ export class FileAnalysisService {
         });
       }
 
-      // More precise ScrollView + map detection
-      const scrollViewMapRegex = /<ScrollView[\s\S]*?>[\s\S]*?\.map\s*\([\s\S]*?<\/ScrollView>/g;
-      if (scrollViewMapRegex.test(content)) {
+      // More precise ScrollView + map detection using pre-compiled pattern
+      if (this.PATTERNS.scrollViewMap.test(content)) {
         issues.push(
           `${fileName}: Using .map() inside ScrollView - consider FlatList for performance`
         );
       }
 
-      // Enhanced hooks analysis
-      const hasUseState = /useState\s*\(/.test(content);
-      const hasUseEffect = /useEffect\s*\(/.test(content);
-      const hasUseCallback = /useCallback\s*\(/.test(content);
-      const hasEventHandlers = /on(?:Press|Change|Submit|Focus|Blur)\s*=/.test(content);
+      // Enhanced hooks analysis using pre-compiled patterns
+      const hasUseState = this.PATTERNS.useState.test(content);
+      const hasUseEffect = this.PATTERNS.useEffect.test(content);
+      const hasUseCallback = this.PATTERNS.useCallback.test(content);
+      const hasEventHandlers = this.PATTERNS.eventHandlers.test(content);
 
       if (hasUseState && hasUseEffect && hasEventHandlers && !hasUseCallback) {
         issues.push(`${fileName}: Event handlers without useCallback may cause re-renders`);
       }
 
-      // Improved style analysis
-      const hasStyleSheetCreate = /StyleSheet\.create\s*\(/.test(content);
-      const hasInlineStyles = /style\s*=\s*\{\{[^}]+\}\}/g.test(content);
+      // Improved style analysis using pre-compiled patterns
+      const hasStyleSheetCreate = this.PATTERNS.styleSheetCreate.test(content);
+      const hasInlineStyles = this.PATTERNS.inlineStyles.test(content);
 
       if (hasInlineStyles && !hasStyleSheetCreate) {
         suggestions.push(
@@ -63,18 +111,18 @@ export class FileAnalysisService {
         );
       }
 
-      // Import optimization checks
-      const wildcardImports = content.match(/import\s+\*\s+as\s+\w+\s+from\s+['"][^'"]+['"]/g);
+      // Import optimization checks using pre-compiled pattern
+      const wildcardImports = content.match(this.PATTERNS.wildcardImports);
       if (wildcardImports && wildcardImports.length > 0) {
         suggestions.push(`${fileName}: Consider using named imports instead of wildcard imports`);
       }
 
-      // Memory leak detection
-      if (/setInterval\s*\(/.test(content) && !/clearInterval/.test(content)) {
+      // Memory leak detection using pre-compiled patterns
+      if (this.PATTERNS.setInterval.test(content) && !this.PATTERNS.clearInterval.test(content)) {
         issues.push(`${fileName}: setInterval without clearInterval may cause memory leaks`);
       }
 
-      if (/addEventListener\s*\(/.test(content) && !/removeEventListener/.test(content)) {
+      if (this.PATTERNS.addEventListener.test(content) && !this.PATTERNS.removeEventListener.test(content)) {
         issues.push(`${fileName}: Event listeners without cleanup may cause memory leaks`);
       }
     }
@@ -90,6 +138,23 @@ export class FileAnalysisService {
   }
 
   static analyzeFilePerformance(content: string, filePath: string, focusAreas: string[]) {
+    // Check cache with focus areas in key
+    const cacheKey = `${this.getCacheKey(filePath, content)}:perf:${focusAreas.sort().join(',')}`;
+    const cached = fileAnalysisCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Perform analysis with performance monitoring
+    const result = this.performPerformanceAnalysis(content, filePath, focusAreas);
+
+    // Cache the result
+    fileAnalysisCache.set(cacheKey, result);
+
+    return result;
+  }
+
+  private static performPerformanceAnalysis(content: string, filePath: string, focusAreas: string[]) {
     const issues: any[] = [];
     const fileName = path.basename(filePath);
 

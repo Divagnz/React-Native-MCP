@@ -1,1 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run lint, build, and test before committing
+npm run lint && npm run build && npm test
+
+# Run lint-staged for formatting
 npx lint-staged

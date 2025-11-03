@@ -9,6 +9,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.72+-blue.svg)](https://reactnative.dev/)
 
+
+
+[![Lines](./coverage/badge-lines.svg)]
+[![Branches](./coverage/badge-branches.svg)]
+[![Functions](./coverage/badge-functions.svg)]
+[![Statements](./coverage/badge-statements.svg)]
+
+
 **Professional AI-powered React Native development companion with expert-level code remediation**
 
 *Expert remediation • Automated fixes • Industry best practices • Enterprise security*

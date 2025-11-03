@@ -10,15 +10,9 @@ import { ValidationError } from '../errors/index.js';
 /**
  * Validate that a value is a non-empty string
  */
-export function validateNonEmptyString(
-  value: unknown,
-  fieldName: string
-): asserts value is string {
+export function validateNonEmptyString(value: unknown, fieldName: string): asserts value is string {
   if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new ValidationError(
-      `${fieldName} must be a non-empty string`,
-      { value, fieldName }
-    );
+    throw new ValidationError(`${fieldName} must be a non-empty string`, { value, fieldName });
   }
 }
 
@@ -79,22 +73,16 @@ export function validateDirectoryExists(dirPath: string): void {
 /**
  * Validate code input with optional length constraints
  */
-export function validateCodeInput(
-  code: string,
-  maxLength = 1000000
-): asserts code is string {
+export function validateCodeInput(code: string, maxLength = 1000000): asserts code is string {
   if (!code || typeof code !== 'string') {
     throw new ValidationError('Code must be a non-empty string', { code });
   }
 
   if (code.length > maxLength) {
-    throw new ValidationError(
-      `Code exceeds maximum length of ${maxLength} characters`,
-      {
-        codeLength: code.length,
-        maxLength,
-      }
-    );
+    throw new ValidationError(`Code exceeds maximum length of ${maxLength} characters`, {
+      codeLength: code.length,
+      maxLength,
+    });
   }
 }
 
@@ -131,10 +119,10 @@ export function validateProjectStructure(projectPath: string): void {
   const packageJsonPath = path.join(projectPath, 'package.json');
 
   if (!fs.existsSync(packageJsonPath)) {
-    throw new ValidationError(
-      `Not a valid project: package.json not found in ${projectPath}`,
-      { projectPath, packageJsonPath }
-    );
+    throw new ValidationError(`Not a valid project: package.json not found in ${projectPath}`, {
+      projectPath,
+      packageJsonPath,
+    });
   }
 
   try {
@@ -170,24 +158,18 @@ export function validateEnum<T extends string>(
   fieldName: string
 ): asserts value is T {
   if (!enumValues.includes(value as T)) {
-    throw new ValidationError(
-      `${fieldName} must be one of: ${enumValues.join(', ')}`,
-      {
-        value,
-        validValues: enumValues,
-        fieldName,
-      }
-    );
+    throw new ValidationError(`${fieldName} must be one of: ${enumValues.join(', ')}`, {
+      value,
+      validValues: enumValues,
+      fieldName,
+    });
   }
 }
 
 /**
  * Validate boolean value
  */
-export function validateBoolean(
-  value: unknown,
-  fieldName: string
-): asserts value is boolean {
+export function validateBoolean(value: unknown, fieldName: string): asserts value is boolean {
   if (typeof value !== 'boolean') {
     throw new ValidationError(`${fieldName} must be a boolean`, {
       value,
@@ -234,10 +216,7 @@ export function validateNumberInRange(
 /**
  * Validate that a value is an array
  */
-export function validateArray(
-  value: unknown,
-  fieldName: string
-): asserts value is unknown[] {
+export function validateArray(value: unknown, fieldName: string): asserts value is unknown[] {
   if (!Array.isArray(value)) {
     throw new ValidationError(`${fieldName} must be an array`, {
       value,
@@ -258,12 +237,8 @@ export function validateOptional<T>(
     return true;
   }
 
-  try {
-    validator(value);
-    return true;
-  } catch (error) {
-    throw error;
-  }
+  validator(value);
+  return true;
 }
 
 /**
@@ -280,13 +255,10 @@ export function validatePackageName(packageName: string): void {
   const packageNamePattern = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 
   if (!packageNamePattern.test(packageName)) {
-    throw new ValidationError(
-      `Invalid package name format: ${packageName}`,
-      {
-        packageName,
-        expectedFormat: 'Valid npm package name',
-      }
-    );
+    throw new ValidationError(`Invalid package name format: ${packageName}`, {
+      packageName,
+      expectedFormat: 'Valid npm package name',
+    });
   }
 }
 
@@ -351,9 +323,7 @@ export const FOCUS_AREAS = [
 
 export type FocusArea = (typeof FOCUS_AREAS)[number];
 
-export function validateFocusAreas(
-  focusAreas: unknown
-): asserts focusAreas is FocusArea[] {
+export function validateFocusAreas(focusAreas: unknown): asserts focusAreas is FocusArea[] {
   // Validate it's an array first
   if (!Array.isArray(focusAreas)) {
     throw new ValidationError('focus_areas must be an array', {
@@ -383,9 +353,7 @@ export const UPDATE_LEVELS = ['patch', 'minor', 'major', 'all'] as const;
 
 export type UpdateLevel = (typeof UPDATE_LEVELS)[number];
 
-export function validateUpdateLevel(
-  updateLevel: unknown
-): asserts updateLevel is UpdateLevel {
+export function validateUpdateLevel(updateLevel: unknown): asserts updateLevel is UpdateLevel {
   validateEnum(updateLevel, UPDATE_LEVELS, 'update_level');
 }
 
@@ -396,9 +364,7 @@ export const REMEDIATION_LEVELS = ['basic', 'standard', 'expert'] as const;
 
 export type RemediationLevel = (typeof REMEDIATION_LEVELS)[number];
 
-export function validateRemediationLevel(
-  level: unknown
-): asserts level is RemediationLevel {
+export function validateRemediationLevel(level: unknown): asserts level is RemediationLevel {
   validateEnum(level, REMEDIATION_LEVELS, 'remediation_level');
 }
 
@@ -409,8 +375,6 @@ export const SEVERITY_LEVELS = ['critical', 'high', 'medium', 'low'] as const;
 
 export type SeverityLevel = (typeof SEVERITY_LEVELS)[number];
 
-export function validateSeverityLevel(
-  severity: unknown
-): asserts severity is SeverityLevel {
+export function validateSeverityLevel(severity: unknown): asserts severity is SeverityLevel {
   validateEnum(severity, SEVERITY_LEVELS, 'severity');
 }

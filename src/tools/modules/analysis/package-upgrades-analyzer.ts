@@ -2,6 +2,8 @@
  * Package upgrades analysis for React Native projects
  */
 
+import { packageInfoCache } from '../../../utils/cache.js';
+
 export interface PackageUpgradeIssue {
   file: string;
   type: string;
@@ -16,6 +18,13 @@ export class PackageUpgradesAnalyzer {
    * Analyze package.json for outdated or deprecated packages
    */
   static analyzePackageUpgrades(packageJson: any): PackageUpgradeIssue[] {
+    // Create cache key from package versions
+    const cacheKey = `pkg-upgrades:${JSON.stringify(packageJson.dependencies || {})}:${JSON.stringify(packageJson.devDependencies || {})}`;
+    const cached = packageInfoCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const suggestions: PackageUpgradeIssue[] = [];
 
     if (!packageJson.dependencies && !packageJson.devDependencies) {
@@ -94,6 +103,9 @@ export class PackageUpgradesAnalyzer {
         });
       }
     }
+
+    // Cache the result
+    packageInfoCache.set(cacheKey, suggestions);
 
     return suggestions;
   }

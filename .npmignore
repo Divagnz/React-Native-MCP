@@ -1,0 +1,47 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Tests
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+coverage/
+.nyc_output/
+
+# Development files
+.github/
+.husky/
+.vscode/
+node_modules/
+
+# Configuration files
+tsconfig.json
+.eslintrc.*
+.prettierrc.*
+jest.config.*
+.gitignore
+
+# Documentation (keep README.md)
+docs/
+examples/
+IMPROVEMENTS_PLAN.md
+
+# Build artifacts
+*.log
+*.pid
+*.seed
+*.pid.lock
+.DS_Store
+.env
+.env.test
+.env.local
+.env.*.local
+
+# Misc
+imgui.ini
+workflow.db
+*.swp
+*.swo
+*~

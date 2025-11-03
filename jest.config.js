@@ -1,18 +1,16 @@
 /** @type {import('jest').Config} */
 export default {
-  // Use ts-jest preset for TypeScript support
+  // ──────────────────────────────────────────────────────────────
+  //  TypeScript + ESM Support
+  // ──────────────────────────────────────────────────────────────
   preset: 'ts-jest/presets/default-esm',
-
-  // Test environment
   testEnvironment: 'node',
-
-  // Module resolution for ES modules
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    // '^@/(.*)$': '<rootDir>/src/$1', // enable if you use path aliases
   },
 
-  // Transform configuration for TypeScript with ES modules
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
@@ -24,64 +22,79 @@ export default {
           esModuleInterop: true,
           allowSyntheticDefaultImports: true,
         },
+        diagnostics: { warnOnly: false },
       },
     ],
   },
 
-  // Test file patterns
+  // ──────────────────────────────────────────────────────────────
+  //  Test Discovery
+  // ──────────────────────────────────────────────────────────────
+  roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*.test.ts',
     '**/?(*.)+(spec|test).ts',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '/build/', '/coverage/'],
 
-  // Roots to search for tests
-  roots: ['<rootDir>/src'],
-
-  // Coverage configuration
+  // ──────────────────────────────────────────────────────────────
+  //  Coverage Collection
+  // ──────────────────────────────────────────────────────────────
+  collectCoverage: true,
+  coverageProvider: 'v8',
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/*.test.ts',
     '!src/**/__tests__/**',
-    '!src/index.ts', // Entry point, tested via integration
+    '!src/**/__mocks__/**',
+    '!src/**/types.ts',
+    '!src/**/index.ts', // barrel/entrypoints excluded for now
   ],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['text', 'lcov', 'json-summary'],
 
-  // Coverage thresholds
-  // NOTE: Phase 2 progress - modularization and testing utility modules
-  // Current coverage: Statements 14.11%, Branches 10.22%, Functions 17.18%, Lines 13.75%
-  // After full Phase 2 refactoring, will increase to 80%+
+  // ──────────────────────────────────────────────────────────────
+  //  Coverage Thresholds (incrementally tighten as project matures)
+  // ──────────────────────────────────────────────────────────────
   coverageThreshold: {
     global: {
-      branches: 10,     // 103/1007 branches covered (up from 0%)
-      functions: 17,    // 44/256 functions covered (up from 3%)
-      lines: 13,        // 222/1614 lines covered (up from 2%)
-      statements: 14,   // 231/1637 statements covered (up from 2%)
+      branches: 25,
+      functions: 35,
+      lines: 35,
+      statements: 35,
+    },
+    './src/utils/*.ts': {
+      branches: 70,
+      functions: 80,
+      lines: 85,
+      statements: 85,
+    },
+    './src/tools/modules/utils/*': {
+      branches: 10,
+      functions: 10,
+      lines: 15,
+      statements: 10,
+    },
+    './src/tools/modules/services/*': {
+      branches: 5,
+      functions: 15,
+
+      lines: 10,
+      statements: 10,
     },
   },
 
-  // Coverage reporting
-  coverageReporters: ['text', 'text-summary', 'lcov', 'html'],
-  coverageDirectory: '<rootDir>/coverage',
-
-  // Ignore patterns
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/build/',
-    '/coverage/',
-  ],
-
-  // Setup files
-  // setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
-
-  // Verbose output
+  // ──────────────────────────────────────────────────────────────
+  //  Behavior & Debugging
+  // ──────────────────────────────────────────────────────────────
   verbose: true,
-
-  // Clear mocks between tests
   clearMocks: true,
-
-  // Restore mocks between tests
   restoreMocks: true,
-
-  // Maximum workers for parallel execution
   maxWorkers: '50%',
+  // detectOpenHandles: true, // uncomment for debugging hanging tests
+
+  // ──────────────────────────────────────────────────────────────
+  //  Optional setup file (uncomment if you add one)
+  // ──────────────────────────────────────────────────────────────
+  // setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
 };

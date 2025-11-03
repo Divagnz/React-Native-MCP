@@ -169,14 +169,10 @@ export async function withErrorHandling<T>(
 
     // Wrap unknown errors in MCPError
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new MCPError(
-      `Failed to ${errorContext}: ${errorMessage}`,
-      'UNKNOWN_ERROR',
-      {
-        originalError: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-      }
-    );
+    throw new MCPError(`Failed to ${errorContext}: ${errorMessage}`, 'UNKNOWN_ERROR', {
+      originalError: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
   }
 }
 
@@ -189,17 +185,14 @@ export async function withErrorHandling<T>(
  * @returns The result of the operation
  * @throws MCPError with proper context
  */
-export function withErrorHandlingSync<T>(
-  operation: () => T,
-  errorContext: string
-): T {
+export function withErrorHandlingSync<T>(operation: () => T, errorContext: string): T {
   try {
     return operation();
   } catch (error) {
     // If it's already an MCPError, just rethrow it
     if (error instanceof MCPError) {
       // Log to file (dynamic import for sync context)
-      import('../utils/logger.js').then(({ logger }) => {
+      void import('../utils/logger.js').then(({ logger }) => {
         logger.error(`Error in ${errorContext}`, {
           code: error.code,
           message: error.message,
@@ -210,7 +203,7 @@ export function withErrorHandlingSync<T>(
     }
 
     // Log the original error to file for debugging
-    import('../utils/logger.js').then(({ logger }) => {
+    void import('../utils/logger.js').then(({ logger }) => {
       logger.error(`Error in ${errorContext}`, {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
@@ -219,14 +212,10 @@ export function withErrorHandlingSync<T>(
 
     // Wrap unknown errors in MCPError
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new MCPError(
-      `Failed to ${errorContext}: ${errorMessage}`,
-      'UNKNOWN_ERROR',
-      {
-        originalError: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-      }
-    );
+    throw new MCPError(`Failed to ${errorContext}: ${errorMessage}`, 'UNKNOWN_ERROR', {
+      originalError: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
   }
 }
 

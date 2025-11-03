@@ -3,11 +3,39 @@
  * Analyzes code for best practices, performance, security, and quality issues
  */
 
+import { componentAnalysisCache } from '../../../utils/cache.js';
+import * as crypto from 'crypto';
+
 export class ComponentAnalyzer {
+  /**
+   * Generate cache key from code and type
+   */
+  private static getCacheKey(code: string, type?: string): string {
+    const codeHash = crypto.createHash('md5').update(code).digest('hex').substring(0, 8);
+    return `component:${codeHash}:${type || 'default'}`;
+  }
+
   /**
    * Analyze a React Native component for best practices and issues
    */
   static analyzeComponent(code: string, type?: string): string {
+    // Check cache first
+    const cacheKey = this.getCacheKey(code, type);
+    const cached = componentAnalysisCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Perform analysis
+    const result = this.performComponentAnalysis(code, type);
+
+    // Cache the result
+    componentAnalysisCache.set(cacheKey, result);
+
+    return result;
+  }
+
+  private static performComponentAnalysis(code: string, type?: string): string {
     const issues: string[] = [];
     const suggestions: string[] = [];
 
