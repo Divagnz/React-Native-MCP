@@ -4,8 +4,8 @@
  */
 
 import * as path from 'path';
-import { fileAnalysisCache } from '../../../utils/cache';
-import { measure, globalPerformanceMonitor } from '../../../utils/performance';
+import { fileAnalysisCache } from '../../../utils/cache.js';
+import { measure, globalPerformanceMonitor } from '../../../utils/performance.js';
 import * as crypto from 'crypto';
 
 export class FileAnalysisService {

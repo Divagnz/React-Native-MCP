@@ -2,7 +2,7 @@
  * Package upgrades analysis for React Native projects
  */
 
-import { packageInfoCache } from '../../../utils/cache';
+import { packageInfoCache } from '../../../utils/cache.js';
 
 export interface PackageUpgradeIssue {
   file: string;

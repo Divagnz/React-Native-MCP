@@ -3,7 +3,7 @@
  * Analyzes code for best practices, performance, security, and quality issues
  */
 
-import { componentAnalysisCache } from '../../../utils/cache';
+import { componentAnalysisCache } from '../../../utils/cache.js';
 import * as crypto from 'crypto';
 
 export class ComponentAnalyzer {
