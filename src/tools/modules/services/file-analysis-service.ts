@@ -122,7 +122,10 @@ export class FileAnalysisService {
         issues.push(`${fileName}: setInterval without clearInterval may cause memory leaks`);
       }
 
-      if (this.PATTERNS.addEventListener.test(content) && !this.PATTERNS.removeEventListener.test(content)) {
+      if (
+        this.PATTERNS.addEventListener.test(content) &&
+        !this.PATTERNS.removeEventListener.test(content)
+      ) {
         issues.push(`${fileName}: Event listeners without cleanup may cause memory leaks`);
       }
     }
@@ -154,7 +157,11 @@ export class FileAnalysisService {
     return result;
   }
 
-  private static performPerformanceAnalysis(content: string, filePath: string, focusAreas: string[]) {
+  private static performPerformanceAnalysis(
+    content: string,
+    filePath: string,
+    focusAreas: string[]
+  ) {
     const issues: any[] = [];
     const fileName = path.basename(filePath);
 
