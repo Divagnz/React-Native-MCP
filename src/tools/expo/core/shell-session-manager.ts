@@ -322,7 +322,8 @@ export class ShellSessionManager extends EventEmitter {
     // Handle stdout
     session.process.stdout?.on('data', (data: Buffer) => {
       const text = data.toString();
-      this.addLog(session, 'info', text);
+      const level = this.detectLogLevel(text);
+      this.addLog(session, level, text);
     });
 
     // Handle stderr

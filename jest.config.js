@@ -78,9 +78,14 @@ export default {
     './src/tools/modules/services/*': {
       branches: 5,
       functions: 15,
-
       lines: 10,
       statements: 10,
+    },
+    './src/tools/expo/**/*.ts': {
+      branches: 50,
+      functions: 60,
+      lines: 60,
+      statements: 60,
     },
   },
 

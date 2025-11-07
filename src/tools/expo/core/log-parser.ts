@@ -129,16 +129,20 @@ export class LogParser {
    */
   public extractURLs(line: string): ExtractedURL[] {
     const urls: ExtractedURL[] = [];
+    const seen = new Set<string>();
 
     // Extract exp:// URLs (Expo dev)
     const expMatches = line.match(LOG_PATTERNS.EXPO_URL);
     if (expMatches) {
       expMatches.forEach((url) => {
-        urls.push({
-          url,
-          type: 'expo',
-          qr_compatible: true,
-        });
+        if (!seen.has(url)) {
+          seen.add(url);
+          urls.push({
+            url,
+            type: 'expo',
+            qr_compatible: true,
+          });
+        }
       });
     }
 
@@ -146,11 +150,14 @@ export class LogParser {
     const metroMatches = line.match(LOG_PATTERNS.METRO_URL);
     if (metroMatches) {
       metroMatches.forEach((url) => {
-        urls.push({
-          url,
-          type: 'metro',
-          qr_compatible: true,
-        });
+        if (!seen.has(url)) {
+          seen.add(url);
+          urls.push({
+            url,
+            type: 'metro',
+            qr_compatible: true,
+          });
+        }
       });
     }
 

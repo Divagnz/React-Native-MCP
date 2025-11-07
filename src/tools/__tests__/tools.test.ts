@@ -143,13 +143,13 @@ describe('ReactNativeTools', () => {
       });
     });
 
-    it('should register all 17 tools including package management tools', () => {
+    it('should register all 32 tools including package management and Expo CLI tools', () => {
       reactNativeTools.register();
 
       const calls = (mockServer.tool as any).mock.calls;
 
-      // Should register 17 tools (fixed: package management tools no longer nested)
-      expect(calls.length).toBe(17);
+      // Should register 32 tools (17 core + 15 Expo CLI tools)
+      expect(calls.length).toBe(32);
     });
   });
 
