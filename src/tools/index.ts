@@ -18,6 +18,7 @@ import { TestGenerationService } from './modules/services/test-generation-servic
 import { TestingAnalysisService } from './modules/services/testing-analysis-service.js';
 import { TestCoverageService } from './modules/services/test-coverage-service.js';
 import { VersionManagementService } from './modules/services/version-management-service.js';
+import { ExpoTools } from './expo/index.js';
 
 /**
  * React Native Tools
@@ -28,6 +29,10 @@ export class ReactNativeTools {
   constructor(private server: McpServer) {}
 
   register() {
+    // Register Expo CLI tools (15 tools)
+    const expoTools = new ExpoTools(this.server);
+    expoTools.register();
+
     // Register all testing tools
     this.register_test_generation();
 
