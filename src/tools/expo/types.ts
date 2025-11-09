@@ -220,6 +220,23 @@ export interface ExpoInstallResult {
   message: string;
 }
 
+export interface ExpoCreateConfig {
+  project_name: string;
+  template?: string; // blank, tabs, bare, etc.
+  npm?: boolean; // Use npm instead of yarn
+  install?: boolean; // Install dependencies (default: true)
+  yes?: boolean; // Skip all prompts (default: false)
+}
+
+export interface ExpoCreateResult {
+  project_name: string;
+  project_path: string;
+  template: string;
+  sdk_version: string;
+  installed: boolean;
+  next_steps: string[];
+}
+
 export interface ExpoUpgradeConfig {
   target_version?: string;
   dry_run?: boolean;

@@ -10,7 +10,7 @@
 
 export const EXPO_CLI = 'npx';
 export const EXPO_COMMAND = 'expo';
-export const EAS_COMMAND = 'eas-cli/bin/run';
+export const EAS_COMMAND = 'eas';
 
 // ============================================================================
 // Timeout Constants (milliseconds)

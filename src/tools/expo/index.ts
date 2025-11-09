@@ -1,11 +1,11 @@
 /**
  * Expo Tools Registration
  *
- * Registers all 15 Expo CLI tools with the MCP server:
+ * Registers all 16 Expo CLI tools with the MCP server:
  * - 4 Dev Server tools (session-based)
  * - 3 Local Build tools (session-based)
  * - 3 Cloud Build tools (EAS)
- * - 3 Project Management tools
+ * - 4 Project Management tools
  * - 2 OTA Update tools
  */
 
@@ -26,6 +26,7 @@ import { triggerEASBuild } from './build-cloud/build.js';
 import { getEASBuildStatus } from './build-cloud/status.js';
 import { submitToStore } from './build-cloud/submit.js';
 
+import { createExpoApp } from './project/create.js';
 import { runExpoDoctor } from './project/doctor.js';
 import { installExpoPackages } from './project/install.js';
 import { upgradeExpoSDK } from './project/upgrade.js';
@@ -317,9 +318,36 @@ export class ExpoTools {
   }
 
   /**
-   * Register Project Management tools (3 tools)
+   * Register Project Management tools (4 tools)
    */
   private registerProjectTools(): void {
+    // expo_create_app
+    this.server.tool(
+      'expo_create_app',
+      'Create a new Expo/React Native project with template support',
+      {
+        project_name: z.string().describe('Name of the new project'),
+        template: z.string().optional().describe('Project template (blank, tabs, bare, etc.)'),
+        npm: z.boolean().optional().describe('Use npm instead of yarn'),
+        install: z.boolean().optional().describe('Install dependencies (default: true)'),
+        yes: z.boolean().optional().describe('Skip all prompts (default: false)'),
+      },
+      async (config) => {
+        const result = await createExpoApp(config);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result.success
+                ? JSON.stringify(result.data, null, 2)
+                : `Error: ${result.error}`,
+            },
+          ],
+          isError: !result.success,
+        };
+      }
+    );
+
     // expo_doctor
     this.server.tool(
       'expo_doctor',

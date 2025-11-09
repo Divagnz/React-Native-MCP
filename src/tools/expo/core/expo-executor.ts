@@ -11,6 +11,7 @@ import { ExecuteOptions, ExecuteResult } from '../types.js';
 import {
   EXPO_CLI,
   EXPO_COMMAND,
+  EAS_COMMAND,
   TIMEOUTS,
   DANGEROUS_CHARS,
   PACKAGE_NAME_REGEX,
@@ -53,7 +54,7 @@ export class ExpoExecutor {
     args: string[],
     options: ExecuteOptions = {}
   ): Promise<ExecuteResult> {
-    return this.execute([EXPO_CLI, 'eas', ...args], options);
+    return this.execute([EXPO_CLI, EAS_COMMAND, ...args], options);
   }
 
   /**

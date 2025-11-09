@@ -1,6 +1,6 @@
 {
   "name": "@divagnz/react-native-expo-mcp",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "React Native Expo MCP server - forked and expanded with expert code remediation, advanced refactoring, modular architecture, and comprehensive testing. Professional development companion for React Native teams with upcoming Expo, ADB, and iOS tool integration.",
   "type": "module",
   "main": "build/index.js",
