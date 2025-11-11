@@ -54,45 +54,56 @@ export default {
   coverageReporters: ['text', 'lcov', 'json-summary'],
 
   // ──────────────────────────────────────────────────────────────
-  //  Coverage Thresholds (incrementally tighten as project matures)
+  //  Coverage Thresholds (v0.1.0 - Raised based on actual coverage)
   // ──────────────────────────────────────────────────────────────
   coverageThreshold: {
+    // Global thresholds raised significantly (actual: 52.4% lines, 64.63% functions, 90.57% branches)
     global: {
-      branches: 25,
-      functions: 35,
-      lines: 35,
-      statements: 35,
+      branches: 80,      // was 25, actual 90.57% - set ambitious target
+      functions: 50,     // was 35, actual 64.63% - set below current (52% actual with tool impls)
+      lines: 50,         // was 35, actual 52.4% - set slightly below current
+      statements: 50,    // was 35, actual 52.4% - set slightly below current
     },
+
+    // Utils directory has excellent coverage - raise to match actual performance
     './src/utils/*.ts': {
-      branches: 70,
-      functions: 80,
-      lines: 85,
-      statements: 85,
+      branches: 85,      // was 70, actual 89-98% across files
+      functions: 90,     // was 80, actual 90-100% across files
+      lines: 90,         // was 85, actual 92-99% across files
+      statements: 90,    // was 85, actual 92-99% across files
     },
+
+    // Module utils directory also has excellent coverage
     './src/tools/modules/utils/*': {
-      branches: 10,
-      functions: 10,
-      lines: 15,
-      statements: 10,
+      branches: 80,      // was 10, actual 86-100%
+      functions: 100,    // was 10, actual 100% on both files
+      lines: 90,         // was 15, actual 94-100%
+      statements: 90,    // was 10, actual 94-100%
     },
+
+    // Module services need improvement but set realistic targets
     './src/tools/modules/services/*': {
-      branches: 5,
-      functions: 15,
-      lines: 10,
-      statements: 10,
+      branches: 55,      // was 5, ranges 55-100%
+      functions: 16,     // was 15, ranges 16-66% - just above minimum
+      lines: 12,         // was 10, ranges 12-73% - just above minimum
+      statements: 12,    // was 10, ranges 12-73% - just above minimum
     },
+
+    // Expo core modules have strong coverage - raise significantly
     './src/tools/expo/core/**/*.ts': {
-      branches: 50,
-      functions: 60,
-      lines: 60,
-      statements: 60,
+      branches: 79,      // was 50, actual 79-93% - set to minimum (expo-executor)
+      functions: 85,     // was 60, actual 85-100% - set to minimum (expo-executor)
+      lines: 80,         // was 60, actual 80-95% - set to minimum (expo-executor)
+      statements: 80,    // was 60, actual 80-95% - set to minimum (expo-executor)
     },
-    // Tool implementations need integration tests - exclude from thresholds temporarily
+
+    // Tool implementations still need integration tests - keep lenient for now
+    // Target for v0.1.0: Add integration tests, then raise to 40%+ coverage
     './src/tools/expo/!(core)/**/*.ts': {
-      branches: 0,
-      functions: 0,
-      lines: 0,
-      statements: 0,
+      branches: 0,       // TODO v0.1.0: Raise to 30 after adding integration tests
+      functions: 0,      // TODO v0.1.0: Raise to 40 after adding integration tests
+      lines: 0,          // TODO v0.1.0: Raise to 40 after adding integration tests
+      statements: 0,     // TODO v0.1.0: Raise to 40 after adding integration tests
     },
   },
 
