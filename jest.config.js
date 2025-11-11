@@ -59,7 +59,7 @@ export default {
   coverageThreshold: {
     // Global thresholds raised significantly (actual: 52.4% lines, 64.63% functions, 90.57% branches)
     global: {
-      branches: 80,      // was 25, actual 90.57% - set ambitious target
+      branches: 85,      // was 25, actual 90.57% - set ambitious target (5% buffer)
       functions: 50,     // was 35, actual 64.63% - set below current (52% actual with tool impls)
       lines: 50,         // was 35, actual 52.4% - set slightly below current
       statements: 50,    // was 35, actual 52.4% - set slightly below current
@@ -81,12 +81,13 @@ export default {
       statements: 90,    // was 10, actual 94-100%
     },
 
-    // Module services need improvement but set realistic targets
+    // Module services need improvement - minimum thresholds set just below current minimums
+    // Note: Most services below 25% floor, will enforce 25%+ after adding more tests in v0.1.0
     './src/tools/modules/services/*': {
       branches: 55,      // was 5, ranges 55-100%
-      functions: 16,     // was 15, ranges 16-66% - just above minimum
-      lines: 12,         // was 10, ranges 12-73% - just above minimum
-      statements: 12,    // was 10, ranges 12-73% - just above minimum
+      functions: 16,     // was 15, below 25% floor (actual minimum: 16.66%), will raise to 25%+ in v0.1.0
+      lines: 12,         // was 10, well below 25% floor (actual minimum: 12.03%), will raise to 25%+ in v0.1.0
+      statements: 12,    // was 10, well below 25% floor (actual minimum: 12.03%), will raise to 25%+ in v0.1.0
     },
 
     // Expo core modules have strong coverage - raise significantly
@@ -97,13 +98,14 @@ export default {
       statements: 80,    // was 60, actual 80-95% - set to minimum (expo-executor)
     },
 
-    // Tool implementations still need integration tests - keep lenient for now
-    // Target for v0.1.0: Add integration tests, then raise to 40%+ coverage
+    // Tool implementations need integration tests - temporarily below 25% floor
+    // These are excluded from enforcement until integration tests are added
+    // Target for v0.1.0: Add integration tests, then enforce 25% minimum (40%+ target)
     './src/tools/expo/!(core)/**/*.ts': {
-      branches: 0,       // TODO v0.1.0: Raise to 30 after adding integration tests
-      functions: 0,      // TODO v0.1.0: Raise to 40 after adding integration tests
-      lines: 0,          // TODO v0.1.0: Raise to 40 after adding integration tests
-      statements: 0,     // TODO v0.1.0: Raise to 40 after adding integration tests
+      branches: 0,       // TODO v0.1.0: Add integration tests, enforce 25% minimum (target 30%)
+      functions: 0,      // TODO v0.1.0: Add integration tests, enforce 25% minimum (target 40%)
+      lines: 0,          // TODO v0.1.0: Add integration tests, enforce 25% minimum (target 40%)
+      statements: 0,     // TODO v0.1.0: Add integration tests, enforce 25% minimum (target 40%)
     },
   },
 
