@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-This document captures critical pain points discovered during actual usage of the react-native-expo-mcp server. Analysis of user transcripts revealed **41 minutes of manual work** that should be automated, **16+ failed tool calls**, and several critical missing features that force users to drop into manual command-line workflows.
+This document captures critical pain points discovered during actual usage of the mcp-react-native-expo server. Analysis of user transcripts revealed **41 minutes of manual work** that should be automated, **16+ failed tool calls**, and several critical missing features that force users to drop into manual command-line workflows.
 
 ### Severity Breakdown
 - **P0 Critical Issues:** 6 (block productivity)
@@ -24,8 +24,8 @@ Users cannot discover correct tool names, leading to multiple failed attempts wi
 
 **Real Transcript Examples:**
 ```
-● react-native-expo-mcp - expo_dev_read (MCP)
-  ⎿  Error: No such tool available: mcp__react-native-expo-mcp__expo_dev_read
+● mcp-react-native-expo - expo_dev_read (MCP)
+  ⎿  Error: No such tool available: mcp__mcp-react-native-expo__expo_dev_read
 
 ● Let me use the correct tool name with mcp__react-native-guide__*
   ⎿  Error: No such tool available: mcp__react-native-guide__expo_dev_start
@@ -46,7 +46,7 @@ Users cannot discover correct tool names, leading to multiple failed attempts wi
 - Add `expo_tools_list` command with descriptions
 - Add `expo_help <tool_name>` for usage examples
 - Implement autocomplete hints in Claude Code integration
-- Standardize tool naming: `mcp__react-native-expo-mcp__<action>_<resource>`
+- Standardize tool naming: `mcp__mcp-react-native-expo__<action>_<resource>`
 
 ---
 
@@ -58,10 +58,10 @@ MCP server fails to connect/reconnect with no diagnostic information.
 **Real Transcript Examples:**
 ```
 > /mcp
-  ⎿  Failed to reconnect to react-native-expo-mcp.
+  ⎿  Failed to reconnect to mcp-react-native-expo.
 
 > /mcp
-  ⎿  Failed to reconnect to react-native-expo-mcp.
+  ⎿  Failed to reconnect to mcp-react-native-expo.
 ```
 
 **Impact:**
@@ -89,8 +89,8 @@ Even with correct tool names, tools are reported as unavailable.
 
 **Real Transcript Example:**
 ```
-● react-native-expo-mcp - expo_dev_start (MCP)
-  ⎿  Error: No such tool available: mcp__react-native-expo-mcp__expo_dev_start
+● mcp-react-native-expo - expo_dev_start (MCP)
+  ⎿  Error: No such tool available: mcp__mcp-react-native-expo__expo_dev_start
 ```
 
 **Impact:**
@@ -305,7 +305,7 @@ Tools return `undefined` instead of proper success/error responses.
 
 **Real Transcript Example:**
 ```
-● react-native-expo-mcp - expo_install (MCP)
+● mcp-react-native-expo - expo_install (MCP)
   ⎿  Error: undefined
 ```
 
@@ -363,7 +363,7 @@ Tool responses exceed token limits without pagination.
 
 **Real Transcript Example:**
 ```
-● react-native-expo-mcp - expo_build_local_read (MCP)(tail: 300)
+● mcp-react-native-expo - expo_build_local_read (MCP)(tail: 300)
   ⎿  Error: MCP tool response (34488 tokens) exceeds maximum allowed tokens (25000).
       Please use pagination, filtering, or limit parameters to reduce the response size.
 ```
@@ -423,7 +423,7 @@ Operations timeout with no intermediate progress or diagnostic info.
 
 **Real Transcript Examples:**
 ```
-● react-native-expo-mcp - expo_dev_start (MCP)
+● mcp-react-native-expo - expo_dev_start (MCP)
   ⎿  Error: Command timed out after 60000ms
 
 # No indication of:
@@ -486,7 +486,7 @@ Builds start without validating environment, leading to late failures.
 **Real Transcript Examples:**
 ```
 # Build started with Java 24 (incompatible with Gradle 8.13)
-● react-native-expo-mcp - expo_build_local_start (MCP)
+● mcp-react-native-expo - expo_build_local_start (MCP)
   ⎿  Build started
 
 # Failed 10 minutes later:
@@ -984,18 +984,18 @@ After implementing P0 and P1 improvements:
 
 ### Example 1: Tool Discovery Failure Loop
 ```
-● react-native-expo-mcp - expo_dev_read (MCP)(session_id: "expo-dev-1762809634019", lines: "50")
-  ⎿  Error: No such tool available: mcp__react-native-expo-mcp__expo_dev_read
+● mcp-react-native-expo - expo_dev_read (MCP)(session_id: "expo-dev-1762809634019", lines: "50")
+  ⎿  Error: No such tool available: mcp__mcp-react-native-expo__expo_dev_read
 
 ● Let me use the correct tool name:
   [attempts mcp__react-native-guide__*]
   ⎿  Error: No such tool available
 
 > /mcp
-  ⎿  Failed to reconnect to react-native-expo-mcp.
+  ⎿  Failed to reconnect to mcp-react-native-expo.
 
 > /mcp
-  ⎿  Failed to reconnect to react-native-expo-mcp.
+  ⎿  Failed to reconnect to mcp-react-native-expo.
 ```
 
 ### Example 2: Dependency Hell

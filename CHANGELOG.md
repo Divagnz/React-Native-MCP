@@ -7,26 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Comprehensive examples directory with:
-  - Basic usage guides (getting started, common workflows)
-  - Code remediation examples (security fixes, performance, refactoring)
-  - Testing examples
-  - Package management guides
-  - Integration examples
-- Enhanced GitHub issue templates:
-  - Bug report template with detailed fields
-  - Feature request template with use case tracking
-- Improved pull request template with:
-  - Comprehensive checklists
-  - Test coverage requirements
-  - Security and performance considerations
-  - Reviewer checklist
-- CHANGELOG.md for tracking project history
+## [0.0.1] - 2025-01-15
 
 ### Changed
-- Improved documentation structure
-- Enhanced project organization
+- Reset version to 0.0.1 as initial stable release
+- Updated roadmap to accurately reflect v0.0.1 features
+- Moved Expo CLI integration to upcoming features (planned for v0.1.0)
+- Fixed repository URL for npm provenance compliance
+
+### Documentation
+- Added comprehensive "What's New in This Fork" section to README
+- Detailed comparison with original @mrnitro360/react-native-mcp-guide fork
+- Enhanced roadmap with clear version milestones
+- Impact metrics and feature comparison tables
+- Seven major enhancement categories documented
+
+### Repository
+- Corrected repository URL from React-Native-MCP to mcp-react-native-expo
+- Fixed npm provenance bundle validation issues
 
 ## [1.1.0] - 2024-11-02
 

@@ -2,10 +2,10 @@
 
 <div align="center">
 
-[![npm version](https://badge.fury.io/js/%40divagnz%2Freact-native-expo-mcp.svg)](https://badge.fury.io/js/%40divagnz%2Freact-native-expo-mcp)
+[![npm version](https://badge.fury.io/js/%40divagnz%2Fmcp-react-native-expo.svg)](https://badge.fury.io/js/%40divagnz%2Fmcp-react-native-expo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-1.1.0-blue.svg)](https://modelcontextprotocol.io/)
-[![PR Checks](https://github.com/Divagnz/React-Native-MCP/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Divagnz/React-Native-MCP/actions/workflows/pr-checks.yml)
+[![PR Checks](https://github.com/Divagnz/mcp-react-native-expo/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Divagnz/mcp-react-native-expo/actions/workflows/pr-checks.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.72+-blue.svg)](https://reactnative.dev/)
 
@@ -116,24 +116,24 @@ export EAS_TOKEN=your_eas_token_here
 
 ```bash
 # Install globally via npm
-npm install -g @divagnz/react-native-expo-mcp
+npm install -g @divagnz/mcp-react-native-expo
 
 # Configure with Claude CLI
-claude mcp add react-native-expo-mcp npx @divagnz/react-native-expo-mcp
+claude mcp add mcp-react-native-expo npx @divagnz/mcp-react-native-expo
 ```
 
 #### Development Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/Divagnz/React-Native-MCP.git
+git clone https://github.com/Divagnz/mcp-react-native-expo.git
 cd React-Native-MCP
 
 # Install dependencies and build
 npm install && npm run build
 
 # Add to Claude CLI
-claude mcp add react-native-expo-mcp node ./build/index.js
+claude mcp add mcp-react-native-expo node ./build/index.js
 ```
 
 ### Verification
@@ -142,7 +142,7 @@ claude mcp add react-native-expo-mcp node ./build/index.js
 claude mcp list
 ```
 
-Verify that `react-native-expo-mcp` appears as **Connected** ✅
+Verify that `mcp-react-native-expo` appears as **Connected** ✅
 
 ---
 
@@ -370,9 +370,9 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "react-native-expo-mcp": {
+    "mcp-react-native-expo": {
       "command": "npx",
-      "args": ["@divagnz/react-native-expo-mcp@0.0.1"],
+      "args": ["@divagnz/mcp-react-native-expo@0.0.1"],
       "env": {}
     }
   }
@@ -384,7 +384,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "react-native-expo-mcp": {
+    "mcp-react-native-expo": {
       "command": "node",
       "args": ["/absolute/path/to/React-Native-MCP/build/index.js"],
       "env": {}
@@ -427,14 +427,14 @@ This project implements enterprise-grade CI/CD:
 
 ```bash
 # Check current version
-npm list -g @divagnz/react-native-expo-mcp
+npm list -g @divagnz/mcp-react-native-expo
 
 # Update to latest version
-npm update -g @divagnz/react-native-expo-mcp
+npm update -g @divagnz/mcp-react-native-expo
 
 # Reconfigure Claude CLI
-claude mcp remove react-native-expo-mcp
-claude mcp add react-native-expo-mcp npx @divagnz/react-native-expo-mcp
+claude mcp remove mcp-react-native-expo
+claude mcp add mcp-react-native-expo npx @divagnz/mcp-react-native-expo
 ```
 
 ---
@@ -584,7 +584,7 @@ While the MCP server provides comprehensive React Native development capabilitie
 
 #### Tool Reliability
 - **60% failure rate:** In some sessions, ~60% of tool calls fail (vs. target >95%)
-- **Tool naming confusion:** Incorrect prefix attempts (`mcp__react-native-guide__*` vs `mcp__react-native-expo-mcp__*`)
+- **Tool naming confusion:** Incorrect prefix attempts (`mcp__react-native-guide__*` vs `mcp__mcp-react-native-expo__*`)
 - **Connection failures:** MCP server reconnections fail without diagnostics
 - **Undefined returns:** Some tools return `undefined` instead of proper error messages
 
@@ -721,7 +721,7 @@ cat ~/.config/claude-desktop/mcp.json
 For detailed troubleshooting, see:
 - [PAIN_POINTS.md](./PAIN_POINTS.md) - Comprehensive pain points analysis with real examples
 - [EXPO_TOOLS_SPEC.md](./EXPO_TOOLS_SPEC.md#-troubleshooting-guide) - Detailed Expo tools troubleshooting
-- [GitHub Issues](https://github.com/Divagnz/React-Native-MCP/issues) - Report bugs and request features
+- [GitHub Issues](https://github.com/Divagnz/mcp-react-native-expo/issues) - Report bugs and request features
 
 When reporting issues, include:
 - OS and version
@@ -830,9 +830,9 @@ When reporting issues, include:
 
 ### Resources
 
-- 📦 **[NPM Package](https://www.npmjs.com/package/@divagnz/react-native-expo-mcp)** - Official package repository
-- 🐙 **[GitHub Repository](https://github.com/Divagnz/React-Native-MCP)** - Source code and development
-- 🐛 **[Issue Tracker](https://github.com/Divagnz/React-Native-MCP/issues)** - Bug reports and feature requests
+- 📦 **[NPM Package](https://www.npmjs.com/package/@divagnz/mcp-react-native-expo)** - Official package repository
+- 🐙 **[GitHub Repository](https://github.com/Divagnz/mcp-react-native-expo)** - Source code and development
+- 🐛 **[Issue Tracker](https://github.com/Divagnz/mcp-react-native-expo/issues)** - Bug reports and feature requests
 - 📖 **[MCP Documentation](https://modelcontextprotocol.io/)** - Model Context Protocol specification
 - ⚛️ **[React Native Docs](https://reactnative.dev/)** - Official React Native documentation
 
@@ -854,7 +854,7 @@ This project is licensed under the [MIT License](LICENSE). See the license file 
 
 🆕 **v0.0.1 - First Release!**
 
-[Get Started](https://www.npmjs.com/package/@divagnz/react-native-expo-mcp) • [Documentation](https://github.com/Divagnz/React-Native-MCP) • [Community](https://github.com/Divagnz/React-Native-MCP/issues)
+[Get Started](https://www.npmjs.com/package/@divagnz/mcp-react-native-expo) • [Documentation](https://github.com/Divagnz/mcp-react-native-expo) • [Community](https://github.com/Divagnz/mcp-react-native-expo/issues)
 
 </div>
 

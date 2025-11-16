@@ -3030,8 +3030,8 @@ npx expo-doctor                    # Verify fixed: 17/17 checks passed
 #### Tool Not Available / MCP Connection Failures
 
 **Symptoms:**
-- Error: "No such tool available: mcp__react-native-expo-mcp__*"
-- "Failed to reconnect to react-native-expo-mcp"
+- Error: "No such tool available: mcp__mcp-react-native-expo__*"
+- "Failed to reconnect to mcp-react-native-expo"
 - Tools work intermittently
 
 **Diagnosis:**
@@ -3050,9 +3050,9 @@ ps aux | grep mcp
 // .mcp.json should contain:
 {
   "mcpServers": {
-    "react-native-expo-mcp": {
+    "mcp-react-native-expo": {
       "command": "node",
-      "args": ["path/to/react-native-expo-mcp/build/index.js"]
+      "args": ["path/to/mcp-react-native-expo/build/index.js"]
     }
   }
 }
@@ -3074,10 +3074,10 @@ expo_help()  // List all available tools
 4. **Verify installation:**
 ```bash
 # Check if MCP server is installed
-npm list -g | grep react-native-expo-mcp
+npm list -g | grep mcp-react-native-expo
 
 # Or check local installation
-npm list | grep react-native-expo-mcp
+npm list | grep mcp-react-native-expo
 ```
 
 **Prevention:**

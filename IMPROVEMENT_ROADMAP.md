@@ -978,7 +978,7 @@ expo_help(tool_name: "expo_dev_start")
 **Manual:** `npx expo install --check`
 
 ### Tool Not Available
-**Symptoms:** "No such tool available: mcp__react-native-expo-mcp__*"
+**Symptoms:** "No such tool available: mcp__mcp-react-native-expo__*"
 **Diagnosis:** `expo_server_status`
 **Fix:** Restart MCP server, check `.mcp.json` configuration
 **Verify:** `expo_help` should list all tools

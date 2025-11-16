@@ -1,11 +1,11 @@
 {
-  "name": "@divagnz/react-native-expo-mcp",
+  "name": "@divagnz/mcp-react-native-expo",
   "version": "0.0.1",
   "description": "React Native Expo MCP server - forked and expanded with expert code remediation, advanced refactoring, modular architecture, and comprehensive testing. Professional development companion for React Native teams with upcoming Expo, ADB, and iOS tool integration.",
   "type": "module",
   "main": "build/index.js",
   "bin": {
-    "react-native-expo-mcp": "build/index.js"
+    "mcp-react-native-expo": "build/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -56,12 +56,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Divagnz/React-Native-MCP.git"
+    "url": "git+https://github.com/Divagnz/mcp-react-native-expo.git"
   },
   "bugs": {
-    "url": "https://github.com/Divagnz/React-Native-MCP/issues"
+    "url": "https://github.com/Divagnz/mcp-react-native-expo/issues"
   },
-  "homepage": "https://github.com/Divagnz/React-Native-MCP#readme",
+  "homepage": "https://github.com/Divagnz/mcp-react-native-expo#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "qrcode": "^1.5.4",
