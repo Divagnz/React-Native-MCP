@@ -19,14 +19,7 @@ import { TestingAnalysisService } from './modules/services/testing-analysis-serv
 import { TestCoverageService } from './modules/services/test-coverage-service.js';
 import { VersionManagementService } from './modules/services/version-management-service.js';
 import { ExpoTools } from './expo/index.js';
-import {
-  listDevices,
-  ListDevicesInputSchema,
-  getDeviceInfo,
-  DeviceInfoInputSchema,
-  connectDevice,
-  ConnectDeviceInputSchema,
-} from './adb/device/index.js';
+import { listDevices, getDeviceInfo, connectDevice } from './adb/device/index.js';
 
 /**
  * React Native Tools
