@@ -20,6 +20,7 @@ import { TestCoverageService } from './modules/services/test-coverage-service.js
 import { VersionManagementService } from './modules/services/version-management-service.js';
 import { ExpoTools } from './expo/index.js';
 import { listDevices, getDeviceInfo, connectDevice } from './adb/device/index.js';
+import { installApp, uninstallApp, listPackages, getPackageInfo } from './adb/app/index.js';
 
 /**
  * React Native Tools
@@ -34,7 +35,7 @@ export class ReactNativeTools {
     const expoTools = new ExpoTools(this.server);
     expoTools.register();
 
-    // Register ADB device management tools (3 tools)
+    // Register ADB tools (7 tools: 3 device + 4 app management)
     this.registerADBTools();
 
     // Register all testing tools
@@ -1087,6 +1088,159 @@ ${testCode}
           host,
           port,
           timeout,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Install App Tool
+    this.server.tool(
+      'adb_install_app',
+      'Install an APK file on an Android device',
+      {
+        apk_path: z.string().describe('Path to the APK file to install'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        replace: z
+          .boolean()
+          .optional()
+          .describe('Replace existing app if installed (default: false)'),
+        grant_permissions: z
+          .boolean()
+          .optional()
+          .describe('Grant all runtime permissions (default: false)'),
+        allow_downgrade: z
+          .boolean()
+          .optional()
+          .describe('Allow version downgrade (default: false)'),
+        allow_test_apk: z
+          .boolean()
+          .optional()
+          .describe('Allow test APKs to be installed (default: false)'),
+      },
+      async ({
+        apk_path,
+        device_id,
+        replace,
+        grant_permissions,
+        allow_downgrade,
+        allow_test_apk,
+      }) => {
+        const result = await installApp({
+          apk_path,
+          device_id,
+          replace,
+          grant_permissions,
+          allow_downgrade,
+          allow_test_apk,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Uninstall App Tool
+    this.server.tool(
+      'adb_uninstall_app',
+      'Uninstall an app from an Android device',
+      {
+        package_name: z.string().describe('Package name to uninstall (e.g., com.example.app)'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        keep_data: z.boolean().optional().describe('Keep app data and cache (default: false)'),
+      },
+      async ({ package_name, device_id, keep_data }) => {
+        const result = await uninstallApp({
+          package_name,
+          device_id,
+          keep_data,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB List Packages Tool
+    this.server.tool(
+      'adb_list_packages',
+      'List installed packages on an Android device',
+      {
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        filter: z.string().optional().describe('Filter packages by name (partial match)'),
+        show_system: z.boolean().optional().describe('Include system packages (default: false)'),
+        show_third_party: z
+          .boolean()
+          .optional()
+          .describe('Include third-party packages (default: true)'),
+        show_disabled: z
+          .boolean()
+          .optional()
+          .describe('Include disabled packages (default: false)'),
+      },
+      async ({ device_id, filter, show_system, show_third_party, show_disabled }) => {
+        const result = await listPackages({
+          device_id,
+          filter,
+          show_system,
+          show_third_party,
+          show_disabled,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Get Package Info Tool
+    this.server.tool(
+      'adb_get_package_info',
+      'Get detailed information about an installed package',
+      {
+        package_name: z.string().describe('Package name to query (e.g., com.example.app)'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+      },
+      async ({ package_name, device_id }) => {
+        const result = await getPackageInfo({
+          package_name,
+          device_id,
         });
 
         return {
