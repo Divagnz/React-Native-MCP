@@ -19,6 +19,14 @@ import { TestingAnalysisService } from './modules/services/testing-analysis-serv
 import { TestCoverageService } from './modules/services/test-coverage-service.js';
 import { VersionManagementService } from './modules/services/version-management-service.js';
 import { ExpoTools } from './expo/index.js';
+import {
+  listDevices,
+  ListDevicesInputSchema,
+  getDeviceInfo,
+  DeviceInfoInputSchema,
+  connectDevice,
+  ConnectDeviceInputSchema,
+} from './adb/device/index.js';
 
 /**
  * React Native Tools
@@ -32,6 +40,9 @@ export class ReactNativeTools {
     // Register Expo CLI tools (15 tools)
     const expoTools = new ExpoTools(this.server);
     expoTools.register();
+
+    // Register ADB device management tools (3 tools)
+    this.registerADBTools();
 
     // Register all testing tools
     this.register_test_generation();
@@ -989,5 +1000,111 @@ ${testCode}
 `;
 
     return report;
+  }
+
+  /**
+   * Register ADB (Android Debug Bridge) tools
+   * Provides device management, app control, and debugging capabilities
+   */
+  private registerADBTools() {
+    // ADB List Devices Tool
+    this.server.tool(
+      'adb_list_devices',
+      'List all connected Android devices and emulators via ADB',
+      {
+        include_offline: z
+          .boolean()
+          .optional()
+          .describe('Include offline/unauthorized devices in the list'),
+        show_details: z
+          .boolean()
+          .optional()
+          .describe('Fetch detailed information for each device (slower but more informative)'),
+      },
+      async ({ include_offline, show_details }) => {
+        const result = await listDevices({
+          include_offline,
+          show_details,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Device Info Tool
+    this.server.tool(
+      'adb_device_info',
+      'Get detailed information about a specific Android device',
+      {
+        device_id: z
+          .string()
+          .optional()
+          .describe(
+            'Device serial number or ID (e.g., emulator-5554, ABC123). If not provided, uses first available device'
+          ),
+      },
+      async ({ device_id }) => {
+        const result = await getDeviceInfo({ device_id });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Connect Device Tool
+    this.server.tool(
+      'adb_connect_device',
+      'Connect to an Android device over TCP/IP for wireless debugging',
+      {
+        host: z
+          .string()
+          .describe(
+            'IP address or hostname of the device (e.g., 192.168.1.100, android-device.local)'
+          ),
+        port: z
+          .number()
+          .int()
+          .min(1)
+          .max(65535)
+          .default(5555)
+          .describe('ADB port number (default: 5555)'),
+        timeout: z
+          .number()
+          .int()
+          .min(1000)
+          .max(60000)
+          .optional()
+          .describe('Connection timeout in milliseconds (default: 10000)'),
+      },
+      async ({ host, port, timeout }) => {
+        const result = await connectDevice({
+          host,
+          port,
+          timeout,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
   }
 }

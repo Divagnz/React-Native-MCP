@@ -32,6 +32,12 @@ export interface DeviceInfo {
   brand?: string;
   product?: string;
   device?: string;
+  // Additional runtime properties
+  sdk_version?: string;
+  screen_resolution?: string;
+  screen_density?: string;
+  battery_level?: string;
+  summary?: string;
 }
 
 /**
