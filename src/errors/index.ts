@@ -133,6 +133,65 @@ export class PermissionError extends MCPError {
 }
 
 /**
+ * ADB error - base error for ADB operations
+ */
+export class ADBError extends MCPError {
+  constructor(message: string, details?: unknown) {
+    super(message, 'ADB_ERROR', details);
+    this.name = 'ADBError';
+  }
+}
+
+/**
+ * Device not found error - thrown when a device is not found
+ */
+export class DeviceNotFoundError extends ADBError {
+  constructor(deviceId?: string, details?: Record<string, unknown>) {
+    const message = deviceId ? `Device not found: ${deviceId}` : 'No devices found';
+    super(message, { deviceId, ...(details || {}) });
+    this.name = 'DeviceNotFoundError';
+    this.code = 'DEVICE_NOT_FOUND';
+  }
+}
+
+/**
+ * Device offline error - thrown when a device is offline
+ */
+export class DeviceOfflineError extends ADBError {
+  constructor(deviceId: string, details?: Record<string, unknown>) {
+    super(`Device is offline: ${deviceId}`, { deviceId, ...(details || {}) });
+    this.name = 'DeviceOfflineError';
+    this.code = 'DEVICE_OFFLINE';
+  }
+}
+
+/**
+ * Package not found error - thrown when an app package is not found
+ */
+export class PackageNotFoundError extends ADBError {
+  constructor(packageName: string, deviceId?: string, details?: Record<string, unknown>) {
+    super(`Package not found: ${packageName}`, {
+      packageName,
+      deviceId,
+      ...(details || {}),
+    });
+    this.name = 'PackageNotFoundError';
+    this.code = 'PACKAGE_NOT_FOUND';
+  }
+}
+
+/**
+ * Screenshot error - thrown during screenshot operations
+ */
+export class ScreenshotError extends ADBError {
+  constructor(message: string, details?: unknown) {
+    super(message, details);
+    this.name = 'ScreenshotError';
+    this.code = 'SCREENSHOT_ERROR';
+  }
+}
+
+/**
  * Error handling wrapper utility
  * Wraps async operations with standardized error handling
  *
