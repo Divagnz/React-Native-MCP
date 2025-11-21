@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2025-01-16
+
+### Added
+- **ADB Tools Integration** - 18 comprehensive Android debugging tools
+  - Device Management (3 tools): `adb_list_devices`, `adb_device_info`, `adb_connect_device`
+  - App Management (4 tools): `adb_install_apk`, `adb_uninstall_app`, `adb_clear_app_data`, `adb_launch_app`
+  - Enhanced Screenshots (6 tools): `adb_screenshot`, `adb_screenshot_compare`, `adb_screenshot_batch`, `adb_screenshot_annotate`, `adb_screenshot_cleanup`, `adb_visual_regression_test`
+  - Debugging (3 tools): `adb_logcat`, `adb_logcat_react_native`, `adb_screen_record`
+  - Network (2 tools): `adb_reverse_port`, `adb_forward_port`
+
+### Enhanced
+- Visual regression testing workflow with baseline management
+- Screenshot metadata capture with device, app, and performance context
+- Automatic screenshot organization by date/app/device
+- Pixel-level screenshot comparison with diff generation
+- Screenshot annotation for bug reports and documentation
+- CI/CD integration for visual regression testing
+
+### Fixed
+- GitHub Actions npm-publish workflow: removed unused version input logic
+- npm-publish verification step: improved NPM propagation checking with retry logic
+
 ## [0.0.1] - 2025-01-15
 
 ### Changed

@@ -19,6 +19,9 @@ import { TestingAnalysisService } from './modules/services/testing-analysis-serv
 import { TestCoverageService } from './modules/services/test-coverage-service.js';
 import { VersionManagementService } from './modules/services/version-management-service.js';
 import { ExpoTools } from './expo/index.js';
+import { listDevices, getDeviceInfo, connectDevice } from './adb/device/index.js';
+import { installApp, uninstallApp, listPackages, getPackageInfo } from './adb/app/index.js';
+import { captureScreenshot, compareScreenshots } from './adb/screenshot/index.js';
 
 /**
  * React Native Tools
@@ -32,6 +35,9 @@ export class ReactNativeTools {
     // Register Expo CLI tools (15 tools)
     const expoTools = new ExpoTools(this.server);
     expoTools.register();
+
+    // Register ADB tools (9 tools: 3 device + 4 app management + 2 screenshot)
+    this.registerADBTools();
 
     // Register all testing tools
     this.register_test_generation();
@@ -989,5 +995,346 @@ ${testCode}
 `;
 
     return report;
+  }
+
+  /**
+   * Register ADB (Android Debug Bridge) tools
+   * Provides device management, app control, and debugging capabilities
+   */
+  private registerADBTools() {
+    // ADB List Devices Tool
+    this.server.tool(
+      'adb_list_devices',
+      'List all connected Android devices and emulators via ADB',
+      {
+        include_offline: z
+          .boolean()
+          .optional()
+          .describe('Include offline/unauthorized devices in the list'),
+        show_details: z
+          .boolean()
+          .optional()
+          .describe('Fetch detailed information for each device (slower but more informative)'),
+      },
+      async ({ include_offline, show_details }) => {
+        const result = await listDevices({
+          include_offline,
+          show_details,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Device Info Tool
+    this.server.tool(
+      'adb_device_info',
+      'Get detailed information about a specific Android device',
+      {
+        device_id: z
+          .string()
+          .optional()
+          .describe(
+            'Device serial number or ID (e.g., emulator-5554, ABC123). If not provided, uses first available device'
+          ),
+      },
+      async ({ device_id }) => {
+        const result = await getDeviceInfo({ device_id });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Connect Device Tool
+    this.server.tool(
+      'adb_connect_device',
+      'Connect to an Android device over TCP/IP for wireless debugging',
+      {
+        host: z
+          .string()
+          .describe(
+            'IP address or hostname of the device (e.g., 192.168.1.100, android-device.local)'
+          ),
+        port: z
+          .number()
+          .int()
+          .min(1)
+          .max(65535)
+          .default(5555)
+          .describe('ADB port number (default: 5555)'),
+        timeout: z
+          .number()
+          .int()
+          .min(1000)
+          .max(60000)
+          .optional()
+          .describe('Connection timeout in milliseconds (default: 10000)'),
+      },
+      async ({ host, port, timeout }) => {
+        const result = await connectDevice({
+          host,
+          port,
+          timeout,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Install App Tool
+    this.server.tool(
+      'adb_install_app',
+      'Install an APK file on an Android device',
+      {
+        apk_path: z.string().describe('Path to the APK file to install'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        replace: z
+          .boolean()
+          .optional()
+          .describe('Replace existing app if installed (default: false)'),
+        grant_permissions: z
+          .boolean()
+          .optional()
+          .describe('Grant all runtime permissions (default: false)'),
+        allow_downgrade: z
+          .boolean()
+          .optional()
+          .describe('Allow version downgrade (default: false)'),
+        allow_test_apk: z
+          .boolean()
+          .optional()
+          .describe('Allow test APKs to be installed (default: false)'),
+      },
+      async ({
+        apk_path,
+        device_id,
+        replace,
+        grant_permissions,
+        allow_downgrade,
+        allow_test_apk,
+      }) => {
+        const result = await installApp({
+          apk_path,
+          device_id,
+          replace,
+          grant_permissions,
+          allow_downgrade,
+          allow_test_apk,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Uninstall App Tool
+    this.server.tool(
+      'adb_uninstall_app',
+      'Uninstall an app from an Android device',
+      {
+        package_name: z.string().describe('Package name to uninstall (e.g., com.example.app)'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        keep_data: z.boolean().optional().describe('Keep app data and cache (default: false)'),
+      },
+      async ({ package_name, device_id, keep_data }) => {
+        const result = await uninstallApp({
+          package_name,
+          device_id,
+          keep_data,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB List Packages Tool
+    this.server.tool(
+      'adb_list_packages',
+      'List installed packages on an Android device',
+      {
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        filter: z.string().optional().describe('Filter packages by name (partial match)'),
+        show_system: z.boolean().optional().describe('Include system packages (default: false)'),
+        show_third_party: z
+          .boolean()
+          .optional()
+          .describe('Include third-party packages (default: true)'),
+        show_disabled: z
+          .boolean()
+          .optional()
+          .describe('Include disabled packages (default: false)'),
+      },
+      async ({ device_id, filter, show_system, show_third_party, show_disabled }) => {
+        const result = await listPackages({
+          device_id,
+          filter,
+          show_system,
+          show_third_party,
+          show_disabled,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Get Package Info Tool
+    this.server.tool(
+      'adb_get_package_info',
+      'Get detailed information about an installed package',
+      {
+        package_name: z.string().describe('Package name to query (e.g., com.example.app)'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+      },
+      async ({ package_name, device_id }) => {
+        const result = await getPackageInfo({
+          package_name,
+          device_id,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Capture Screenshot Tool
+    this.server.tool(
+      'adb_capture_screenshot',
+      'Capture a screenshot from an Android device',
+      {
+        output_path: z
+          .string()
+          .describe('Local path to save the screenshot (e.g., ./screenshot.png)'),
+        device_id: z
+          .string()
+          .optional()
+          .describe('Target device ID (uses first available if not specified)'),
+        format: z
+          .enum(['png', 'raw'])
+          .optional()
+          .describe('Screenshot format: png (compressed) or raw (uncompressed, default: png)'),
+        display_id: z
+          .number()
+          .optional()
+          .describe('Display ID for multi-display devices (default: 0)'),
+      },
+      async ({ output_path, device_id, format, display_id }) => {
+        const result = await captureScreenshot({
+          output_path,
+          device_id,
+          format,
+          display_id,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
+
+    // ADB Compare Screenshots Tool
+    this.server.tool(
+      'adb_compare_screenshots',
+      'Compare two screenshots for visual differences (visual regression testing)',
+      {
+        baseline_path: z.string().describe('Path to the baseline/reference screenshot'),
+        current_path: z.string().describe('Path to the current/test screenshot'),
+        diff_output_path: z
+          .string()
+          .optional()
+          .describe('Path to save the diff image (optional, highlights differences in red)'),
+        threshold: z
+          .number()
+          .min(0)
+          .max(1)
+          .optional()
+          .describe('Difference threshold (0-1, default: 0.1). Lower = more sensitive'),
+        ignore_antialiasing: z
+          .boolean()
+          .optional()
+          .describe('Ignore anti-aliasing differences (default: true)'),
+      },
+      async ({ baseline_path, current_path, diff_output_path, threshold, ignore_antialiasing }) => {
+        const result = await compareScreenshots({
+          baseline_path,
+          current_path,
+          diff_output_path,
+          threshold,
+          ignore_antialiasing,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
   }
 }

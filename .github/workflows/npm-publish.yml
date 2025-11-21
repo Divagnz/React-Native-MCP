@@ -40,51 +40,40 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Update version (if specified)
-        if: github.event.inputs.version != ''
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
-
       - name: Publish to NPM
         run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create GitHub Release (if version updated)
-        if: github.event.inputs.version != ''
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          release_name: Release v${{ github.event.inputs.version }}
-          body: |
-            Automated release for version ${{ github.event.inputs.version }}
-
-            Published to NPM: https://www.npmjs.com/package/@divagnz/mcp-react-native-expo
-          draft: false
-          prerelease: false
-
   verify:
     name: Verify Publication
     runs-on: ubuntu-latest
     needs: publish
-    if: always()
+    if: success()
 
     steps:
       - name: Wait for NPM propagation
-        run: sleep 30
+        run: sleep 60
 
       - name: Verify package is available
         run: |
-          npm view @divagnz/mcp-react-native-expo version || echo "Package not yet available"
-
-      - name: Verify package installation
-        run: |
-          npm install -g @divagnz/mcp-react-native-expo
-          which mcp-react-native-expo || echo "Binary not found"
+          echo "Checking package availability..."
+          for i in {1..5}; do
+            if npm view @divagnz/mcp-react-native-expo version > /dev/null 2>&1; then
+              echo "✅ Package is available on NPM"
+              npm view @divagnz/mcp-react-native-expo version
+              exit 0
+            fi
+            echo "Attempt $i/5: Package not yet available, waiting..."
+            sleep 15
+          done
+          echo "⚠️ Package may not be fully propagated yet"
+          exit 1
 
       - name: Summary
+        if: success()
         run: |
-          echo "✅ Package published successfully!"
+          echo "✅ Package published and verified successfully!"
           echo "📦 Package: @divagnz/mcp-react-native-expo"
           echo "🔗 NPM: https://www.npmjs.com/package/@divagnz/mcp-react-native-expo"
+          echo "📖 Version: $(npm view @divagnz/mcp-react-native-expo version)"

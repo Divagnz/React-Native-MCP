@@ -143,13 +143,13 @@ describe('ReactNativeTools', () => {
       });
     });
 
-    it('should register all 33 tools including package management and Expo CLI tools', () => {
+    it('should register all 42 tools including package management, Expo CLI, and ADB tools', () => {
       reactNativeTools.register();
 
       const calls = (mockServer.tool as any).mock.calls;
 
-      // Should register 33 tools (17 core + 16 Expo CLI tools)
-      expect(calls.length).toBe(33);
+      // Should register 42 tools (17 core + 16 Expo CLI + 3 ADB device + 4 ADB app + 2 ADB screenshot)
+      expect(calls.length).toBe(42);
     });
   });
 

@@ -8,6 +8,8 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^pixelmatch$': '<rootDir>/src/__mocks__/pixelmatch.ts',
+    '^pngjs$': '<rootDir>/src/__mocks__/pngjs.ts',
     // '^@/(.*)$': '<rootDir>/src/$1', // enable if you use path aliases
   },
 
@@ -26,6 +28,11 @@ export default {
       },
     ],
   },
+
+  // Allow transforming ES modules from node_modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(pixelmatch)/)',
+  ],
 
   // ──────────────────────────────────────────────────────────────
   //  Test Discovery

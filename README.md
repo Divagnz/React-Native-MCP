@@ -501,6 +501,23 @@ claude mcp add mcp-react-native-expo npx @divagnz/mcp-react-native-expo
 - Debugging guidance
 - Architecture advice
 
+### Current Release - v0.0.2 ✅
+
+**ADB (Android Debug Bridge) Integration** - 18 comprehensive tools
+- ✅ Device Management: list_devices, device_info, connect_device
+- ✅ App Management: install_apk, uninstall_app, clear_app_data, launch_app
+- ✅ Enhanced Screenshots: screenshot with metadata, screenshot_compare, screenshot_batch
+- ✅ Visual Testing: screenshot_annotate, screenshot_cleanup, visual_regression_test
+- ✅ Debugging: logcat, logcat_react_native, screen_record
+- ✅ Network: reverse_port (Metro bundler), forward_port
+
+**Visual Regression Testing Workflow:**
+- Automatic screenshot organization by date/app/device
+- Pixel-level comparison with diff generation
+- Baseline management for CI/CD
+- Screenshot annotation for bug reports
+- Metadata capture (device, app, performance context)
+
 ### Upcoming Features 🔜
 
 #### Expo CLI Integration (v0.1.0 - Planned)
@@ -509,15 +526,6 @@ claude mcp add mcp-react-native-expo npx @divagnz/mcp-react-native-expo
 - 🔜 Project management tools (doctor, install, upgrade)
 - 🔜 OTA update publishing with rollout control
 - 🔜 15 comprehensive Expo CLI tools (7 session-based + 8 one-shot)
-
-#### ADB (Android Debug Bridge) Integration
-- 🔜 Device connection and management
-- 🔜 App installation and uninstallation
-- 🔜 Logcat monitoring and filtering
-- 🔜 Screenshot and screen recording
-- 🔜 Visual regression testing
-- 🔜 Performance profiling tools
-- 🔜 Complete Android development workflow
 
 #### iOS Development Tools
 - 🔜 Simulator management
